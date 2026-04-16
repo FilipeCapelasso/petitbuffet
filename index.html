@@ -1590,7 +1590,7 @@ const IMGS = window.IMGS || {};
     chave_pix: "68 9262-6612",
     url_google_script: "https://script.google.com/macros/s/AKfycbx5sl9-P8JGsnPYa7I8PdSYQAVIPAQ_lIpZUcPRqLzESEkzwVA61TKpxIN4yUmsRbKucw/exec",
     nomeAtendimento: "Assistente Petiti Buffet",
-    mensagemBoasVindas: "Olá! Seja bem-vindo(a)! Como posso ajudar com o seu evento hoje?",
+    mensagemBoasVindas: "Olá! Seja bem-vindo(a)! Como posso ajudar hoje?",
     instagram: ""
   };
 
@@ -1615,8 +1615,8 @@ const IMGS = window.IMGS || {};
     algodao: { nome: "Algodão Doce", icone: "☁️", imgKey: "algodao", desc: "Carrinho de algodão doce colorido.", valorTex: "R$ 7,00 à unidade", minimoTex: "Mínimo: 60 unidades", valorNum: 7.00, minNum: 60, tipo: "unidade" },
     brigadeiro: { nome: "Brigadeiro no Tacho", icone: "🍫", imgKey: "brigadeiro", desc: "Carrinho de brigadeiro saboroso. Preço único para qualquer combinação de 3 tipos.", valorTex: "A combinar", minimoTex: "Sem Mínimo", valorNum: 0, minNum: 1, tipo: "combinar" },
     pizza: { nome: "Pizza no Evento", icone: "🍕", imgKey: "pizza", desc: "Carrinho de pizza artesanal preparada na hora.", valorTex: "R$ 7,00 à unidade", minimoTex: "60 unidades", valorNum: 7.00, minNum: 60, tipo: "unidade" },
-    sanduiche: { nome: "Sanduíche Natural", icone: "🥪", imgKey: "sanduiche", desc: "Preparados no dia com pão integral macio, proteínas magras, vegetais frescos e temperos especiais. Temos opções de atum e frango.", valorTex: "R$ 10,00 à unidade", minimoTex: "Sem Mínimo", valorNum: 10.00, minNum: 1, tipo: "unidade" },
-    empada: { nome: "Empadas Artesanais", icone: "🥐", imgKey: "empada", desc: "Massa que derrete na boca, feita com manteiga selecionada e recheios generosos.", valorTex: "R$ 8,00 à unidade", minimoTex: "Sem Mínimo", valorNum: 8.00, minNum: 1, tipo: "unidade" }
+    sanduiche: { nome: "Sanduíche Natural", icone: "🥪", imgKey: "sanduiche", desc: "Preparados no dia com pão integral macio, proteínas magras, vegetais frescos e temperos especiais. Temos opções de atum e frango, perfeitos para o dia a dia.", valorTex: "R$ 10,00 à unidade", minimoTex: "Sem Mínimo", valorNum: 10.00, minNum: 1, tipo: "unidade", diasVenda: "Vendemos os sanduíches toda segunda, quarta e sábado." },
+    empada: { nome: "Empadas Artesanais", icone: "🥐", imgKey: "empada", desc: "Massa que derrete na boca, feita com manteiga selecionada e recheios generosos, ideal para o dia a dia.", valorTex: "R$ 8,00 à unidade", minimoTex: "Sem Mínimo", valorNum: 8.00, minNum: 1, tipo: "unidade", diasVenda: "Vendemos as empadas toda terça, quinta e sábado." }
   };
 
 
@@ -1954,6 +1954,7 @@ const IMGS = window.IMGS || {};
         <h3 class="product-name">${prod.nome}</h3>
         <p class="product-desc">${prod.desc}</p>
         ${id === "sanduiche" ? `<div class="product-note">🥗 Sabores: Atum e Frango</div>` : ""}
+        ${prod.diasVenda ? `<div class="product-note">📅 ${prod.diasVenda}</div>` : ""}
         <div class="product-badges">
           ${prod.valorTex ? `<span class="product-badge">💰 ${prod.valorTex}</span>` : ""}
           ${prod.minimoTex ? `<span class="product-badge">📦 ${formatarMinimoHome(prod.minimoTex)}</span>` : ""}
@@ -2086,7 +2087,14 @@ const IMGS = window.IMGS || {};
       ? `
         <div class="prod-detalhes" style="margin-top:8px;">
           <span class="prod-badge">🥗 Sabores: Atum e Frango</span>
+          <span class="prod-badge">📅 Segunda, quarta e sábado</span>
           <span class="prod-badge">💬 Escolha pelo chat</span>
+        </div>
+      `
+      : id === "empada"
+        ? `
+        <div class="prod-detalhes" style="margin-top:8px;">
+          <span class="prod-badge">📅 Terça, quinta e sábado</span>
         </div>
       `
       : "";
@@ -2161,7 +2169,7 @@ const IMGS = window.IMGS || {};
     let nomeUsuario = localStorage.getItem("cg_nomeUsuario");
     let msgInicial = CONFIG.mensagemBoasVindas;
     if (nomeUsuario) {
-      msgInicial = `Olá, ${nomeUsuario.split(' ')[0]}! Bem-vindo(a) de volta! 🍕🎉\nEstou aqui para ajudar com os detalhes do seu evento. O que precisa hoje?`;
+      msgInicial = `Olá, ${nomeUsuario.split(' ')[0]}! Bem-vindo(a) de volta! 🍕🎉\nEstou aqui para ajudar com seu pedido. O que você precisa hoje?`;
     }
     adicionarBolao({ tipo: "recebida", texto: msgInicial, de: CONFIG.nomeAtendimento, ts: Date.now() });
     area.scrollTop = area.scrollHeight;
