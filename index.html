@@ -446,6 +446,15 @@
             margin-bottom: 15px;
         }
 
+        .product-note {
+            font-size: 12px;
+            color: #ffc47f;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-top: -4px;
+            margin-bottom: 12px;
+        }
+
         .product-badges {
             display: flex;
             flex-direction: column;
@@ -1228,6 +1237,14 @@
             box-shadow: 0 4px 15px rgba(232, 112, 10, 0.1);
         }
 
+        .home-section-title {
+            font-family: "Playfair Display", serif;
+            font-size: 32px;
+            text-align: center;
+            color: var(--laranja);
+            margin-bottom: 40px;
+        }
+
         .home-actions {
             display: flex;
             justify-content: center;
@@ -1900,17 +1917,24 @@ const IMGS = window.IMGS || {};
   function renderHome() {
     const wppLink = `https://wa.me/${obterWhatsappLink()}?text=${encodeURIComponent("Olá! Quero saber mais sobre os carrinhos gourmet.")}`;
     const instagramLink = "https://www.instagram.com/petitbuffet_ac/";
-    const productsHTML = Object.entries(PRODUTOS).map(([id, prod]) => `
+    const carrinhosIds = ["pizza", "picole", "brigadeiro", "pipoca", "algodao", "cachorroquente", "hamburguer"];
+    const lanchesIds = ["sanduiche", "empada"];
+
+    const renderCardProduto = (id, prod) => `
       <div class="product-card" onclick="abrirPagina('${id}')">
         <span class="product-icon">${prod.icone}</span>
         <h3 class="product-name">${prod.nome}</h3>
         <p class="product-desc">${prod.desc}</p>
+        ${id === "sanduiche" ? `<div class="product-note">🥗 Sabores: Atum e Frango</div>` : ""}
         <div class="product-badges">
           ${prod.valorTex ? `<span class="product-badge">💰 ${prod.valorTex}</span>` : ""}
           ${prod.minimoTex ? `<span class="product-badge">📦 ${formatarMinimoHome(prod.minimoTex)}</span>` : ""}
         </div>
       </div>
-    `).join("");
+    `;
+
+    const carrinhosHTML = carrinhosIds.map(id => renderCardProduto(id, PRODUTOS[id])).join("");
+    const lanchesHTML = lanchesIds.map(id => renderCardProduto(id, PRODUTOS[id])).join("");
 
     const faqHTML = FAQ_HOME.map(item => `
       <div class="faq-chat-card">
@@ -1932,16 +1956,17 @@ const IMGS = window.IMGS || {};
       </div>
 
       <div style="max-width: 1400px; margin: 0 auto;">
-        <h2 style="font-family: 'Playfair Display', serif; font-size: 32px; text-align: center; color: var(--laranja); margin-bottom: 40px;">
-          Nossos Carrinhos Gourmet
-        </h2>
+        <h2 class="home-section-title">Nossos Carrinhos Gourmet</h2>
         <div class="products-grid">
-          ${productsHTML}
+          ${carrinhosHTML}
         </div>
 
-        <h2 style="font-family: 'Playfair Display', serif; font-size: 32px; text-align: center; color: var(--laranja); margin: 60px 0 40px;">
-          Perguntas Frequentes
-        </h2>
+        <h2 class="home-section-title" style="margin: 60px 0 40px;">Lanches Artesanais</h2>
+        <div class="products-grid">
+          ${lanchesHTML}
+        </div>
+
+        <h2 class="home-section-title" style="margin: 60px 0 40px;">Perguntas Frequentes</h2>
         <div class="faq-chat-grid">
           ${faqHTML}
         </div>
