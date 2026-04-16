@@ -260,12 +260,27 @@
 
         .btn-voltar {
             display: none;
-            background: none;
-            border: none;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(232, 112, 10, 0.35);
+            background: rgba(232, 112, 10, 0.12);
             color: var(--laranja);
-            font-size: 28px;
+            font-size: 24px;
+            font-weight: 700;
             cursor: pointer;
             margin-right: 15px;
+            line-height: 1;
+            box-shadow: 0 6px 18px rgba(232, 112, 10, 0.12);
+            transition: all 0.3s ease;
+        }
+
+        .btn-voltar:hover {
+            background: rgba(232, 112, 10, 0.2);
+            border-color: rgba(232, 112, 10, 0.55);
+            transform: translateY(-1px);
         }
 
         .header-actions {
@@ -1316,7 +1331,7 @@
             }
 
             .btn-voltar {
-                display: block;
+                display: inline-flex;
             }
 
             body.chat-aberto #sidebar {
