@@ -1040,6 +1040,32 @@
             z-index: 1;
         }
 
+        .produto-resumo-toggle {
+            display: none;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto 18px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(232, 112, 10, 0.32);
+            background: rgba(232, 112, 10, 0.12);
+            color: var(--laranja);
+            font-family: "DM Sans", sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .produto-resumo-toggle:hover {
+            background: rgba(232, 112, 10, 0.18);
+        }
+
+        .produto-resumo-extra {
+            display: block;
+        }
+
         #principal.produto-chat-ativo #vitrine {
             padding-bottom: 128px;
         }
@@ -1246,6 +1272,61 @@
 
             .checkout-address-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .prod-foto-wrap {
+                max-width: none;
+                margin-bottom: 18px;
+            }
+
+            .prod-foto {
+                max-height: 250px;
+            }
+
+            .prod-titulo {
+                font-size: 28px;
+                margin-bottom: 14px;
+            }
+
+            .prod-detalhes {
+                gap: 10px;
+                margin-bottom: 18px;
+            }
+
+            .prod-badge {
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+
+            .prod-desc {
+                font-size: 14px;
+                line-height: 1.65;
+                margin-bottom: 18px;
+            }
+
+            .produto-resumo-toggle {
+                display: block;
+            }
+
+            .catalogo-info.mobile-resumido .produto-resumo-extra {
+                display: none;
+            }
+
+            .catalogo-info.mobile-resumido .prod-foto {
+                max-height: 210px;
+            }
+
+            .catalogo-info.mobile-resumido .prod-foto-wrap {
+                margin-bottom: 14px;
+            }
+
+            .catalogo-info.mobile-resumido .prod-titulo {
+                font-size: 25px;
+                margin-bottom: 12px;
+            }
+
+            .catalogo-info.mobile-resumido .prod-detalhes {
+                margin-bottom: 12px;
             }
 
             #principal.produto-chat-ativo #vitrine {
@@ -1839,13 +1920,19 @@ const IMGS = window.IMGS || {};
       `
       : "";
 
+    const classesCatalogo = ["catalogo-info", "product-detail"];
+    if (telaMobileAtiva()) classesCatalogo.push("mobile-resumido");
+
     document.getElementById("vitrine").innerHTML = `
-      <div class="catalogo-info product-detail" id="catalogo-info">
+      <div class="${classesCatalogo.join(" ")}" id="catalogo-info">
         ${imgHTML}
         <h2 class="prod-titulo">${prod.icone} ${prod.nome}</h2>
         ${badgesHTML}
-        <p class="prod-desc">${prod.desc}</p>
-        ${extraHTML}
+        <button type="button" id="produto-resumo-toggle" class="produto-resumo-toggle" onclick="alternarResumoProduto()">Ver mais detalhes do produto</button>
+        <div class="produto-resumo-extra" id="produto-resumo-extra">
+          <p class="prod-desc">${prod.desc}</p>
+          ${extraHTML}
+        </div>
       </div>
     `;
     ajustarLayoutChatProduto();
@@ -1885,6 +1972,16 @@ const IMGS = window.IMGS || {};
       chatArea.style.top = `${topoChat}px`;
       chatArea.style.bottom = `${espacoInferior}px`;
     });
+  }
+
+  function alternarResumoProduto() {
+    const infoCatalogo = document.getElementById("catalogo-info");
+    const botao = document.getElementById("produto-resumo-toggle");
+    if (!infoCatalogo || !botao || !telaMobileAtiva()) return;
+
+    const estaResumido = infoCatalogo.classList.toggle("mobile-resumido");
+    botao.innerText = estaResumido ? "Ver mais detalhes do produto" : "Ocultar detalhes do produto";
+    ajustarLayoutChatProduto();
   }
 
   function carregarMensagens() {
