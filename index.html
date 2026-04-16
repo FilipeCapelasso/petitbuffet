@@ -1228,6 +1228,58 @@
             box-shadow: 0 4px 15px rgba(232, 112, 10, 0.1);
         }
 
+        .home-actions {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 20px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .home-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            min-width: 260px;
+            padding: 18px 28px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .home-action-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .home-action-btn svg {
+            flex-shrink: 0;
+        }
+
+        .home-action-whatsapp {
+            background: linear-gradient(135deg, var(--verde) 0%, #1aa854 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.25);
+        }
+
+        .home-action-whatsapp:hover {
+            box-shadow: 0 16px 36px rgba(37, 211, 102, 0.35);
+        }
+
+        .home-action-instagram {
+            background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 45%, #fcb045 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(253, 29, 29, 0.22);
+        }
+
+        .home-action-instagram:hover {
+            box-shadow: 0 16px 36px rgba(253, 29, 29, 0.3);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             #sidebar {
@@ -1342,6 +1394,17 @@
 
             .faq-chat-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .home-actions {
+                gap: 14px;
+            }
+
+            .home-action-btn {
+                width: min(100%, 360px);
+                min-width: 0;
+                font-size: 16px;
+                padding: 16px 22px;
             }
         }
     </style>
@@ -1836,6 +1899,7 @@ const IMGS = window.IMGS || {};
 
   function renderHome() {
     const wppLink = `https://wa.me/${obterWhatsappLink()}?text=${encodeURIComponent("Olá! Quero saber mais sobre os carrinhos gourmet.")}`;
+    const instagramLink = "https://www.instagram.com/petitbuffet_ac/";
     const productsHTML = Object.entries(PRODUTOS).map(([id, prod]) => `
       <div class="product-card" onclick="abrirPagina('${id}')">
         <span class="product-icon">${prod.icone}</span>
@@ -1882,13 +1946,19 @@ const IMGS = window.IMGS || {};
           ${faqHTML}
         </div>
 
-        <div style="text-align: center; margin-top: 60px;">
-          <a href="${wppLink}" target="_blank" class="btn-wpp" style="display: inline-flex; font-size: 18px; padding: 18px 40px;">
+        <div class="home-actions">
+          <a href="${wppLink}" target="_blank" class="home-action-btn home-action-whatsapp">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
               <path d="M11.999 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2.014 22l4.982-1.404A9.954 9.954 0 0 0 12 21.999c5.523 0 10-4.477 10-10S17.522 2 11.999 2z"/>
             </svg>
             FALE CONOSCO AGORA
+          </a>
+          <a href="${instagramLink}" target="_blank" class="home-action-btn home-action-instagram">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.8A3.95 3.95 0 0 0 3.8 7.75v8.5a3.95 3.95 0 0 0 3.95 3.95h8.5a3.95 3.95 0 0 0 3.95-3.95v-8.5a3.95 3.95 0 0 0-3.95-3.95h-8.5zm8.95 1.35a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2zM12 6.8A5.2 5.2 0 1 1 6.8 12 5.2 5.2 0 0 1 12 6.8zm0 1.8A3.4 3.4 0 1 0 15.4 12 3.4 3.4 0 0 0 12 8.6z"/>
+            </svg>
+            Petit Buffet
           </a>
         </div>
       </div>
