@@ -835,6 +835,16 @@
             box-shadow: 0 12px 30px rgba(37, 211, 102, 0.5);
         }
 
+        .modal-btn-cartao {
+            background: linear-gradient(135deg, #1f2937 0%, #334155 100%);
+            box-shadow: 0 8px 20px rgba(51, 65, 85, 0.35);
+            margin-bottom: 15px;
+        }
+
+        .modal-btn-cartao:hover {
+            box-shadow: 0 12px 30px rgba(51, 65, 85, 0.5);
+        }
+
         .pix-box {
             background: rgba(232, 112, 10, 0.1);
             border: 2px dashed var(--laranja);
@@ -1543,12 +1553,15 @@
         <div class="modal-box">
             <button class="modal-fechar" onclick="fecharModal('modal-checkout')">×</button>
             <div class="pix-icone">PIX</div>
-            <h3 class="modal-titulo">Pagamento via PIX</h3>
-            <p class="modal-texto">Realize o pagamento para confirmar seu pedido</p>
+            <h3 class="modal-titulo">Escolha como pagar</h3>
+            <p class="modal-texto">Use a chave PIX abaixo ou solicite o pagamento no cartao pelo WhatsApp</p>
             <div class="order-badge" id="checkout-pedido-numero">#0000</div>
             <h2 class="checkout-total" id="checkout-valor-total">R$ 0,00</h2>
             <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin-bottom: 8px;">Chave PIX:</p>
             <div class="pix-box" id="chave-pix-texto">68 9262-6612</div>
+            <button class="modal-btn modal-btn-cartao" onclick="solicitarPagamentoCartao()">
+                💳 PAGAR NO CARTÃO
+            </button>
             <button class="modal-btn" onclick="copiarPix()" style="margin-bottom: 15px;">
                 📋 COPIAR CHAVE PIX
             </button>
@@ -1626,7 +1639,7 @@ const IMGS = window.IMGS || {};
     },
     {
       pergunta: "Quais formas de pagamento vocês aceitam?",
-      resposta: "No momento aceitamos somente PIX."
+      resposta: "Aceitamos PIX e tambem pagamento no cartao, combinado manualmente pelo WhatsApp apos o envio do pedido."
     },
     {
       pergunta: "Onde vocês estão localizados e há quanto tempo trabalham com isso?",
@@ -2022,7 +2035,7 @@ const IMGS = window.IMGS || {};
       html += `
         <div class="checkout-extra-box">
           <h3>Dados do pedido</h3>
-          <p>Preencha os campos abaixo antes de seguir para o PIX. Assim o endereço vai completo para o atendimento, WhatsApp e planilha.</p>
+          <p>Preencha os campos abaixo antes de seguir para o pagamento. Assim o endereco vai completo para o atendimento, WhatsApp e planilha.</p>
           <div class="checkout-address-grid">
             <div class="checkout-field-wrap checkout-field-wrap-full">
               <label class="checkout-field-label" for="checkout-rua">Rua</label>
@@ -2342,7 +2355,6 @@ const IMGS = window.IMGS || {};
     document.getElementById("chave-pix-texto").innerText = CONFIG.chave_pix;
     document.getElementById("checkout-pedido-numero").innerText = pedidoAtual.numero;
     document.getElementById("checkout-valor-total").innerText = formatarValorBRL(pedidoAtual.total);
-    registrarPedidoNaPlanilha();
     document.getElementById("modal-checkout").classList.add("ativo");
   }
 
@@ -2386,12 +2398,15 @@ const IMGS = window.IMGS || {};
     return meuCarrinho.map(item => `${item.nome} (${item.qtd}x)`).join(", ");
   }
 
-  function montarPayloadPedidoPlanilha() {
+  function montarPayloadPedidoPlanilha(formaPagamento) {
+    const dadosComplementares = obterDadosComplementaresPedido();
     return {
       pedido: pedidoAtual.numero || "",
       nome: localStorage.getItem("cg_nomeUsuario") || "Desconhecido",
       telefone: localStorage.getItem("cg_telefoneUsuario") || "Nao informado",
+      endereco: dadosComplementares.endereco || "Rua: Não informado | Número: Não informado | Bairro: Não informado | Complemento: Não informado",
       itens: montarItensPlanilha(),
+      forma_pagamento: formaPagamento || "PIX",
       total: formatarValorBRL(pedidoAtual.total)
     };
   }
@@ -2424,15 +2439,31 @@ const IMGS = window.IMGS || {};
     setTimeout(() => { form.remove(); }, 2000);
   }
 
-  function registrarPedidoNaPlanilha() {
+  function registrarPedidoNaPlanilha(formaPagamento) {
     if (!CONFIG.url_google_script || pedidoAtual.enviadoPlanilha) return;
 
     try {
-      enviarPedidoParaPlanilha(montarPayloadPedidoPlanilha());
+      const formaPagamentoFinal = formaPagamento || pedidoAtual.formaPagamento || "PIX";
+      enviarPedidoParaPlanilha(montarPayloadPedidoPlanilha(formaPagamentoFinal));
       pedidoAtual.enviadoPlanilha = true;
+      pedidoAtual.pagamentoInformado = true;
+      pedidoAtual.formaPagamento = formaPagamentoFinal;
     } catch (erro) {
       console.error("Erro ao registrar pedido na planilha:", erro);
     }
+  }
+
+  function concluirPedidoViaWhatsApp(msgWhatsApp) {
+    const janelaWhatsApp = window.open(`https://wa.me/${obterWhatsappLink()}?text=${encodeURIComponent(msgWhatsApp)}`, "_blank");
+    if (!janelaWhatsApp) {
+      alert("Não consegui abrir o WhatsApp automaticamente. Verifique se o navegador bloqueou a janela.");
+      return;
+    }
+    meuCarrinho = [];
+    salvarCarrinho();
+    localStorage.removeItem("cg_observacaoPedido");
+    fecharModal("modal-checkout");
+    abrirPagina("home");
   }
 
   function confirmarPagamento() {
@@ -2449,15 +2480,7 @@ const IMGS = window.IMGS || {};
     const itensWhatsApp = montarItensWhatsApp();
     const totalFormatado = formatarValorBRL(pedidoAtual.total);
 
-    if (CONFIG.url_google_script && !pedidoAtual.enviadoPlanilha) {
-      try {
-        enviarPedidoParaPlanilha(montarPayloadPedidoPlanilha());
-        pedidoAtual.enviadoPlanilha = true;
-        pedidoAtual.pagamentoInformado = true;
-      } catch (erro) {
-        console.error("Erro ao enviar pedido para a planilha:", erro);
-      }
-    }
+    registrarPedidoNaPlanilha("PIX");
 
     const msgWhatsApp =
       `Olá! Já realizei o pagamento via PIX.\n\n` +
@@ -2469,16 +2492,33 @@ const IMGS = window.IMGS || {};
       `Total do carrinho: ${totalFormatado}\n\n` +
       `Vou enviar o comprovante logo abaixo.`;
 
-    const janelaWhatsApp = window.open(`https://wa.me/${obterWhatsappLink()}?text=${encodeURIComponent(msgWhatsApp)}`, "_blank");
-    if (!janelaWhatsApp) {
-      alert("Não consegui abrir o WhatsApp automaticamente. Verifique se o navegador bloqueou a janela.");
+    concluirPedidoViaWhatsApp(msgWhatsApp);
+  }
+
+  function solicitarPagamentoCartao() {
+    if (!pedidoAtual.numero || !pedidoAtual.total) {
+      alert("Seu pedido ainda não está pronto para pagamento.");
       return;
     }
-    meuCarrinho = [];
-    salvarCarrinho();
-    localStorage.removeItem("cg_observacaoPedido");
-    fecharModal("modal-checkout");
-    abrirPagina("home");
+    const nomeUsuario = localStorage.getItem("cg_nomeUsuario") || "Desconhecido";
+    const telefoneUsuario = localStorage.getItem("cg_telefoneUsuario") || "Não informado";
+    const dadosComplementares = obterDadosComplementaresPedido();
+    const enderecoEstruturado = dadosComplementares.enderecoEstruturado || {};
+    const itensWhatsApp = montarItensWhatsApp();
+    const totalFormatado = formatarValorBRL(pedidoAtual.total);
+
+    registrarPedidoNaPlanilha("Cartão");
+
+    const msgWhatsApp =
+      `quero pagar no cartão\n\n` +
+      `Pedido: ${pedidoAtual.numero}\n` +
+      `Nome: ${nomeUsuario}\n` +
+      `Telefone: ${telefoneUsuario}\n` +
+      `Endereço:\n${montarEnderecoWhatsApp(enderecoEstruturado)}\n` +
+      `Produtos comprados:\n${itensWhatsApp}\n` +
+      `Total do carrinho: ${totalFormatado}`;
+
+    concluirPedidoViaWhatsApp(msgWhatsApp);
   }
 
   function enviarFoto(event) {
