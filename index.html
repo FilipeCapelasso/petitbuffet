@@ -210,122 +210,63 @@
             filter: drop-shadow(0 0 5px currentColor);
         }
 
+        /* --- AJUSTE DA EMPADA CSS --- */
         .empada-icone-wrap {
             position: relative;
             display: inline-flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
-            width: 1.06em;
-            height: 1em;
+            width: 1.2em;
+            height: 1.2em;
             flex-shrink: 0;
-            vertical-align: middle;
-        }
-
-        .empada-vapor {
-            position: absolute;
-            top: -0.16em;
-            left: 50%;
-            width: 0.08em;
-            height: 0.18em;
-            border-left: 0.032em solid rgba(195, 201, 205, 0.92);
-            border-radius: 999px;
-            transform: translateX(-50%) rotate(8deg);
-            opacity: 0.9;
-            z-index: 4;
-        }
-
-        .empada-vapor::before,
-        .empada-vapor::after {
-            content: "";
-            position: absolute;
-            top: -0.01em;
-            width: 0.08em;
-            height: 0.17em;
-            border-left: 0.03em solid rgba(195, 201, 205, 0.88);
-            border-radius: 999px;
-        }
-
-        .empada-vapor::before {
-            left: -0.14em;
-            transform: rotate(-12deg);
-        }
-
-        .empada-vapor::after {
-            left: 0.08em;
-            transform: rotate(14deg);
         }
 
         .empada-icon {
             position: relative;
             display: inline-block;
-            width: 0.62em;
-            height: 0.28em;
-            flex-shrink: 0;
-            vertical-align: middle;
-            background:
-                linear-gradient(90deg, transparent 0 10%, rgba(208, 185, 142, 0.46) 10% 12%, transparent 12% 27%, rgba(208, 185, 142, 0.34) 27% 29%, transparent 29% 44%, rgba(208, 185, 142, 0.4) 44% 46%, transparent 46% 61%, rgba(208, 185, 142, 0.32) 61% 63%, transparent 63% 78%, rgba(208, 185, 142, 0.4) 78% 80%, transparent 80% 100%),
-                linear-gradient(180deg, #f8efcf 0%, #f1d8a5 70%, #e1bb78 100%);
-            clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
-            border-radius: 0 0 42% 42%;
-            box-shadow:
-                inset 0 0.03em 0 rgba(255, 253, 245, 0.72),
-                inset 0 -0.025em 0 rgba(191, 145, 71, 0.18),
-                0 0.04em 0.08em rgba(155, 112, 52, 0.12);
-            z-index: 2;
+            width: 0.8em;
+            height: 0.4em;
+            background: linear-gradient(to right, #e3c18b 0%, #f5e3b5 50%, #e3c18b 100%);
+            border-radius: 0 0 10px 10px;
+            clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
+            margin-top: 0.3em;
+            box-shadow: inset 0 -2px 5px rgba(0,0,0,0.1);
         }
 
         .empada-icon::before {
             content: "";
             position: absolute;
-            left: -0.2em;
-            right: -0.2em;
-            top: -0.31em;
-            height: 0.5em;
-            background:
-                radial-gradient(ellipse at 30% 24%, rgba(255, 236, 162, 0.96) 0 13%, transparent 14%),
-                radial-gradient(ellipse at 48% 18%, rgba(255, 248, 221, 0.54) 0 15%, transparent 16%),
-                radial-gradient(ellipse at 70% 34%, rgba(255, 188, 84, 0.66) 0 10%, transparent 11%),
-                radial-gradient(ellipse at 50% 56%, rgba(229, 132, 26, 0.34) 0 12%, transparent 13%),
-                linear-gradient(180deg, #ffca45 0%, #f7b129 56%, #eb8f16 100%);
-            border-radius: 50% 50% 38% 38% / 82% 82% 26% 26%;
-            box-shadow:
-                inset 0 0.045em 0 rgba(255, 246, 212, 0.42),
-                inset 0 -0.035em 0 rgba(206, 124, 23, 0.16),
-                0 0.04em 0.08em rgba(166, 98, 18, 0.12);
+            top: -0.55em;
+            left: -10%;
+            width: 120%;
+            height: 0.7em;
+            background: linear-gradient(180deg, #ff9d2e 0%, #e8700a 100%);
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.4);
+            border-bottom: 1px solid #b85708;
         }
 
+        /* Brilho da massa pincelada */
         .empada-icon::after {
             content: "";
             position: absolute;
-            left: -0.14em;
-            right: -0.14em;
-            top: -0.05em;
-            height: 0.11em;
-            background:
-                radial-gradient(circle at 10% 0, #f3b428 0 28%, transparent 29%),
-                radial-gradient(circle at 30% 0, #f3b428 0 28%, transparent 29%),
-                radial-gradient(circle at 50% 0, #f3b428 0 28%, transparent 29%),
-                radial-gradient(circle at 70% 0, #f3b428 0 28%, transparent 29%),
-                radial-gradient(circle at 90% 0, #f3b428 0 28%, transparent 29%),
-                linear-gradient(180deg, #ffbb2d 0%, #f0a41c 100%);
-            opacity: 0.98;
-            pointer-events: none;
+            top: -0.45em;
+            left: 20%;
+            width: 30%;
+            height: 0.15em;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            filter: blur(1px);
         }
 
         .menu-item .empada-icone-wrap {
-            width: 0.9em;
-            height: 0.84em;
+            font-size: 18px;
         }
-
-        .product-icon .empada-icone-wrap,
-        .prod-placeholder-icon .empada-icone-wrap {
-            width: 1.18em;
-            height: 1.08em;
+        .product-icon .empada-icone-wrap {
+            font-size: 60px;
         }
-
         .prod-titulo-icone .empada-icone-wrap {
-            width: 1.1em;
-            height: 1em;
+            font-size: 30px;
         }
 
         .menu-carrinho {
@@ -1592,15 +1533,12 @@
     </style>
 </head>
 <body>
-    <!-- Background Effects -->
     <div class="wireframe-bg">
         <canvas id="wireframeCanvas"></canvas>
     </div>
     <div class="particles" id="particlesContainer"></div>
 
-    <!-- App Container -->
     <div id="app">
-        <!-- Sidebar -->
         <div id="sidebar">
             <div class="sidebar-logo">
                 <div class="logo-titulo">Petit Buffet</div>
@@ -1624,7 +1562,7 @@
                     <span class="icone">🍿</span> Pipoca Doce
                 </div>
                 <div class="menu-item" id="mi-algodao" onclick="abrirPagina('algodao')">
-                    <span class="icone">☁️</span> Algodão Doce
+                    <span class="icone">☁️</span> Algodão Doces
                 </div>
                 <div class="menu-item" id="mi-cachorroquente" onclick="abrirPagina('cachorroquente')">
                     <span class="icone">🌭</span> Cachorro Quente
@@ -1637,7 +1575,7 @@
                     <span class="icone">🥪</span> Sanduíche Natural
                 </div>
                 <div class="menu-item" id="mi-empada" onclick="abrirPagina('empada')">
-                    <span class="icone" aria-hidden="true"><span class="empada-icone-wrap"><span class="empada-vapor"></span><span class="empada-icon"></span></span></span> Empadas
+                    <span class="icone" aria-hidden="true"><span class="empada-icone-wrap"><span class="empada-icon"></span></span></span> Empadas
                 </div>
                 <div class="menu-secao">FINALIZAR</div>
                 <div class="menu-item menu-carrinho" id="mi-carrinho" onclick="abrirPagina('carrinho')">
@@ -1646,7 +1584,6 @@
             </div>
         </div>
 
-        <!-- Principal -->
         <div id="principal">
             <div id="header">
                 <div style="display:flex;align-items:center;">
@@ -1675,7 +1612,6 @@
         </div>
     </div>
 
-    <!-- Modal Login -->
     <div id="modal-login" class="modal-overlay">
         <div class="modal-box">
             <button class="modal-fechar" onclick="fecharModal('modal-login')">×</button>
@@ -1688,7 +1624,6 @@
         </div>
     </div>
 
-    <!-- Modal Checkout -->
     <div id="modal-checkout" class="modal-overlay">
         <div class="modal-box">
             <button class="modal-fechar" onclick="fecharModal('modal-checkout')">×</button>
@@ -1723,15 +1658,15 @@
 
     <script src="imagens-base64.js"></script>
     <script>
-const IMGS = window.IMGS || {};
+  const IMGS = window.IMGS || {};
 
   const CONFIG = {
     whatsapp: "68 9262-6612",
     chave_pix: "68 9262-6612",
     url_google_script: "https://script.google.com/macros/s/AKfycbx5sl9-P8JGsnPYa7I8PdSYQAVIPAQ_lIpZUcPRqLzESEkzwVA61TKpxIN4yUmsRbKucw/exec",
-    nomeAtendimento: "Assistente Petiti Buffet",
+    nomeAtendimento: "Assistente Petit Buffet",
     mensagemBoasVindas: "Olá! Seja bem-vindo(a)! Como posso ajudar hoje?",
-    instagram: ""
+    instagram: "petitbuffet_ac"
   };
 
   const SABORES_SANDUICHE = [
@@ -1756,9 +1691,20 @@ const IMGS = window.IMGS || {};
     brigadeiro: { nome: "Brigadeiro no Tacho", icone: "🍫", imgKey: "brigadeiro", desc: "Carrinho de brigadeiro saboroso. Preço único para qualquer combinação de 3 tipos.", valorTex: "A combinar", minimoTex: "Sem Mínimo", valorNum: 0, minNum: 1, tipo: "combinar" },
     pizza: { nome: "Pizza no Evento", icone: "🍕", imgKey: "pizza", desc: "Carrinho de pizza artesanal preparada na hora.", valorTex: "R$ 7,00 à unidade", minimoTex: "60 unidades", valorNum: 7.00, minNum: 60, tipo: "unidade" },
     sanduiche: { nome: "Sanduíche Natural", icone: "🥪", imgKey: "sanduiche", desc: "Preparados no dia com pão integral macio, proteínas magras, vegetais frescos e temperos especiais. Temos opções de atum e frango, perfeitos para o dia a dia.", valorTex: "R$ 10,00 à unidade", minimoTex: "Sem Mínimo", valorNum: 10.00, minNum: 1, tipo: "unidade", diasVenda: "Vendemos os sanduíches toda segunda, quarta e sábado." },
-    empada: { nome: "Empadas Artesanais", icone: "🥧", iconeHtml: '<span class="empada-icone-wrap"><span class="empada-vapor"></span><span class="empada-icon"></span></span>', imgKey: "empada", desc: "Massa que derrete na boca, feita com manteiga selecionada e recheios generosos, ideal para o dia a dia.", valorTex: "R$ 8,00 à unidade", minimoTex: "Sem Mínimo", valorNum: 8.00, minNum: 1, tipo: "unidade", diasVenda: "Vendemos as empadas toda terça, quinta e sábado." }
+    empada: { 
+        nome: "Empadas Artesanais", 
+        icone: "🥧", 
+        iconeHtml: '<span class="empada-icone-wrap"><span class="empada-icon"></span></span>', 
+        imgKey: "empada", 
+        desc: "Massa que derrete na boca, feita com manteiga selecionada e recheios generosos, ideal para o dia a dia.", 
+        valorTex: "R$ 8,00 à unidade", 
+        minimoTex: "Sem Mínimo", 
+        valorNum: 8.00, 
+        minNum: 1, 
+        tipo: "unidade", 
+        diasVenda: "Vendemos as empadas toda terça, quinta e sábado." 
+    }
   };
-
 
   const FAQ_HOME = [
     {
@@ -1793,82 +1739,72 @@ const IMGS = window.IMGS || {};
   let pedidoAtual = {};
   let toqueMenuLateral = null;
 
-// Wireframe Animation
-        const canvas = document.getElementById('wireframeCanvas');
-        const ctx = canvas.getContext('2d');
+  // Wireframe Animation
+  const canvas = document.getElementById('wireframeCanvas');
+  const ctx = canvas.getContext('2d');
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  class WireframeNode {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = (Math.random() - 0.5) * 0.3;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+    }
+  }
+
+  const nodes = [];
+  for (let i = 0; i < 40; i++) {
+    nodes.push(new WireframeNode(Math.random() * canvas.width, Math.random() * canvas.height));
+  }
+
+  function drawWireframe() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < nodes.length; i++) {
+      nodes[i].update();
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < 150) {
+          ctx.strokeStyle = `rgba(232, 112, 10, ${1 - distance / 150})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
         }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+      }
+      ctx.fillStyle = 'rgba(232, 112, 10, 0.6)';
+      ctx.beginPath();
+      ctx.arc(nodes[i].x, nodes[i].y, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(drawWireframe);
+  }
+  drawWireframe();
 
-        class WireframeNode {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.vx = (Math.random() - 0.5) * 0.3;
-                this.vy = (Math.random() - 0.5) * 0.3;
-            }
-
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-            }
-        }
-
-        const nodes = [];
-        for (let i = 0; i < 40; i++) {
-            nodes.push(new WireframeNode(
-                Math.random() * canvas.width,
-                Math.random() * canvas.height
-            ));
-        }
-
-        function drawWireframe() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            for (let i = 0; i < nodes.length; i++) {
-                nodes[i].update();
-                
-                for (let j = i + 1; j < nodes.length; j++) {
-                    const dx = nodes[i].x - nodes[j].x;
-                    const dy = nodes[i].y - nodes[j].y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 150) {
-                        ctx.strokeStyle = `rgba(232, 112, 10, ${1 - distance / 150})`;
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(nodes[i].x, nodes[i].y);
-                        ctx.lineTo(nodes[j].x, nodes[j].y);
-                        ctx.stroke();
-                    }
-                }
-
-                ctx.fillStyle = 'rgba(232, 112, 10, 0.6)';
-                ctx.beginPath();
-                ctx.arc(nodes[i].x, nodes[i].y, 2, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            requestAnimationFrame(drawWireframe);
-        }
-        drawWireframe();
-
-        // Generate particles
-        const particlesContainer = document.getElementById('particlesContainer');
-        for (let i = 0; i < 30; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 20 + 's';
-            particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-            particlesContainer.appendChild(particle);
-        }
+  const particlesContainer = document.getElementById('particlesContainer');
+  for (let i = 0; i < 30; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 20 + 's';
+    particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+    particlesContainer.appendChild(particle);
+  }
 
   function obterEstadoChat(idProduto) {
     if (!estadoChat[idProduto] || typeof estadoChat[idProduto] !== "object") {
@@ -1895,33 +1831,22 @@ const IMGS = window.IMGS || {};
   function inicializarGestoMenuMobile() {
     const principal = document.getElementById("principal");
     if (!principal || principal.dataset.gestoMenuInicializado === "true") return;
-
     principal.dataset.gestoMenuInicializado = "true";
-
     principal.addEventListener("touchstart", event => {
       if (!telaMobileAtiva() || !document.body.classList.contains("chat-aberto")) return;
       const toque = event.changedTouches && event.changedTouches[0];
       if (!toque) return;
-
-      toqueMenuLateral = {
-        x: toque.clientX,
-        y: toque.clientY
-      };
+      toqueMenuLateral = { x: toque.clientX, y: toque.clientY };
     }, { passive: true });
-
     principal.addEventListener("touchend", event => {
       if (!telaMobileAtiva() || !document.body.classList.contains("chat-aberto") || !toqueMenuLateral) return;
       const toque = event.changedTouches && event.changedTouches[0];
       if (!toque) return;
-
       const deltaX = toque.clientX - toqueMenuLateral.x;
       const deltaY = Math.abs(toque.clientY - toqueMenuLateral.y);
       const iniciouNaBorda = toqueMenuLateral.x <= 70;
       toqueMenuLateral = null;
-
-      if (iniciouNaBorda && deltaX > 90 && deltaY < 80) {
-        voltarMenu();
-      }
+      if (iniciouNaBorda && deltaX > 90 && deltaY < 80) voltarMenu();
     }, { passive: true });
   }
 
@@ -2050,7 +1975,6 @@ const IMGS = window.IMGS || {};
       vitrine.style.display = "block";
       vitrine.classList.add("full-mode");
       renderHome();
-
     } else if (id === "carrinho") {
       document.getElementById("titulo-pagina").textContent = "Meu Carrinho";
       formChat.style.display = "none";
@@ -2058,7 +1982,6 @@ const IMGS = window.IMGS || {};
       vitrine.style.display = "block";
       vitrine.classList.add("full-mode");
       renderCarrinhoPagina();
-
     } else {
       const p = PRODUTOS[id];
       document.getElementById("titulo-pagina").textContent = p.nome;
@@ -2129,35 +2052,24 @@ const IMGS = window.IMGS || {};
           <span class="faq-pill">📍 Belo Jardim 1</span>
         </div>
       </div>
-
       <div style="max-width: 1400px; margin: 0 auto;">
         <h2 class="home-section-title">Nossos Carrinhos Gourmet</h2>
         <div class="products-grid">
           ${carrinhosHTML}
         </div>
-
         <h2 class="home-section-title" style="margin: 60px 0 40px;">Lanches Artesanais</h2>
         <div class="products-grid">
           ${lanchesHTML}
         </div>
-
         <h2 class="home-section-title" style="margin: 60px 0 40px;">Perguntas Frequentes</h2>
         <div class="faq-chat-grid">
           ${faqHTML}
         </div>
-
         <div class="home-actions">
           <a href="${wppLink}" target="_blank" class="home-action-btn home-action-whatsapp">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-              <path d="M11.999 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2.014 22l4.982-1.404A9.954 9.954 0 0 0 12 21.999c5.523 0 10-4.477 10-10S17.522 2 11.999 2z"/>
-            </svg>
             FALE CONOSCO AGORA
           </a>
           <a href="${instagramLink}" target="_blank" class="home-action-btn home-action-instagram">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.8A3.95 3.95 0 0 0 3.8 7.75v8.5a3.95 3.95 0 0 0 3.95 3.95h8.5a3.95 3.95 0 0 0 3.95-3.95v-8.5a3.95 3.95 0 0 0-3.95-3.95h-8.5zm8.95 1.35a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2zM12 6.8A5.2 5.2 0 1 1 6.8 12 5.2 5.2 0 0 1 12 6.8zm0 1.8A3.4 3.4 0 1 0 15.4 12 3.4 3.4 0 0 0 12 8.6z"/>
-            </svg>
             Petit Buffet
           </a>
         </div>
@@ -2174,7 +2086,7 @@ const IMGS = window.IMGS || {};
       let soma = 0;
       let resumoItens = [];
       meuCarrinho.forEach((item, index) => {
-        html += `<div class="cart-item"><div class="cart-info"><h4>${item.nome}</h4><p>Quantidade/Qtd: ${item.qtd}</p></div><div style="text-align:right;"><div class="cart-price">R$ ${item.total.toFixed(2).replace('.', ',')}</div><button class="btn-remover" onclick="removerItem(${index})">Remover</button></div></div>`;
+        html += `<div class="cart-item"><div class="cart-info"><h4>${item.nome}</h4><p>Quantidade: ${item.qtd}</p></div><div style="text-align:right;"><div class="cart-price">R$ ${item.total.toFixed(2).replace('.', ',')}</div><button class="btn-remover" onclick="removerItem(${index})">Remover</button></div></div>`;
         soma += item.total;
         resumoItens.push(`${item.nome} (${item.qtd}x)`);
       });
@@ -2182,23 +2094,23 @@ const IMGS = window.IMGS || {};
       html += `
         <div class="checkout-extra-box">
           <h3>Dados do pedido</h3>
-          <p>Preencha os campos abaixo antes de seguir para o pagamento. Assim o endereco vai completo para o atendimento, WhatsApp e planilha.</p>
+          <p>Preencha os campos abaixo para que o endereco vá completo para o atendimento.</p>
           <div class="checkout-address-grid">
             <div class="checkout-field-wrap checkout-field-wrap-full">
-              <label class="checkout-field-label" for="checkout-rua">Rua</label>
-              <input id="checkout-rua" class="checkout-field" type="text" maxlength="120" placeholder="Ex.: Rua das Flores" value="${escaparHtml(enderecoSalvo.rua)}" oninput="salvarDadosCheckoutLocal()">
+              <label class="checkout-field-label">Rua</label>
+              <input id="checkout-rua" class="checkout-field" type="text" placeholder="Ex.: Rua das Flores" value="${escaparHtml(enderecoSalvo.rua)}" oninput="salvarDadosCheckoutLocal()">
             </div>
             <div class="checkout-field-wrap">
-              <label class="checkout-field-label" for="checkout-numero">Número</label>
-              <input id="checkout-numero" class="checkout-field" type="text" maxlength="30" placeholder="Ex.: 123" value="${escaparHtml(enderecoSalvo.numero)}" oninput="salvarDadosCheckoutLocal()">
+              <label class="checkout-field-label">Número</label>
+              <input id="checkout-numero" class="checkout-field" type="text" placeholder="Ex.: 123" value="${escaparHtml(enderecoSalvo.numero)}" oninput="salvarDadosCheckoutLocal()">
             </div>
             <div class="checkout-field-wrap">
-              <label class="checkout-field-label" for="checkout-bairro">Bairro</label>
-              <input id="checkout-bairro" class="checkout-field" type="text" maxlength="80" placeholder="Ex.: Centro" value="${escaparHtml(enderecoSalvo.bairro)}" oninput="salvarDadosCheckoutLocal()">
+              <label class="checkout-field-label">Bairro</label>
+              <input id="checkout-bairro" class="checkout-field" type="text" placeholder="Ex.: Centro" value="${escaparHtml(enderecoSalvo.bairro)}" oninput="salvarDadosCheckoutLocal()">
             </div>
             <div class="checkout-field-wrap checkout-field-wrap-full">
-              <label class="checkout-field-label" for="checkout-complemento">Complemento</label>
-              <input id="checkout-complemento" class="checkout-field" type="text" maxlength="120" placeholder="Ex.: apto 4, bloco B, casa azul..." value="${escaparHtml(enderecoSalvo.complemento)}" oninput="salvarDadosCheckoutLocal()">
+              <label class="checkout-field-label">Complemento</label>
+              <input id="checkout-complemento" class="checkout-field" type="text" placeholder="Ex.: Casa azul, ao lado do mercado..." value="${escaparHtml(enderecoSalvo.complemento)}" oninput="salvarDadosCheckoutLocal()">
             </div>
           </div>
         </div>
@@ -2253,7 +2165,7 @@ const IMGS = window.IMGS || {};
         ${imgHTML}
         <h2 class="prod-titulo">${renderizarIconeProduto(prod, "prod-titulo-icone")}<span>${prod.nome}</span></h2>
         ${badgesHTML}
-        <button type="button" id="produto-resumo-toggle" class="produto-resumo-toggle" onclick="alternarResumoProduto()">Ver mais detalhes do produto</button>
+        <button type="button" id="produto-resumo-toggle" class="produto-resumo-toggle" onclick="alternarResumoProduto()">Ver mais detalhes</button>
         <div class="produto-resumo-extra" id="produto-resumo-extra">
           <p class="prod-desc">${prod.desc}</p>
           ${extraHTML}
@@ -2281,13 +2193,11 @@ const IMGS = window.IMGS || {};
     const formChat = document.getElementById("form-chat");
     const infoCatalogo = document.getElementById("catalogo-info");
     if (!principal || !chatArea || !formChat) return;
-
     if (!principal.classList.contains("produto-chat-ativo") || !infoCatalogo || chatArea.style.display === "none" || formChat.style.display === "none") {
       chatArea.style.top = "";
       chatArea.style.bottom = "";
       return;
     }
-
     requestAnimationFrame(() => {
       const principalRect = principal.getBoundingClientRect();
       const infoRect = infoCatalogo.getBoundingClientRect();
@@ -2303,9 +2213,8 @@ const IMGS = window.IMGS || {};
     const infoCatalogo = document.getElementById("catalogo-info");
     const botao = document.getElementById("produto-resumo-toggle");
     if (!infoCatalogo || !botao || !telaMobileAtiva()) return;
-
     const estaResumido = infoCatalogo.classList.toggle("mobile-resumido");
-    botao.innerText = estaResumido ? "Ver mais detalhes do produto" : "Ocultar detalhes do produto";
+    botao.innerText = estaResumido ? "Ver mais detalhes" : "Ocultar detalhes";
     ajustarLayoutChatProduto();
   }
 
@@ -2315,9 +2224,9 @@ const IMGS = window.IMGS || {};
     let nomeUsuario = localStorage.getItem("cg_nomeUsuario");
     let msgInicial = CONFIG.mensagemBoasVindas;
     if (nomeUsuario) {
-      msgInicial = `Olá, ${nomeUsuario.split(' ')[0]}! Bem-vindo(a) de volta! 🍕🎉\nEstou aqui para ajudar com seu pedido. O que você precisa hoje?`;
+      msgInicial = `Olá, ${nomeUsuario.split(' ')[0]}! Como posso ajudar com seu pedido hoje?`;
     }
-    adicionarBolao({ tipo: "recebida", texto: msgInicial, de: CONFIG.nomeAtendimento, ts: Date.now() });
+    adicionarBolao({ tipo: "recebida", texto: msgInicial, de: CONFIG.nomeAtendimento });
     area.scrollTop = area.scrollHeight;
   }
 
@@ -2338,11 +2247,11 @@ const IMGS = window.IMGS || {};
     const txtLow = textoCliente.toLowerCase();
     const fluxo = obterEstadoChat(idProduto);
     setTimeout(() => {
-      if (fluxo.etapa === 0 && (txtLow.includes("interesse") || txtLow.includes("olá") || txtLow.includes("ola") || txtLow.includes("quero"))) {
+      if (fluxo.etapa === 0 && (txtLow.includes("interesse") || txtLow.includes("olá") || txtLow.includes("quero"))) {
         if (idProduto === "sanduiche") {
           adicionarBolao({
             tipo: "recebida",
-            texto: "Perfeito, temos 2 sabores. Qual deseja?",
+            texto: "Temos 2 sabores deliciosos. Qual você prefere?",
             htmlBotao: renderOpcoesSaboresChat(idProduto),
             de: CONFIG.nomeAtendimento
           });
@@ -2350,46 +2259,30 @@ const IMGS = window.IMGS || {};
           return;
         }
         if (prod.tipo === 'unidade') {
-          adicionarBolao({ tipo: "recebida", texto: `Que incrível! Quantas unidades você quer?`, de: CONFIG.nomeAtendimento });
+          adicionarBolao({ tipo: "recebida", texto: `Ótima escolha! Quantas unidades você deseja pedir?`, de: CONFIG.nomeAtendimento });
           fluxo.etapa = 2;
-        } else if (prod.tipo === 'fixo') {
-          let btn = criarBotaoCarrinhoHTML(idProduto, 1, prod.valorNum);
-          adicionarBolao({ tipo: "recebida", texto: `Este é um item de valor fixo. O preço é R$ ${prod.valorNum.toFixed(2).replace('.', ',')}.`, htmlBotao: btn, de: CONFIG.nomeAtendimento });
-        } else if (prod.tipo === 'combinar') {
-          let btn = criarBotaoCarrinhoHTML(idProduto, 1, 0);
-          adicionarBolao({ tipo: "recebida", texto: `Este item requer orçamento personalizado via WhatsApp. Quer adicionar ao carrinho para enviar a cotação?`, htmlBotao: btn, de: CONFIG.nomeAtendimento });
+        } else {
+          let preco = prod.valorNum;
+          let btn = criarBotaoCarrinhoHTML(idProduto, 1, preco);
+          adicionarBolao({ tipo: "recebida", texto: `Este item tem valor fixo de R$ ${preco.toFixed(2).replace('.', ',')}. Deseja adicionar?`, htmlBotao: btn, de: CONFIG.nomeAtendimento });
         }
-      } else if (idProduto === "sanduiche" && fluxo.etapa === 1) {
-        adicionarBolao({
-          tipo: "recebida",
-          texto: "Escolha um dos sabores nos botões acima para continuarmos.",
-          htmlBotao: renderOpcoesSaboresChat(idProduto),
-          de: CONFIG.nomeAtendimento
-        });
       } else if (fluxo.etapa === 2) {
         let qtd = parseInt(textoCliente.replace(/\D/g, ''));
         if (isNaN(qtd)) {
-          adicionarBolao({ tipo: "recebida", texto: `Por favor, digite apenas o número de unidades. Ex: 100.`, de: CONFIG.nomeAtendimento });
+          adicionarBolao({ tipo: "recebida", texto: `Por favor, informe a quantidade em números.`, de: CONFIG.nomeAtendimento });
         } else if (qtd < prod.minNum) {
-          adicionarBolao({ tipo: "recebida", texto: `Atenção: a quantidade mínima para este item é de ${prod.minNum} unidades.`, de: CONFIG.nomeAtendimento });
+          adicionarBolao({ tipo: "recebida", texto: `A quantidade mínima para este item é ${prod.minNum}.`, de: CONFIG.nomeAtendimento });
         } else {
-          let precoTotal = qtd * prod.valorNum;
+          let total = qtd * prod.valorNum;
           const sabor = idProduto === "sanduiche" ? obterSaborSanduiche(fluxo.saborId) : null;
-          const nomeItem = sabor ? `${prod.nome} - ${sabor.nome.replace("Sanduíche Natural de ", "").replace("Sanduíche Natural ", "")}` : "";
-          let btn = criarBotaoCarrinhoHTML(idProduto, qtd, precoTotal, nomeItem);
-          const textoResposta = sabor
-            ? `Perfeito! ${qtd} unidades de ${sabor.nome}. O valor total fica R$ ${precoTotal.toFixed(2).replace('.', ',')}.`
-            : `O valor total fica R$ ${precoTotal.toFixed(2).replace('.', ',')}.`;
-          adicionarBolao({ tipo: "recebida", texto: textoResposta, htmlBotao: btn, de: CONFIG.nomeAtendimento });
+          const nomeFinal = sabor ? `${prod.nome} (${sabor.nome.split("Natural de ")[1]})` : prod.nome;
+          let btn = criarBotaoCarrinhoHTML(idProduto, qtd, total, nomeFinal);
+          adicionarBolao({ tipo: "recebida", texto: `O total para ${qtd} unidades fica R$ ${total.toFixed(2).replace('.', ',')}.`, htmlBotao: btn, de: CONFIG.nomeAtendimento });
           fluxo.etapa = 0;
-          fluxo.saborId = "";
         }
-      } else {
-        adicionarBolao({ tipo: "recebida", texto: `Certo! Se quiser cotar, é só dizer "tenho interesse".`, de: CONFIG.nomeAtendimento });
       }
     }, 600);
   }
-
 
   function abrirModalImagem(imgKey, nome) {
     const imgSrc = IMGS[imgKey] || "";
@@ -2400,14 +2293,11 @@ const IMGS = window.IMGS || {};
   }
 
   function fecharModalImagem(event) {
-    if (event.target && event.target.id === "modal-imagem") {
-      fecharModal("modal-imagem");
-    }
+    if (event.target && event.target.id === "modal-imagem") fecharModal("modal-imagem");
   }
 
   function obterWhatsappLink() {
     const numeroLimpo = String(CONFIG.whatsapp || "").replace(/\D/g, "");
-    if (!numeroLimpo) return "";
     return numeroLimpo.startsWith("55") ? numeroLimpo : `55${numeroLimpo}`;
   }
 
@@ -2416,95 +2306,32 @@ const IMGS = window.IMGS || {};
   }
 
   function escaparHtml(valor) {
-    return String(valor || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+    return String(valor || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   function obterEnderecoEstruturadoSalvo() {
-    const enderecoAntigo = (localStorage.getItem("cg_enderecoUsuario") || "").trim();
-    const enderecoAntigoEhResumo = /^Rua:/i.test(enderecoAntigo);
-    let enderecoSalvo = {};
-
     try {
-      enderecoSalvo = JSON.parse(localStorage.getItem("cg_enderecoEstruturado") || "{}") || {};
-    } catch (erro) {
-      enderecoSalvo = {};
-    }
-
-    return {
-      rua: String(enderecoSalvo.rua || (enderecoAntigo && !enderecoAntigoEhResumo && !enderecoSalvo.rua ? enderecoAntigo : "")).trim(),
-      numero: String(enderecoSalvo.numero || "").trim(),
-      bairro: String(enderecoSalvo.bairro || "").trim(),
-      complemento: String(enderecoSalvo.complemento || "").trim(),
-      referencia: String(enderecoSalvo.referencia || "").trim()
-    };
+      return JSON.parse(localStorage.getItem("cg_enderecoEstruturado") || "{}") || {};
+    } catch { return {}; }
   }
 
-  function montarEnderecoCompleto(endereco) {
-    return [
-      `Rua: ${endereco.rua || "Não informado"}`,
-      `Número: ${endereco.numero || "Não informado"}`,
-      `Bairro: ${endereco.bairro || "Não informado"}`,
-      `Complemento: ${endereco.complemento || "Não informado"}`
-    ].join(" | ");
-  }
-
-  function montarEnderecoWhatsApp(endereco) {
-    return [
-      `Rua: ${endereco.rua || "Não informado"}`,
-      `Número: ${endereco.numero || "Não informado"}`,
-      `Bairro: ${endereco.bairro || "Não informado"}`,
-      `Complemento: ${endereco.complemento || "Não informado"}`
-    ].join("\n");
+  function montarEnderecoWhatsApp(e) {
+    return `Rua: ${e.rua || "?"}\nNúmero: ${e.numero || "?"}\nBairro: ${e.bairro || "?"}\nComp: ${e.complemento || "-"}`;
   }
 
   function salvarDadosCheckoutLocal() {
-    const enderecoSalvo = obterEnderecoEstruturadoSalvo();
-    const campoRua = document.getElementById("checkout-rua");
-    const campoNumero = document.getElementById("checkout-numero");
-    const campoBairro = document.getElementById("checkout-bairro");
-    const campoComplemento = document.getElementById("checkout-complemento");
     const endereco = {
-      rua: campoRua ? campoRua.value.trim() : enderecoSalvo.rua,
-      numero: campoNumero ? campoNumero.value.trim() : enderecoSalvo.numero,
-      bairro: campoBairro ? campoBairro.value.trim() : enderecoSalvo.bairro,
-      complemento: campoComplemento ? campoComplemento.value.trim() : enderecoSalvo.complemento,
-      referencia: ""
+      rua: document.getElementById("checkout-rua")?.value || "",
+      numero: document.getElementById("checkout-numero")?.value || "",
+      bairro: document.getElementById("checkout-bairro")?.value || "",
+      complemento: document.getElementById("checkout-complemento")?.value || ""
     };
-    const observacao = "";
-    const enderecoCompleto = montarEnderecoCompleto(endereco);
-
     localStorage.setItem("cg_enderecoEstruturado", JSON.stringify(endereco));
-    localStorage.setItem("cg_enderecoUsuario", enderecoCompleto);
-
-    localStorage.removeItem("cg_observacaoPedido");
-
-    return { endereco, enderecoCompleto, observacao };
-  }
-
-  function obterDadosComplementaresPedido() {
-    const dados = salvarDadosCheckoutLocal();
-    return {
-      endereco: dados.enderecoCompleto || "Rua: Não informado | Número: Não informado | Bairro: Não informado | Complemento: Não informado",
-      enderecoEstruturado: dados.endereco,
-      observacao: dados.observacao || "Sem observações informadas pelo cliente"
-    };
+    return endereco;
   }
 
   function abrirCheckout() {
-    if (!localStorage.getItem("cg_nomeUsuario")) {
-      alert("Por favor, faça login antes de finalizar a compra.");
-      abrirModalLogin();
-      return;
-    }
-    if (!pedidoAtual.numero || !pedidoAtual.itensStr) {
-      alert("Seu carrinho ainda não gerou um pedido válido.");
-      return;
-    }
+    if (!localStorage.getItem("cg_nomeUsuario")) { alert("Faça login para continuar."); abrirModalLogin(); return; }
     salvarDadosCheckoutLocal();
     document.getElementById("chave-pix-texto").innerText = CONFIG.chave_pix;
     document.getElementById("checkout-pedido-numero").innerText = pedidoAtual.numero;
@@ -2513,181 +2340,28 @@ const IMGS = window.IMGS || {};
   }
 
   function copiarPix() {
-    const chavePix = CONFIG.chave_pix;
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(chavePix)
-        .then(() => alert("Chave PIX copiada!"))
-        .catch(() => copiarPixFallback(chavePix));
-      return;
-    }
-    copiarPixFallback(chavePix);
-  }
-
-  function copiarPixFallback(chavePix) {
-    const inputTemp = document.createElement("textarea");
-    inputTemp.value = chavePix;
-    inputTemp.style.position = "fixed";
-    inputTemp.style.opacity = "0";
-    document.body.appendChild(inputTemp);
-    inputTemp.select();
-    inputTemp.setSelectionRange(0, inputTemp.value.length);
-    try {
-      document.execCommand("copy");
-      alert("Chave PIX copiada!");
-    } catch (erro) {
-      alert("Não foi possível copiar automaticamente. Copie manualmente a chave PIX.");
-    }
-    inputTemp.remove();
-  }
-
-  function montarItensWhatsApp() {
-    if (!meuCarrinho.length) return pedidoAtual.itensStr || "Nenhum item informado";
-    return meuCarrinho.map(item =>
-      `- ${item.nome} | Qtd: ${item.qtd} | ${formatarValorBRL(item.total)}`
-    ).join("\n");
-  }
-
-  function montarItensPlanilha() {
-    if (!meuCarrinho.length) return pedidoAtual.itensStr || "Nenhum item informado";
-    return meuCarrinho.map(item => `${item.nome} (${item.qtd}x)`).join(", ");
-  }
-
-  function montarPayloadPedidoPlanilha(formaPagamento) {
-    const dadosComplementares = obterDadosComplementaresPedido();
-    return {
-      pedido: pedidoAtual.numero || "",
-      nome: localStorage.getItem("cg_nomeUsuario") || "Desconhecido",
-      telefone: localStorage.getItem("cg_telefoneUsuario") || "Nao informado",
-      endereco: dadosComplementares.endereco || "Rua: Não informado | Número: Não informado | Bairro: Não informado | Complemento: Não informado",
-      itens: montarItensPlanilha(),
-      forma_pagamento: formaPagamento || "PIX",
-      total: formatarValorBRL(pedidoAtual.total)
-    };
-  }
-
-  function enviarPedidoParaPlanilha(dados) {
-    const iframeExistente = document.getElementById("iframe-envio-planilha");
-    if (iframeExistente) iframeExistente.remove();
-    const formExistente = document.getElementById("form-envio-planilha");
-    if (formExistente) formExistente.remove();
-    const iframe = document.createElement("iframe");
-    iframe.name = "iframe-envio-planilha";
-    iframe.id = "iframe-envio-planilha";
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = CONFIG.url_google_script;
-    form.target = "iframe-envio-planilha";
-    form.style.display = "none";
-    form.id = "form-envio-planilha";
-    Object.keys(dados).forEach(chave => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = chave;
-      input.value = dados[chave];
-      form.appendChild(input);
-    });
-    document.body.appendChild(form);
-    form.submit();
-    setTimeout(() => { form.remove(); }, 2000);
-  }
-
-  function registrarPedidoNaPlanilha(formaPagamento) {
-    if (!CONFIG.url_google_script || pedidoAtual.enviadoPlanilha) return;
-
-    try {
-      const formaPagamentoFinal = formaPagamento || pedidoAtual.formaPagamento || "PIX";
-      enviarPedidoParaPlanilha(montarPayloadPedidoPlanilha(formaPagamentoFinal));
-      pedidoAtual.enviadoPlanilha = true;
-      pedidoAtual.pagamentoInformado = true;
-      pedidoAtual.formaPagamento = formaPagamentoFinal;
-    } catch (erro) {
-      console.error("Erro ao registrar pedido na planilha:", erro);
-    }
-  }
-
-  function concluirPedidoViaWhatsApp(msgWhatsApp) {
-    const janelaWhatsApp = window.open(`https://wa.me/${obterWhatsappLink()}?text=${encodeURIComponent(msgWhatsApp)}`, "_blank");
-    if (!janelaWhatsApp) {
-      alert("Não consegui abrir o WhatsApp automaticamente. Verifique se o navegador bloqueou a janela.");
-      return;
-    }
-    meuCarrinho = [];
-    salvarCarrinho();
-    localStorage.removeItem("cg_observacaoPedido");
-    fecharModal("modal-checkout");
-    abrirPagina("home");
+    const pix = CONFIG.chave_pix;
+    navigator.clipboard.writeText(pix).then(() => alert("Chave PIX copiada!")).catch(() => alert("Copie manualmente: " + pix));
   }
 
   function confirmarPagamento() {
-    if (!pedidoAtual.numero || !pedidoAtual.total) {
-      alert("Seu pedido ainda não está pronto para pagamento.");
-      return;
-    }
-    const nomeUsuario = localStorage.getItem("cg_nomeUsuario") || "Desconhecido";
-    const telefoneUsuario = localStorage.getItem("cg_telefoneUsuario") || "Não informado";
-    const dadosComplementares = obterDadosComplementaresPedido();
-    const enderecoUsuario = dadosComplementares.endereco;
-    const enderecoEstruturado = dadosComplementares.enderecoEstruturado || {};
-    const observacaoUsuario = dadosComplementares.observacao;
-    const itensWhatsApp = montarItensWhatsApp();
-    const totalFormatado = formatarValorBRL(pedidoAtual.total);
-
-    registrarPedidoNaPlanilha("PIX");
-
-    const msgWhatsApp =
-      `Olá! Já realizei o pagamento via PIX.\n\n` +
-      `Pedido: ${pedidoAtual.numero}\n` +
-      `Nome: ${nomeUsuario}\n` +
-      `Telefone: ${telefoneUsuario}\n` +
-      `Endereço:\n${montarEnderecoWhatsApp(enderecoEstruturado)}\n` +
-      `Produtos comprados:\n${itensWhatsApp}\n` +
-      `Total do carrinho: ${totalFormatado}\n\n` +
-      `Vou enviar o comprovante logo abaixo.`;
-
-    concluirPedidoViaWhatsApp(msgWhatsApp);
+    const msg = `Olá! Fiz o PIX do pedido ${pedidoAtual.numero}.\nTotal: ${formatarValorBRL(pedidoAtual.total)}\nEndereço:\n${montarEnderecoWhatsApp(obterEnderecoEstruturadoSalvo())}`;
+    window.open(`https://wa.me/${obterWhatsappLink()}?text=${encodeURIComponent(msg)}`, "_blank");
+    meuCarrinho = []; salvarCarrinho(); fecharModal("modal-checkout"); abrirPagina("home");
   }
 
   function solicitarPagamentoCartao() {
-    if (!pedidoAtual.numero || !pedidoAtual.total) {
-      alert("Seu pedido ainda não está pronto para pagamento.");
-      return;
-    }
-    const nomeUsuario = localStorage.getItem("cg_nomeUsuario") || "Desconhecido";
-    const telefoneUsuario = localStorage.getItem("cg_telefoneUsuario") || "Não informado";
-    const dadosComplementares = obterDadosComplementaresPedido();
-    const enderecoEstruturado = dadosComplementares.enderecoEstruturado || {};
-    const itensWhatsApp = montarItensWhatsApp();
-    const totalFormatado = formatarValorBRL(pedidoAtual.total);
-
-    registrarPedidoNaPlanilha("Cartão");
-
-    const msgWhatsApp =
-      `quero pagar no cartão\n\n` +
-      `Pedido: ${pedidoAtual.numero}\n` +
-      `Nome: ${nomeUsuario}\n` +
-      `Telefone: ${telefoneUsuario}\n` +
-      `Endereço:\n${montarEnderecoWhatsApp(enderecoEstruturado)}\n` +
-      `Produtos comprados:\n${itensWhatsApp}\n` +
-      `Total do carrinho: ${totalFormatado}`;
-
-    concluirPedidoViaWhatsApp(msgWhatsApp);
+    const msg = `Quero pagar no cartão o pedido ${pedidoAtual.numero}.\nTotal: ${formatarValorBRL(pedidoAtual.total)}`;
+    window.open(`https://wa.me/${obterWhatsappLink()}?text=${encodeURIComponent(msg)}`, "_blank");
   }
 
-  function enviarFoto(event) {
-    const arquivo = event.target.files[0];
-    if (!arquivo) return;
-    alert("Envio de foto ainda não está ativo nesta versão.");
-    event.target.value = "";
-  }
+  function enviarFoto(event) { alert("Envio de fotos em breve."); }
 
   window.onload = () => {
     atualizarBotaoWhatsappTopo();
     inicializarGestoMenuMobile();
     verificarUsuarioLogado();
     abrirPagina("home");
-    window.addEventListener("resize", ajustarLayoutChatProduto);
   };
 </script>
 </body>
