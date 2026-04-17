@@ -202,8 +202,56 @@
 
         .menu-item .icone {
             font-size: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
             flex-shrink: 0;
             filter: drop-shadow(0 0 5px currentColor);
+        }
+
+        .empada-icon {
+            position: relative;
+            display: inline-block;
+            width: 1em;
+            height: 0.82em;
+            flex-shrink: 0;
+            border-radius: 50% 50% 42% 42% / 68% 68% 24% 24%;
+            background:
+                radial-gradient(circle at 32% 28%, rgba(255, 248, 220, 0.95) 0 10%, transparent 11%),
+                radial-gradient(circle at 68% 32%, rgba(255, 235, 182, 0.72) 0 8%, transparent 9%),
+                linear-gradient(180deg, #ffd88a 0%, #f0a63c 42%, #d77915 72%, #8f4306 100%);
+            box-shadow:
+                inset 0 0.08em 0 rgba(255, 255, 255, 0.35),
+                inset 0 -0.08em 0 rgba(110, 54, 0, 0.28),
+                0 0.12em 0.22em rgba(0, 0, 0, 0.28);
+        }
+
+        .empada-icon::before {
+            content: "";
+            position: absolute;
+            left: 0.12em;
+            right: 0.12em;
+            top: 0.1em;
+            height: 0.28em;
+            border-radius: 50%;
+            border-top: 0.08em solid rgba(144, 77, 9, 0.55);
+            box-shadow:
+                0 0.11em 0 -0.03em rgba(144, 77, 9, 0.42),
+                -0.22em 0.08em 0 -0.04em rgba(144, 77, 9, 0.38),
+                0.22em 0.08em 0 -0.04em rgba(144, 77, 9, 0.38);
+            opacity: 0.9;
+        }
+
+        .empada-icon::after {
+            content: "";
+            position: absolute;
+            left: 0.14em;
+            right: 0.14em;
+            bottom: 0.08em;
+            height: 0.1em;
+            border-radius: 999px;
+            background: rgba(110, 54, 0, 0.22);
         }
 
         .menu-carrinho {
@@ -532,7 +580,8 @@
             color: var(--laranja);
         }
 
-        .prod-foto-placeholder span:first-child {
+        .prod-foto-placeholder span:first-child,
+        .prod-placeholder-icon {
             font-size: 80px;
             filter: drop-shadow(0 0 20px currentColor);
         }
@@ -543,8 +592,25 @@
             font-weight: 900;
             color: var(--laranja);
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
             margin-bottom: 20px;
             text-shadow: 0 0 20px rgba(232, 112, 10, 0.3);
+        }
+
+        .prod-titulo-icone,
+        .prod-placeholder-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .prod-titulo-icone {
+            font-size: 0.9em;
         }
 
         .prod-detalhes {
@@ -1497,7 +1563,7 @@
                     <span class="icone">🥪</span> Sanduíche Natural
                 </div>
                 <div class="menu-item" id="mi-empada" onclick="abrirPagina('empada')">
-                    <span class="icone">🥐</span> Empadas
+                    <span class="icone" aria-hidden="true"><span class="empada-icon"></span></span> Empadas
                 </div>
                 <div class="menu-secao">FINALIZAR</div>
                 <div class="menu-item menu-carrinho" id="mi-carrinho" onclick="abrirPagina('carrinho')">
@@ -1616,7 +1682,7 @@ const IMGS = window.IMGS || {};
     brigadeiro: { nome: "Brigadeiro no Tacho", icone: "🍫", imgKey: "brigadeiro", desc: "Carrinho de brigadeiro saboroso. Preço único para qualquer combinação de 3 tipos.", valorTex: "A combinar", minimoTex: "Sem Mínimo", valorNum: 0, minNum: 1, tipo: "combinar" },
     pizza: { nome: "Pizza no Evento", icone: "🍕", imgKey: "pizza", desc: "Carrinho de pizza artesanal preparada na hora.", valorTex: "R$ 7,00 à unidade", minimoTex: "60 unidades", valorNum: 7.00, minNum: 60, tipo: "unidade" },
     sanduiche: { nome: "Sanduíche Natural", icone: "🥪", imgKey: "sanduiche", desc: "Preparados no dia com pão integral macio, proteínas magras, vegetais frescos e temperos especiais. Temos opções de atum e frango, perfeitos para o dia a dia.", valorTex: "R$ 10,00 à unidade", minimoTex: "Sem Mínimo", valorNum: 10.00, minNum: 1, tipo: "unidade", diasVenda: "Vendemos os sanduíches toda segunda, quarta e sábado." },
-    empada: { nome: "Empadas Artesanais", icone: "🥐", imgKey: "empada", desc: "Massa que derrete na boca, feita com manteiga selecionada e recheios generosos, ideal para o dia a dia.", valorTex: "R$ 8,00 à unidade", minimoTex: "Sem Mínimo", valorNum: 8.00, minNum: 1, tipo: "unidade", diasVenda: "Vendemos as empadas toda terça, quinta e sábado." }
+    empada: { nome: "Empadas Artesanais", icone: "🥧", iconeHtml: '<span class="empada-icon"></span>', imgKey: "empada", desc: "Massa que derrete na boca, feita com manteiga selecionada e recheios generosos, ideal para o dia a dia.", valorTex: "R$ 8,00 à unidade", minimoTex: "Sem Mínimo", valorNum: 8.00, minNum: 1, tipo: "unidade", diasVenda: "Vendemos as empadas toda terça, quinta e sábado." }
   };
 
 
@@ -1942,6 +2008,12 @@ const IMGS = window.IMGS || {};
     return /^mínimo:/i.test(texto) ? texto : `Mínimo: ${texto}`;
   }
 
+  function renderizarIconeProduto(prod, className = "") {
+    const classes = className ? ` class="${className}"` : "";
+    if (prod.iconeHtml) return `<span${classes} aria-hidden="true">${prod.iconeHtml}</span>`;
+    return `<span${classes}>${prod.icone}</span>`;
+  }
+
   function renderHome() {
     const wppLink = `https://wa.me/${obterWhatsappLink()}?text=${encodeURIComponent("Olá! Quero saber mais sobre os carrinhos gourmet.")}`;
     const instagramLink = "https://www.instagram.com/petitbuffet_ac/";
@@ -1950,7 +2022,7 @@ const IMGS = window.IMGS || {};
 
     const renderCardProduto = (id, prod) => `
       <div class="product-card" onclick="abrirPagina('${id}')">
-        <span class="product-icon">${prod.icone}</span>
+        ${renderizarIconeProduto(prod, "product-icon")}
         <h3 class="product-name">${prod.nome}</h3>
         <p class="product-desc">${prod.desc}</p>
         ${id === "sanduiche" ? `<div class="product-note">🥗 Sabores: Atum e Frango</div>` : ""}
@@ -2080,7 +2152,7 @@ const IMGS = window.IMGS || {};
           <button type="button" class="prod-foto-zoom">Ampliar imagem</button>
         </div>`;
     } else {
-      imgHTML = `<div class="prod-foto-placeholder"><span>${prod.icone}</span><span>Imagem em breve</span></div>`;
+      imgHTML = `<div class="prod-foto-placeholder">${renderizarIconeProduto(prod, "prod-placeholder-icon")}<span>Imagem em breve</span></div>`;
     }
 
     const extraHTML = id === "sanduiche"
@@ -2105,7 +2177,7 @@ const IMGS = window.IMGS || {};
     document.getElementById("vitrine").innerHTML = `
       <div class="${classesCatalogo.join(" ")}" id="catalogo-info">
         ${imgHTML}
-        <h2 class="prod-titulo">${prod.icone} ${prod.nome}</h2>
+        <h2 class="prod-titulo">${renderizarIconeProduto(prod, "prod-titulo-icone")}<span>${prod.nome}</span></h2>
         ${badgesHTML}
         <button type="button" id="produto-resumo-toggle" class="produto-resumo-toggle" onclick="alternarResumoProduto()">Ver mais detalhes do produto</button>
         <div class="produto-resumo-extra" id="produto-resumo-extra">
