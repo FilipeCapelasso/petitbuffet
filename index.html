@@ -215,8 +215,8 @@
             display: inline-flex;
             align-items: flex-end;
             justify-content: center;
-            width: 1em;
-            height: 0.78em;
+            width: 1.08em;
+            height: 0.9em;
             flex-shrink: 0;
             vertical-align: middle;
         }
@@ -231,6 +231,7 @@
             width: 0.58em;
             height: 0.26em;
             flex-shrink: 0;
+            overflow: visible;
             vertical-align: middle;
             background:
                 linear-gradient(90deg, transparent 0 10%, rgba(202, 176, 131, 0.44) 10% 12%, transparent 12% 28%, rgba(202, 176, 131, 0.34) 28% 30%, transparent 30% 46%, rgba(202, 176, 131, 0.4) 46% 48%, transparent 48% 64%, rgba(202, 176, 131, 0.32) 64% 66%, transparent 66% 82%, rgba(202, 176, 131, 0.4) 82% 84%, transparent 84% 100%),
@@ -247,21 +248,22 @@
         .empada-icon::before {
             content: "";
             position: absolute;
-            left: -0.18em;
-            right: -0.18em;
-            top: -0.24em;
-            height: 0.37em;
+            left: -0.21em;
+            right: -0.21em;
+            top: -0.31em;
+            height: 0.45em;
             background:
                 radial-gradient(ellipse at 30% 26%, rgba(255, 246, 198, 0.96) 0 12%, transparent 13%),
                 radial-gradient(ellipse at 52% 20%, rgba(255, 250, 226, 0.5) 0 15%, transparent 16%),
                 radial-gradient(ellipse at 70% 38%, rgba(255, 196, 95, 0.62) 0 10%, transparent 11%),
                 radial-gradient(ellipse at 54% 54%, rgba(223, 140, 34, 0.28) 0 16%, transparent 17%),
                 linear-gradient(180deg, #ffd86f 0%, #f4be45 56%, #da9326 100%);
-            border-radius: 52% 52% 34% 34% / 82% 82% 22% 22%;
+            border-radius: 52% 52% 36% 36% / 88% 88% 26% 26%;
             box-shadow:
                 inset 0 0.04em 0 rgba(255, 246, 214, 0.42),
                 inset 0 -0.03em 0 rgba(195, 126, 34, 0.16),
                 0 0.04em 0.08em rgba(160, 99, 25, 0.12);
+            z-index: 3;
         }
 
         .empada-icon::after {
@@ -269,8 +271,8 @@
             position: absolute;
             left: -0.14em;
             right: -0.14em;
-            top: -0.09em;
-            height: 0.1em;
+            top: -0.1em;
+            height: 0.11em;
             background:
                 radial-gradient(circle at 10% 0, #f2ac2b 0 26%, transparent 27%),
                 radial-gradient(circle at 30% 0, #f2ac2b 0 26%, transparent 27%),
@@ -280,22 +282,23 @@
                 linear-gradient(180deg, #f8b633 0%, #eda322 100%);
             opacity: 0.96;
             pointer-events: none;
+            z-index: 4;
         }
 
         .menu-item .empada-icone-wrap {
-            width: 0.86em;
-            height: 0.72em;
+            width: 0.92em;
+            height: 0.78em;
         }
 
         .product-icon .empada-icone-wrap,
         .prod-placeholder-icon .empada-icone-wrap {
-            width: 1.12em;
-            height: 0.92em;
+            width: 1.32em;
+            height: 1.08em;
         }
 
         .prod-titulo-icone .empada-icone-wrap {
-            width: 1.04em;
-            height: 0.86em;
+            width: 1.18em;
+            height: 0.98em;
         }
 
         .menu-carrinho {
