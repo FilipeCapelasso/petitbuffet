@@ -215,140 +215,121 @@
             display: inline-flex;
             align-items: flex-end;
             justify-content: center;
-            width: 1.12em;
-            height: 1.04em;
+            width: 1.04em;
+            height: 1.12em;
             flex-shrink: 0;
             vertical-align: middle;
         }
 
         .empada-vapor {
             position: absolute;
-            top: 0.02em;
+            top: -0.01em;
             left: 50%;
-            width: 0.12em;
-            height: 0.22em;
-            border-left: 0.045em solid rgba(255, 248, 237, 0.94);
-            border-radius: 50%;
-            transform: translateX(-50%) rotate(14deg);
-            opacity: 0.95;
+            width: 0.34em;
+            height: 0.24em;
+            transform: translateX(-50%);
+            color: #cd9854;
             z-index: 3;
         }
 
-        .empada-vapor::before,
+        .empada-vapor::before {
+            content: "♡";
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            font-size: 0.24em;
+            line-height: 1;
+            font-weight: 700;
+            color: #cd9854;
+        }
+
         .empada-vapor::after {
             content: "";
             position: absolute;
-            width: 0.12em;
-            height: 0.22em;
-            border-left: 0.04em solid rgba(255, 248, 237, 0.9);
-            border-radius: 50%;
-        }
-
-        .empada-vapor::before {
-            left: -0.18em;
-            top: 0.03em;
-            transform: rotate(-10deg);
-        }
-
-        .empada-vapor::after {
-            left: 0.14em;
-            top: -0.01em;
-            transform: rotate(18deg);
+            left: 50%;
+            top: 0.12em;
+            width: 0.42em;
+            height: 0.12em;
+            transform: translateX(-50%);
+            background:
+                radial-gradient(120% 140% at 14% 58%, transparent 52%, #cd9854 54% 61%, transparent 63%),
+                radial-gradient(120% 140% at 86% 58%, transparent 52%, #cd9854 54% 61%, transparent 63%);
+            opacity: 0.95;
         }
 
         .empada-icon {
             position: relative;
             display: inline-block;
             width: 0.82em;
-            height: 0.68em;
+            height: 0.66em;
             flex-shrink: 0;
             vertical-align: middle;
-            background:
-                linear-gradient(90deg, transparent 0 16%, rgba(111, 38, 20, 0.18) 16% 18%, transparent 18% 39%, rgba(111, 38, 20, 0.16) 39% 41%, transparent 41% 62%, rgba(111, 38, 20, 0.18) 62% 64%, transparent 64% 84%, rgba(111, 38, 20, 0.16) 84% 86%, transparent 86% 100%),
-                linear-gradient(180deg, #ef6b43 0%, #d54d32 72%, #b53929 100%);
+            background: linear-gradient(180deg, #a44f36 0%, #8f432f 100%);
             clip-path: polygon(12% 42%, 88% 42%, 97% 100%, 3% 100%);
-            border-radius: 0 0 28% 28%;
+            border-radius: 0 0 24% 24%;
             box-shadow:
-                inset 0 0.05em 0 rgba(255, 183, 144, 0.28),
-                0 0.05em 0.12em rgba(92, 32, 20, 0.16);
+                inset 0 0.05em 0 rgba(199, 122, 92, 0.16),
+                0 0.04em 0.08em rgba(80, 39, 28, 0.12);
             z-index: 2;
         }
 
         .empada-icon::before {
             content: "";
             position: absolute;
-            left: -0.06em;
-            right: -0.06em;
-            top: -0.02em;
-            height: 0.42em;
+            left: -0.08em;
+            right: -0.08em;
+            top: -0.03em;
+            height: 0.44em;
             background:
-                radial-gradient(circle at 18% 96%, #f4b52f 0 13%, transparent 14%),
-                radial-gradient(circle at 34% 98%, #f8be37 0 14%, transparent 15%),
-                radial-gradient(circle at 50% 100%, #efb02f 0 14%, transparent 15%),
-                radial-gradient(circle at 66% 98%, #f7be38 0 14%, transparent 15%),
-                radial-gradient(circle at 82% 96%, #efab29 0 13%, transparent 14%),
-                radial-gradient(ellipse at 28% 28%, rgba(255, 241, 184, 0.95) 0 8%, transparent 9%),
-                radial-gradient(ellipse at 52% 18%, rgba(255, 247, 204, 0.5) 0 12%, transparent 13%),
-                radial-gradient(ellipse at 72% 34%, rgba(255, 234, 173, 0.85) 0 7%, transparent 8%),
-                linear-gradient(180deg, #ffd95a 0%, #f6bf38 62%, #eca727 100%);
-            border-radius: 54% 46% 38% 40% / 82% 78% 30% 34%;
+                radial-gradient(circle at 18% 98%, #c08f5e 0 14%, transparent 15%),
+                radial-gradient(circle at 34% 100%, #c69561 0 15%, transparent 16%),
+                radial-gradient(circle at 50% 100%, #bc8b5a 0 15%, transparent 16%),
+                radial-gradient(circle at 66% 100%, #c69561 0 15%, transparent 16%),
+                radial-gradient(circle at 82% 98%, #c08f5e 0 14%, transparent 15%),
+                radial-gradient(ellipse at 24% 48%, rgba(245, 224, 193, 0.62) 0 4%, transparent 5%),
+                radial-gradient(ellipse at 50% 44%, rgba(244, 223, 192, 0.54) 0 4%, transparent 5%),
+                radial-gradient(ellipse at 76% 48%, rgba(245, 224, 193, 0.62) 0 4%, transparent 5%),
+                linear-gradient(180deg, #d2a673 0%, #c69864 65%, #ba8454 100%);
+            border-radius: 55% 45% 38% 40% / 84% 80% 30% 34%;
             box-shadow:
-                inset 0 0.06em 0 rgba(255, 255, 255, 0.34),
-                inset 0 -0.03em 0 rgba(182, 112, 25, 0.22),
-                0 0.04em 0.1em rgba(139, 88, 20, 0.12);
+                inset 0 0.05em 0 rgba(250, 240, 220, 0.2),
+                inset 0 -0.03em 0 rgba(151, 102, 58, 0.16),
+                0 0.03em 0.08em rgba(111, 77, 45, 0.1);
         }
 
         .empada-icon::after {
             content: "";
             position: absolute;
-            left: 0.11em;
-            right: 0.11em;
-            top: 0.08em;
+            left: 0.12em;
+            right: 0.12em;
+            top: 0.11em;
             height: 0.12em;
             background:
-                radial-gradient(ellipse at 10% 50%, rgba(255, 248, 223, 0.92) 0 20%, transparent 21%),
-                radial-gradient(ellipse at 34% 52%, rgba(255, 240, 199, 0.86) 0 18%, transparent 19%),
-                radial-gradient(ellipse at 58% 48%, rgba(255, 246, 218, 0.92) 0 18%, transparent 19%),
-                radial-gradient(ellipse at 84% 50%, rgba(255, 237, 192, 0.88) 0 20%, transparent 21%);
-            opacity: 0.95;
+                radial-gradient(ellipse at 8% 50%, rgba(244, 227, 198, 0.96) 0 18%, transparent 19%),
+                radial-gradient(ellipse at 50% 50%, rgba(244, 227, 198, 0.9) 0 18%, transparent 19%),
+                radial-gradient(ellipse at 92% 50%, rgba(244, 227, 198, 0.96) 0 18%, transparent 19%);
+            opacity: 0.92;
         }
 
         .menu-item .empada-icone-wrap {
-            width: 0.95em;
-            height: 0.82em;
-        }
-
-        .menu-item .empada-vapor {
-            display: none;
+            width: 0.94em;
+            height: 0.96em;
         }
 
         .product-icon .empada-icone-wrap,
         .prod-placeholder-icon .empada-icone-wrap {
-            width: 1.18em;
-            height: 1.18em;
-            padding-bottom: 0.05em;
-        }
-
-        .product-icon .empada-icone-wrap::before,
-        .prod-placeholder-icon .empada-icone-wrap::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: #344f60;
-            box-shadow:
-                inset 0 -0.08em 0 rgba(0, 0, 0, 0.16),
-                0 0.08em 0.16em rgba(0, 0, 0, 0.18);
-            z-index: 0;
+            width: 1.14em;
+            height: 1.22em;
         }
 
         .prod-titulo-icone .empada-icone-wrap {
-            width: 1.08em;
-            height: 1.02em;
+            width: 1.06em;
+            height: 1.14em;
         }
 
         .prod-titulo-icone .empada-vapor {
-            top: -0.01em;
+            top: 0;
         }
 
         .menu-carrinho {
