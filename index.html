@@ -215,121 +215,82 @@
             display: inline-flex;
             align-items: flex-end;
             justify-content: center;
-            width: 1.04em;
-            height: 1.12em;
+            width: 1.06em;
+            height: 0.94em;
             flex-shrink: 0;
             vertical-align: middle;
         }
 
         .empada-vapor {
-            position: absolute;
-            top: -0.01em;
-            left: 50%;
-            width: 0.34em;
-            height: 0.24em;
-            transform: translateX(-50%);
-            color: #cd9854;
-            z-index: 3;
-        }
-
-        .empada-vapor::before {
-            content: "♡";
-            position: absolute;
-            left: 50%;
-            top: 0;
-            transform: translateX(-50%);
-            font-size: 0.24em;
-            line-height: 1;
-            font-weight: 700;
-            color: #cd9854;
-        }
-
-        .empada-vapor::after {
-            content: "";
-            position: absolute;
-            left: 50%;
-            top: 0.12em;
-            width: 0.42em;
-            height: 0.12em;
-            transform: translateX(-50%);
-            background:
-                radial-gradient(120% 140% at 14% 58%, transparent 52%, #cd9854 54% 61%, transparent 63%),
-                radial-gradient(120% 140% at 86% 58%, transparent 52%, #cd9854 54% 61%, transparent 63%);
-            opacity: 0.95;
+            display: none;
         }
 
         .empada-icon {
             position: relative;
             display: inline-block;
-            width: 0.82em;
-            height: 0.66em;
+            width: 0.64em;
+            height: 0.3em;
             flex-shrink: 0;
             vertical-align: middle;
-            background: linear-gradient(180deg, #a44f36 0%, #8f432f 100%);
-            clip-path: polygon(12% 42%, 88% 42%, 97% 100%, 3% 100%);
-            border-radius: 0 0 24% 24%;
+            background:
+                linear-gradient(180deg, #f8e9bf 0%, #efcf92 72%, #d9ae63 100%);
+            clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
+            border-radius: 0 0 38% 38%;
             box-shadow:
-                inset 0 0.05em 0 rgba(199, 122, 92, 0.16),
-                0 0.04em 0.08em rgba(80, 39, 28, 0.12);
+                inset 0 0.03em 0 rgba(255, 251, 238, 0.55),
+                inset 0 -0.03em 0 rgba(183, 131, 61, 0.2),
+                0 0.04em 0.08em rgba(149, 103, 42, 0.12);
             z-index: 2;
         }
 
         .empada-icon::before {
             content: "";
             position: absolute;
-            left: -0.08em;
-            right: -0.08em;
-            top: -0.03em;
-            height: 0.44em;
+            left: -0.17em;
+            right: -0.17em;
+            top: -0.29em;
+            height: 0.5em;
             background:
-                radial-gradient(circle at 18% 98%, #c08f5e 0 14%, transparent 15%),
-                radial-gradient(circle at 34% 100%, #c69561 0 15%, transparent 16%),
-                radial-gradient(circle at 50% 100%, #bc8b5a 0 15%, transparent 16%),
-                radial-gradient(circle at 66% 100%, #c69561 0 15%, transparent 16%),
-                radial-gradient(circle at 82% 98%, #c08f5e 0 14%, transparent 15%),
-                radial-gradient(ellipse at 24% 48%, rgba(245, 224, 193, 0.62) 0 4%, transparent 5%),
-                radial-gradient(ellipse at 50% 44%, rgba(244, 223, 192, 0.54) 0 4%, transparent 5%),
-                radial-gradient(ellipse at 76% 48%, rgba(245, 224, 193, 0.62) 0 4%, transparent 5%),
-                linear-gradient(180deg, #d2a673 0%, #c69864 65%, #ba8454 100%);
-            border-radius: 55% 45% 38% 40% / 84% 80% 30% 34%;
+                radial-gradient(ellipse at 28% 26%, rgba(255, 241, 188, 0.95) 0 13%, transparent 14%),
+                radial-gradient(ellipse at 48% 18%, rgba(255, 248, 219, 0.58) 0 14%, transparent 15%),
+                radial-gradient(ellipse at 68% 34%, rgba(255, 224, 141, 0.74) 0 10%, transparent 11%),
+                radial-gradient(ellipse at 54% 48%, rgba(235, 146, 26, 0.34) 0 18%, transparent 19%),
+                linear-gradient(180deg, #ffe38a 0%, #f6c84a 54%, #e39a22 100%);
+            border-radius: 50% 50% 42% 42% / 74% 74% 34% 34%;
             box-shadow:
-                inset 0 0.05em 0 rgba(250, 240, 220, 0.2),
-                inset 0 -0.03em 0 rgba(151, 102, 58, 0.16),
-                0 0.03em 0.08em rgba(111, 77, 45, 0.1);
+                inset 0 0.05em 0 rgba(255, 250, 226, 0.34),
+                inset 0 -0.04em 0 rgba(177, 117, 28, 0.18),
+                0 0.04em 0.08em rgba(159, 103, 26, 0.12);
         }
 
         .empada-icon::after {
             content: "";
             position: absolute;
-            left: 0.12em;
-            right: 0.12em;
-            top: 0.11em;
-            height: 0.12em;
+            left: 50%;
+            top: -0.15em;
+            width: 0.42em;
+            height: 0.2em;
+            transform: translateX(-50%) rotate(-6deg);
             background:
-                radial-gradient(ellipse at 8% 50%, rgba(244, 227, 198, 0.96) 0 18%, transparent 19%),
-                radial-gradient(ellipse at 50% 50%, rgba(244, 227, 198, 0.9) 0 18%, transparent 19%),
-                radial-gradient(ellipse at 92% 50%, rgba(244, 227, 198, 0.96) 0 18%, transparent 19%);
-            opacity: 0.92;
+                radial-gradient(ellipse at 50% 50%, rgba(255, 196, 89, 0.86) 0 36%, rgba(240, 158, 31, 0.62) 37% 58%, transparent 59%);
+            opacity: 0.88;
+            pointer-events: none;
         }
 
         .menu-item .empada-icone-wrap {
-            width: 0.94em;
-            height: 0.96em;
+            width: 0.92em;
+            height: 0.82em;
         }
 
         .product-icon .empada-icone-wrap,
         .prod-placeholder-icon .empada-icone-wrap {
-            width: 1.14em;
-            height: 1.22em;
+            width: 1.16em;
+            height: 0.98em;
         }
 
         .prod-titulo-icone .empada-icone-wrap {
-            width: 1.06em;
-            height: 1.14em;
-        }
-
-        .prod-titulo-icone .empada-vapor {
-            top: 0;
+            width: 1.08em;
+            height: 0.92em;
         }
 
         .menu-carrinho {
