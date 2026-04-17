@@ -210,53 +210,145 @@
             filter: drop-shadow(0 0 5px currentColor);
         }
 
+        .empada-icone-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: flex-end;
+            justify-content: center;
+            width: 1.12em;
+            height: 1.04em;
+            flex-shrink: 0;
+            vertical-align: middle;
+        }
+
+        .empada-vapor {
+            position: absolute;
+            top: 0.02em;
+            left: 50%;
+            width: 0.12em;
+            height: 0.22em;
+            border-left: 0.045em solid rgba(255, 248, 237, 0.94);
+            border-radius: 50%;
+            transform: translateX(-50%) rotate(14deg);
+            opacity: 0.95;
+            z-index: 3;
+        }
+
+        .empada-vapor::before,
+        .empada-vapor::after {
+            content: "";
+            position: absolute;
+            width: 0.12em;
+            height: 0.22em;
+            border-left: 0.04em solid rgba(255, 248, 237, 0.9);
+            border-radius: 50%;
+        }
+
+        .empada-vapor::before {
+            left: -0.18em;
+            top: 0.03em;
+            transform: rotate(-10deg);
+        }
+
+        .empada-vapor::after {
+            left: 0.14em;
+            top: -0.01em;
+            transform: rotate(18deg);
+        }
+
         .empada-icon {
             position: relative;
             display: inline-block;
-            width: 1.06em;
-            height: 0.84em;
+            width: 0.82em;
+            height: 0.68em;
             flex-shrink: 0;
             vertical-align: middle;
+            background:
+                linear-gradient(90deg, transparent 0 16%, rgba(111, 38, 20, 0.18) 16% 18%, transparent 18% 39%, rgba(111, 38, 20, 0.16) 39% 41%, transparent 41% 62%, rgba(111, 38, 20, 0.18) 62% 64%, transparent 64% 84%, rgba(111, 38, 20, 0.16) 84% 86%, transparent 86% 100%),
+                linear-gradient(180deg, #ef6b43 0%, #d54d32 72%, #b53929 100%);
+            clip-path: polygon(12% 42%, 88% 42%, 97% 100%, 3% 100%);
+            border-radius: 0 0 28% 28%;
+            box-shadow:
+                inset 0 0.05em 0 rgba(255, 183, 144, 0.28),
+                0 0.05em 0.12em rgba(92, 32, 20, 0.16);
+            z-index: 2;
         }
 
         .empada-icon::before {
             content: "";
             position: absolute;
-            inset: 0 0 auto 0;
-            height: 0.54em;
+            left: -0.06em;
+            right: -0.06em;
+            top: -0.02em;
+            height: 0.42em;
             background:
-                radial-gradient(circle at 26% 28%, rgba(255, 205, 141, 0.96) 0 11%, transparent 12%),
-                radial-gradient(circle at 40% 18%, rgba(255, 245, 220, 0.45) 0 12%, transparent 13%),
-                radial-gradient(circle at 70% 22%, rgba(255, 230, 184, 0.34) 0 10%, transparent 11%),
-                radial-gradient(circle at 14% 90%, #ff8b1f 0 14%, transparent 15%),
-                radial-gradient(circle at 34% 96%, #ff9122 0 15%, transparent 16%),
-                radial-gradient(circle at 56% 92%, #f57d16 0 15%, transparent 16%),
-                radial-gradient(circle at 79% 89%, #ff891d 0 14%, transparent 15%),
-                linear-gradient(180deg, #ffb34d 0%, #ff9a28 58%, #ef7311 100%);
-            border-radius: 56% 44% 40% 42% / 82% 78% 34% 36%;
+                radial-gradient(circle at 18% 96%, #f4b52f 0 13%, transparent 14%),
+                radial-gradient(circle at 34% 98%, #f8be37 0 14%, transparent 15%),
+                radial-gradient(circle at 50% 100%, #efb02f 0 14%, transparent 15%),
+                radial-gradient(circle at 66% 98%, #f7be38 0 14%, transparent 15%),
+                radial-gradient(circle at 82% 96%, #efab29 0 13%, transparent 14%),
+                radial-gradient(ellipse at 28% 28%, rgba(255, 241, 184, 0.95) 0 8%, transparent 9%),
+                radial-gradient(ellipse at 52% 18%, rgba(255, 247, 204, 0.5) 0 12%, transparent 13%),
+                radial-gradient(ellipse at 72% 34%, rgba(255, 234, 173, 0.85) 0 7%, transparent 8%),
+                linear-gradient(180deg, #ffd95a 0%, #f6bf38 62%, #eca727 100%);
+            border-radius: 54% 46% 38% 40% / 82% 78% 30% 34%;
             box-shadow:
-                inset 0 0.07em 0 rgba(255, 255, 255, 0.28),
-                inset 0 -0.04em 0 rgba(166, 80, 12, 0.22),
-                0 0.1em 0.18em rgba(0, 0, 0, 0.16);
-            z-index: 2;
+                inset 0 0.06em 0 rgba(255, 255, 255, 0.34),
+                inset 0 -0.03em 0 rgba(182, 112, 25, 0.22),
+                0 0.04em 0.1em rgba(139, 88, 20, 0.12);
         }
 
         .empada-icon::after {
             content: "";
             position: absolute;
-            left: 0.16em;
-            right: 0.16em;
-            bottom: 0;
-            height: 0.36em;
+            left: 0.11em;
+            right: 0.11em;
+            top: 0.08em;
+            height: 0.12em;
             background:
-                linear-gradient(90deg, transparent 0 18%, rgba(202, 156, 103, 0.52) 18% 20%, transparent 20% 42%, rgba(202, 156, 103, 0.4) 42% 44%, transparent 44% 66%, rgba(202, 156, 103, 0.5) 66% 68%, transparent 68% 100%),
-                linear-gradient(180deg, #fff9eb 0%, #f7e3b6 74%, #e5c789 100%);
-            clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
-            border-radius: 0.1em 0.1em 0.18em 0.18em;
+                radial-gradient(ellipse at 10% 50%, rgba(255, 248, 223, 0.92) 0 20%, transparent 21%),
+                radial-gradient(ellipse at 34% 52%, rgba(255, 240, 199, 0.86) 0 18%, transparent 19%),
+                radial-gradient(ellipse at 58% 48%, rgba(255, 246, 218, 0.92) 0 18%, transparent 19%),
+                radial-gradient(ellipse at 84% 50%, rgba(255, 237, 192, 0.88) 0 20%, transparent 21%);
+            opacity: 0.95;
+        }
+
+        .menu-item .empada-icone-wrap {
+            width: 0.95em;
+            height: 0.82em;
+        }
+
+        .menu-item .empada-vapor {
+            display: none;
+        }
+
+        .product-icon .empada-icone-wrap,
+        .prod-placeholder-icon .empada-icone-wrap {
+            width: 1.18em;
+            height: 1.18em;
+            padding-bottom: 0.05em;
+        }
+
+        .product-icon .empada-icone-wrap::before,
+        .prod-placeholder-icon .empada-icone-wrap::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: #344f60;
             box-shadow:
-                inset 0 0.05em 0 rgba(255, 255, 255, 0.56),
-                0 0.06em 0.12em rgba(146, 95, 34, 0.16);
-            z-index: 1;
+                inset 0 -0.08em 0 rgba(0, 0, 0, 0.16),
+                0 0.08em 0.16em rgba(0, 0, 0, 0.18);
+            z-index: 0;
+        }
+
+        .prod-titulo-icone .empada-icone-wrap {
+            width: 1.08em;
+            height: 1.02em;
+        }
+
+        .prod-titulo-icone .empada-vapor {
+            top: -0.01em;
         }
 
         .menu-carrinho {
@@ -1568,7 +1660,7 @@
                     <span class="icone">🥪</span> Sanduíche Natural
                 </div>
                 <div class="menu-item" id="mi-empada" onclick="abrirPagina('empada')">
-                    <span class="icone" aria-hidden="true"><span class="empada-icon"></span></span> Empadas
+                    <span class="icone" aria-hidden="true"><span class="empada-icone-wrap"><span class="empada-vapor"></span><span class="empada-icon"></span></span></span> Empadas
                 </div>
                 <div class="menu-secao">FINALIZAR</div>
                 <div class="menu-item menu-carrinho" id="mi-carrinho" onclick="abrirPagina('carrinho')">
@@ -1687,7 +1779,7 @@ const IMGS = window.IMGS || {};
     brigadeiro: { nome: "Brigadeiro no Tacho", icone: "🍫", imgKey: "brigadeiro", desc: "Carrinho de brigadeiro saboroso. Preço único para qualquer combinação de 3 tipos.", valorTex: "A combinar", minimoTex: "Sem Mínimo", valorNum: 0, minNum: 1, tipo: "combinar" },
     pizza: { nome: "Pizza no Evento", icone: "🍕", imgKey: "pizza", desc: "Carrinho de pizza artesanal preparada na hora.", valorTex: "R$ 7,00 à unidade", minimoTex: "60 unidades", valorNum: 7.00, minNum: 60, tipo: "unidade" },
     sanduiche: { nome: "Sanduíche Natural", icone: "🥪", imgKey: "sanduiche", desc: "Preparados no dia com pão integral macio, proteínas magras, vegetais frescos e temperos especiais. Temos opções de atum e frango, perfeitos para o dia a dia.", valorTex: "R$ 10,00 à unidade", minimoTex: "Sem Mínimo", valorNum: 10.00, minNum: 1, tipo: "unidade", diasVenda: "Vendemos os sanduíches toda segunda, quarta e sábado." },
-    empada: { nome: "Empadas Artesanais", icone: "🥧", iconeHtml: '<span class="empada-icon"></span>', imgKey: "empada", desc: "Massa que derrete na boca, feita com manteiga selecionada e recheios generosos, ideal para o dia a dia.", valorTex: "R$ 8,00 à unidade", minimoTex: "Sem Mínimo", valorNum: 8.00, minNum: 1, tipo: "unidade", diasVenda: "Vendemos as empadas toda terça, quinta e sábado." }
+    empada: { nome: "Empadas Artesanais", icone: "🥧", iconeHtml: '<span class="empada-icone-wrap"><span class="empada-vapor"></span><span class="empada-icon"></span></span>', imgKey: "empada", desc: "Massa que derrete na boca, feita com manteiga selecionada e recheios generosos, ideal para o dia a dia.", valorTex: "R$ 8,00 à unidade", minimoTex: "Sem Mínimo", valorNum: 8.00, minNum: 1, tipo: "unidade", diasVenda: "Vendemos as empadas toda terça, quinta e sábado." }
   };
 
 
