@@ -995,9 +995,14 @@
             box-shadow: 0 8px 20px rgba(232, 112, 10, 0.3);
         }
 
-        .modal-btn:hover {
+        .modal-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 12px 30px rgba(232, 112, 10, 0.5);
+        }
+
+        .modal-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
         }
 
         .modal-btn-whatsapp {
@@ -1005,7 +1010,7 @@
             box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
         }
 
-        .modal-btn-whatsapp:hover {
+        .modal-btn-whatsapp:hover:not(:disabled) {
             box-shadow: 0 12px 30px rgba(37, 211, 102, 0.5);
         }
 
@@ -1015,7 +1020,7 @@
             margin-bottom: 15px;
         }
 
-        .modal-btn-cartao:hover {
+        .modal-btn-cartao:hover:not(:disabled) {
             box-shadow: 0 12px 30px rgba(51, 65, 85, 0.5);
         }
 
@@ -1901,13 +1906,13 @@
         </div>
         <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin-bottom: 8px;">Chave PIX:</p>
         <div class="pix-box" id="chave-pix-texto">68 9262-6612</div>
-        <button class="modal-btn modal-btn-cartao" onclick="solicitarPagamentoCartao()">
+        <button class="modal-btn modal-btn-cartao" onclick="solicitarPagamentoCartao(this)">
           💳 Solicitar pagamento no cartão
         </button>
         <button class="modal-btn" onclick="copiarPix()" style="margin-bottom: 12px;">
           📋 Copiar chave PIX
         </button>
-        <button class="modal-btn modal-btn-whatsapp" onclick="confirmarPagamento('sinal')">
+        <button class="modal-btn modal-btn-whatsapp" onclick="confirmarPagamento('sinal', this)">
           ✅ Já paguei — Enviar comprovante
         </button>
       </div>
@@ -1931,7 +1936,7 @@ const IMGS = window.IMGS || {};
   const CONFIG = {
     whatsapp: "68 9262-6612",
     chave_pix: "68 9262-6612",
-    url_google_script: "https://script.google.com/macros/s/AKfycbxIxHY6mAvMtScJYG6QZKZAMvsHrsTt9vYQ-f0qPnH5zJNTN5IkaO3Unb31TWhLTF9rag/exec",
+    url_google_script: "https://script.google.com/macros/s/AKfycbwiuxYOZQfbRZsC8fWXSVTNigkAs9sAoCa-GJW2NXroZBU7ao5TB03vpQILsLqrJGMnuQ/exec",
     nomeAtendimento: "Assistente Petiti Buffet",
     mensagemBoasVindas: "Olá! Seja bem-vindo(a)! Como posso ajudar hoje?",
     instagram: ""
@@ -3493,7 +3498,7 @@ const IMGS = window.IMGS || {};
     abrirPagina("home");
   }
 
-  function confirmarPagamento(stage = 'total') {
+  function confirmarPagamento(stage = 'total', btn = null) {
     if (!pedidoAtual.numero || !pedidoAtual.total) {
       alert("Seu pedido ainda não está pronto para pagamento.");
       return;
@@ -3508,6 +3513,13 @@ const IMGS = window.IMGS || {};
     if (!nomeUsuario || !telefoneUsuario || telefoneUsuario === "Não informado") {
       alert("Por favor, informe seu nome e WhatsApp para finalizar o pedido.");
       return;
+    }
+
+    // UX Feedback: Feedback de Carregamento
+    if (btn) {
+      btn.dataset.originalText = btn.innerHTML;
+      btn.innerHTML = "⏳ Processando...";
+      btn.disabled = true;
     }
 
     const dataEvento = (dataCampo && dataCampo.value) || pedidoAtual.eventDate || "";
@@ -3581,23 +3593,35 @@ const IMGS = window.IMGS || {};
       criadoEm: new Date().toISOString()
     });
 
-    // Abrir WhatsApp e finalizar fluxo (o pedido já foi registrado localmente e enviado para a planilha)
-    concluirPedidoViaWhatsApp(msgWhatsApp);
-
-    showMeusPedidosMenu(true);
-
-    // Abre a aba localmente após o comprovante; o polling atualiza os status da planilha em seguida.
+    // Simular delay do servidor para dar feedback visual antes de abrir Whatsapp
     setTimeout(() => {
-      abrirPagina('meus-pedidos');
-      sincronizarPedidosCliente();
-    }, 600);
+        if (btn) {
+            btn.innerHTML = btn.dataset.originalText;
+            btn.disabled = false;
+        }
+
+        concluirPedidoViaWhatsApp(msgWhatsApp);
+        showMeusPedidosMenu(true);
+
+        setTimeout(() => {
+          abrirPagina('meus-pedidos');
+          sincronizarPedidosCliente();
+        }, 600);
+    }, 1200);
   }
 
-  function solicitarPagamentoCartao() {
+  function solicitarPagamentoCartao(btn = null) {
     if (!pedidoAtual.numero || !pedidoAtual.total) {
       alert("Seu pedido ainda não está pronto para pagamento.");
       return;
     }
+    
+    if (btn) {
+        btn.dataset.originalText = btn.innerHTML;
+        btn.innerHTML = "⏳ Processando...";
+        btn.disabled = true;
+    }
+
     const nomeUsuario = localStorage.getItem("cg_nomeUsuario") || "Desconhecido";
     const telefoneUsuario = localStorage.getItem("cg_telefoneUsuario") || "Não informado";
     const dadosComplementares = obterDadosComplementaresPedido();
@@ -3616,7 +3640,13 @@ const IMGS = window.IMGS || {};
       `Produtos comprados:\n${itensWhatsApp}\n` +
       `Total do carrinho: ${totalFormatado}`;
 
-    concluirPedidoViaWhatsApp(msgWhatsApp);
+    setTimeout(() => {
+        if (btn) {
+            btn.innerHTML = btn.dataset.originalText;
+            btn.disabled = false;
+        }
+        concluirPedidoViaWhatsApp(msgWhatsApp);
+    }, 1200);
   }
 
   function enviarFoto(event) {
@@ -3690,15 +3720,16 @@ const IMGS = window.IMGS || {};
     }
 
     const status = obterStatusPedidoCliente(pedido).toLowerCase();
-    const prontoLabel = /lanche/.test(status)
+    const prontoLabel = /lanche|salgado|sanduíche|empada/.test(pedido.itens?.toLowerCase() || "")
       ? "Lanche Pronto!"
-      : (/carrinho|alimentos/.test(status) ? "Carrinhos Reservados e Alimentos Prontos!" : "Pedido Pronto!");
+      : "Pedido Pronto!";
 
     return [
       { label: "Pedido Recebido", active: true },
-      { label: "Pedido em Preparo", active: /preparo|pronto|caminho|reservados/.test(status) },
-      { label: prontoLabel, active: /pronto|caminho|reservados/.test(status) },
-      { label: "A Caminho", active: /caminho/.test(status) }
+      { label: "Pedido em Preparo", active: /preparo|pronto|entrega|saiu|caminho|finalizado/i.test(status) },
+      { label: prontoLabel, active: /pronto|entrega|saiu|caminho|finalizado/i.test(status) },
+      { label: "Saiu para Entrega", active: /entrega|saiu|caminho|finalizado/i.test(status) },
+      { label: "Finalizado", active: /finalizado/i.test(status) }
     ];
   }
 
@@ -3799,8 +3830,8 @@ const IMGS = window.IMGS || {};
           statusPrincipal: o.status_principal || anterior.statusPrincipal || '',
           fasePreparo: o.fase_preparo || anterior.fasePreparo || '',
           entrega: o.entrega || anterior.entrega || '',
-          finalizacao: o.finalizacao || anterior.finalizacao || '',
-          aCaminho: o.a_caminho || anterior.aCaminho || '',
+          pronto: o.pronto || anterior.pronto || '', // Mapeamento novo
+          finalizado: o.finalizado || anterior.finalizado || '', // Mapeamento novo
           timeline: Array.isArray(o.timeline) ? o.timeline : (anterior.timeline || []),
           pagamentoValidado: pagamentoValidadoPedido(o),
           origemLocal: anterior.origemLocal === true || pedidoPertenceAoDispositivo(anterior),
