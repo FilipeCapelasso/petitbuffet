@@ -1639,6 +1639,52 @@
             font-style: italic;
         }
 
+        /* BOTAO COMENTAR */
+        .btn-comentar {
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFD700;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-comentar:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: #FFD700;
+            transform: translateY(-2px);
+        }
+
+        /* STARS RATING */
+        .star-rating {
+            display: inline-flex;
+            flex-direction: row-reverse;
+            gap: 4px;
+        }
+        .star-rating input { display: none; }
+        .star-rating label {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #FFD700;
+        }
+        .avaliacao-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -1871,10 +1917,23 @@
             <h3 class="modal-titulo" id="depoimento-nome">Nome</h3>
             <div class="review-stats">
                 <span class="review-stat-badge" id="depoimento-compras">🛍️ 0 compras</span>
-                <span class="review-stat-badge">⭐ 5.0 Avaliação Geral</span>
+                <span class="review-stat-badge">⭐ Avaliação Geral</span>
             </div>
             <div class="review-items-list" id="depoimento-avaliacoes">
-                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-avaliacao" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-avaliacao')">
+        <div class="modal-box">
+            <button class="modal-fechar" onclick="fecharModal('modal-avaliacao')">×</button>
+            <div class="modal-icone" style="font-size: 40px;">⭐</div>
+            <h3 class="modal-titulo">Avaliar Pedido</h3>
+            <p class="modal-texto">Conte para nós o que achou dos produtos consumidos no seu evento!</p>
+            <div id="lista-avaliacoes" style="text-align: left; margin-bottom: 20px;"></div>
+            <textarea id="avaliacao-comentario" class="modal-input" placeholder="Deixe um comentário geral sobre o pedido (opcional)..." style="height: 80px; resize: none;"></textarea>
+            <button class="modal-btn" onclick="enviarAvaliacao()">PUBLICAR AVALIAÇÃO</button>
+            <input type="hidden" id="avaliacao-pedido-numero">
         </div>
     </div>
 
@@ -2261,6 +2320,85 @@ const IMGS = window.IMGS || {};
       `).join('');
 
       document.getElementById('modal-depoimento').classList.add('ativo');
+  }
+
+  // ABRIR AVALIACAO (NOVO)
+  function abrirModalAvaliacao(numeroPedido) {
+      const lista = JSON.parse(localStorage.getItem('cg_meus_pedidos') || '[]');
+      const pedido = lista.find(p => p.numero === numeroPedido);
+      if (!pedido) return;
+
+      document.getElementById('avaliacao-pedido-numero').value = numeroPedido;
+      const container = document.getElementById('lista-avaliacoes');
+      container.innerHTML = '';
+
+      const nomesProdutos = pedido.itens.split(',').map(item => item.replace(/\(\d+x\)/, '').trim()).filter(Boolean);
+
+      nomesProdutos.forEach((nome, idx) => {
+          container.innerHTML += `
+              <div class="avaliacao-item">
+                  <span style="font-size: 14px; color: white;">${nome}</span>
+                  <div class="star-rating">
+                      <input type="radio" id="star5_${idx}" name="rating_${idx}" value="5"><label for="star5_${idx}">★</label>
+                      <input type="radio" id="star4_${idx}" name="rating_${idx}" value="4"><label for="star4_${idx}">★</label>
+                      <input type="radio" id="star3_${idx}" name="rating_${idx}" value="3"><label for="star3_${idx}">★</label>
+                      <input type="radio" id="star2_${idx}" name="rating_${idx}" value="2"><label for="star2_${idx}">★</label>
+                      <input type="radio" id="star1_${idx}" name="rating_${idx}" value="1"><label for="star1_${idx}">★</label>
+                  </div>
+              </div>
+          `;
+      });
+
+      document.getElementById('avaliacao-comentario').value = '';
+      document.getElementById('modal-avaliacao').classList.add('ativo');
+  }
+
+  // ENVIAR AVALIACAO (NOVO)
+  function enviarAvaliacao() {
+      const numeroPedido = document.getElementById('avaliacao-pedido-numero').value;
+      const comentario = document.getElementById('avaliacao-comentario').value.trim();
+
+      const itemsNodes = document.querySelectorAll('.avaliacao-item');
+      const avaliacoes = [];
+      itemsNodes.forEach((node, idx) => {
+          const nome = node.querySelector('span').innerText;
+          const checkedStar = node.querySelector(`input[name="rating_${idx}"]:checked`);
+          if (checkedStar) {
+              avaliacoes.push({ produto: nome, nota: parseInt(checkedStar.value) });
+          }
+      });
+
+      // Simula o envio ao site adicionando na lista de depoimentos e chamando endpoint
+      if (avaliacoes.length > 0 || comentario) {
+          DEPOIMENTOS.unshift({
+              nome: localStorage.getItem("cg_nomeUsuario") || "Cliente",
+              texto: comentario || "Excelente atendimento e produtos de ótima qualidade!",
+              compras: 1,
+              avaliacoes: avaliacoes.length > 0 ? avaliacoes : [{ produto: "Pedido Completo", nota: 5, comentario: "Gostei muito." }]
+          });
+
+          // Opcional: Enviar para planilha como uma avaliação para registro
+          try {
+              enviarPedidoParaPlanilha({
+                  action: "submitReview",
+                  pedido: numeroPedido,
+                  comentario: comentario,
+                  avaliacoes: JSON.stringify(avaliacoes)
+              });
+          } catch(e) {}
+      }
+
+      // Marca o pedido como avaliado
+      const lista = JSON.parse(localStorage.getItem('cg_meus_pedidos') || '[]');
+      const idx = lista.findIndex(p => p.numero === numeroPedido);
+      if (idx >= 0) {
+          lista[idx].avaliado = true;
+          localStorage.setItem('cg_meus_pedidos', JSON.stringify(lista));
+      }
+
+      alert("Sua avaliação foi publicada com sucesso! Muito obrigado.");
+      fecharModal('modal-avaliacao');
+      renderMeusPedidosPagina();
   }
 
   function cadastrarUsuario() {
@@ -2783,7 +2921,6 @@ const IMGS = window.IMGS || {};
       </div>
     `).join("");
 
-    // O truque para scroll infinito é renderizar a lista 2 vezes e animar em CSS
     const carrosselHTML = `
       <div class="carousel-container">
         <div class="carousel-track">
@@ -3324,7 +3461,6 @@ const IMGS = window.IMGS || {};
       return;
     }
     salvarDadosCheckoutLocal();
-    // Prefill checkout modal with name/phone (if saved) and compute parcelas
     const nomeSalvo = localStorage.getItem("cg_nomeUsuario") || "";
     const wppSalvo = localStorage.getItem("cg_telefoneUsuario") || "";
     const nomeInp = document.getElementById("checkout-nome");
@@ -3515,7 +3651,6 @@ const IMGS = window.IMGS || {};
       return;
     }
 
-    // UX Feedback: Feedback de Carregamento
     if (btn) {
       btn.dataset.originalText = btn.innerHTML;
       btn.innerHTML = "⏳ Processando...";
@@ -3530,7 +3665,6 @@ const IMGS = window.IMGS || {};
       ? (document.getElementById('checkout-saldo-vencimento')?.innerText || calcularSaldoVencimento(dataEvento))
       : '';
 
-    // Atualiza pedidoAtual com informações que serão enviadas
     pedidoAtual.cliente = nomeUsuario;
     pedidoAtual.telefone = telefoneUsuario;
     pedidoAtual.eventDate = dataEvento;
@@ -3539,11 +3673,9 @@ const IMGS = window.IMGS || {};
     pedidoAtual.saldoVencimento = saldoVencimentoDisplay;
     pedidoAtual.status = "pedido recebido";
 
-    // Persistir nome/telefone localmente para conveniência
     localStorage.setItem("cg_nomeUsuario", nomeUsuario);
     localStorage.setItem("cg_telefoneUsuario", telefoneUsuario);
 
-    // Registrar pedido na planilha com etapa (sinal/total)
     registrarPedidoNaPlanilha(stage === 'sinal' ? 'PIX' : 'PIX', stage === 'sinal' ? 'sinal' : 'total');
 
     let msgWhatsApp = '';
@@ -3574,7 +3706,6 @@ const IMGS = window.IMGS || {};
         `Vou enviar o comprovante logo abaixo.`;
     }
 
-    // Salva pedido localmente para a aba "Meus Pedidos"
     saveLocalOrder({
       id: pedidoAtual.id,
       numero: pedidoAtual.numero,
@@ -3593,7 +3724,6 @@ const IMGS = window.IMGS || {};
       criadoEm: new Date().toISOString()
     });
 
-    // Simular delay do servidor para dar feedback visual antes de abrir Whatsapp
     setTimeout(() => {
         if (btn) {
             btn.innerHTML = btn.dataset.originalText;
@@ -3743,13 +3873,25 @@ const IMGS = window.IMGS || {};
   function renderMeusPedidosPagina() {
     const vitrine = document.getElementById('vitrine');
     if (!vitrine) return;
-    const pedidos = JSON.parse(localStorage.getItem('cg_meus_pedidos') || '[]').filter(pedidoVisivelCliente);
-    if (!pedidos.length) {
+    
+    const agora = Date.now();
+    const todosPedidos = JSON.parse(localStorage.getItem('cg_meus_pedidos') || '[]').filter(pedidoVisivelCliente);
+    
+    // Filtra os pedidos finalizados há mais de 5 minutos (300.000 ms)
+    const pedidosVisiveisTela = todosPedidos.filter(p => {
+         if (/finalizado/i.test(obterStatusPedidoCliente(p)) && p.finalizadoEm) {
+              return (agora - p.finalizadoEm) <= 300000;
+         }
+         return true;
+    });
+
+    if (!pedidosVisiveisTela.length) {
       vitrine.innerHTML = `<h1 class="home-titulo" style="text-align:left;margin-bottom:20px;">📦 Meus Pedidos</h1><p>Seus pedidos aparecem aqui após a validação do pagamento na planilha.</p>`;
       return;
     }
+    
     let html = `<h1 class="home-titulo" style="text-align:left;margin-bottom:20px;">📦 Meus Pedidos</h1>`;
-    pedidos.forEach(p => {
+    pedidosVisiveisTela.forEach(p => {
       const eventDateDisplay = formatarDataEventoDisplay(p.eventDate);
       const diasRestantes = calcularDiasAteEvento(p.eventDate);
       html += `<div class="faq-chat-card" style="margin-bottom:12px;padding:18px;">`;
@@ -3761,14 +3903,17 @@ const IMGS = window.IMGS || {};
       if (p.etapa === 'sinal' || p.sinalValor || p.saldoValor) {
         const saldoValor = normalizarValorMonetario(p.saldoValor || 0);
         const saldoVencimento = p.saldoVencimento || '';
-        const valorComprovante = saldoValor > 0 ? saldoValor : normalizarValorMonetario(p.sinalValor || p.total || 0);
         html += `<div style="margin-bottom:6px;"><strong>pedido pago:</strong> ${formatarValorBRL(p.sinalValor || 0)}</div>`;
         if (saldoValor > 0) {
           html += `<div style="margin-bottom:6px;"><strong>Saldo:</strong> ${formatarValorBRL(saldoValor)} — ${textoSaldoVencimento(saldoValor, saldoVencimento)}</div>`;
         }
-        html += `<div style="display:flex;gap:8px;margin-top:8px;">`;
-        html += `<button class="modal-btn modal-btn-whatsapp" onclick="enviarComprovanteTransferenciaWhatsApp(${JSON.stringify(String(p.numero || ""))}, ${valorComprovante})">Enviar comprovante de transferência</button>`;
-        html += `</div>`;
+        
+        // NOVO BOTAO PARA AVALIACAO
+        if (!p.avaliado) {
+            html += `<div style="display:flex;gap:8px;margin-top:12px;">`;
+            html += `<button class="btn-comentar" onclick="abrirModalAvaliacao('${p.numero}')">⭐ Comentar e Avaliar</button>`;
+            html += `</div>`;
+        }
       }
       if (diasRestantes !== null) {
         html += `<div style="margin-bottom:8px;color:rgba(255,255,255,0.8)"><strong>Faltam ${diasRestantes} dias para o seu evento</strong></div>`;
@@ -3776,12 +3921,6 @@ const IMGS = window.IMGS || {};
       html += `</div></div>`;
     });
     vitrine.innerHTML = html;
-  }
-
-  function enviarComprovanteTransferenciaWhatsApp(numeroPedido, valor) {
-    const texto = `Olá! Estou enviando o comprovante de transferência para o pedido ${numeroPedido}. Valor: ${formatarValorBRL(valor)}. Por favor, confirme o recebimento.`;
-    const url = `https://wa.me/${obterWhatsappLink()}?text=${encodeURIComponent(texto)}`;
-    window.open(url, '_blank');
   }
 
   async function carregarMeusPedidosPlanilhaCliente() {
@@ -3830,14 +3969,25 @@ const IMGS = window.IMGS || {};
           statusPrincipal: o.status_principal || anterior.statusPrincipal || '',
           fasePreparo: o.fase_preparo || anterior.fasePreparo || '',
           entrega: o.entrega || anterior.entrega || '',
-          pronto: o.pronto || anterior.pronto || '', // Mapeamento novo
-          finalizado: o.finalizado || anterior.finalizado || '', // Mapeamento novo
+          pronto: o.pronto || anterior.pronto || '', 
+          finalizado: o.finalizado || anterior.finalizado || '', 
           timeline: Array.isArray(o.timeline) ? o.timeline : (anterior.timeline || []),
           pagamentoValidado: pagamentoValidadoPedido(o),
           origemLocal: anterior.origemLocal === true || pedidoPertenceAoDispositivo(anterior),
+          avaliado: anterior.avaliado || false,
           criadoEm: o.created_at || anterior.criadoEm || new Date().toISOString(),
           atualizadoEm: o.updated_at || anterior.atualizadoEm || ''
         };
+
+        // Lógica dos 5 minutos: Gravar o Timestamp em que foi finalizado pela primeira vez
+        const isFinalizado = /finalizado/i.test(obterStatusPedidoCliente(novo));
+        const wasFinalizado = /finalizado/i.test(anterior.statusAtual || anterior.status || '');
+
+        if (isFinalizado && !wasFinalizado) {
+            novo.finalizadoEm = Date.now();
+        } else if (isFinalizado && anterior.finalizadoEm) {
+            novo.finalizadoEm = anterior.finalizadoEm;
+        }
 
         const anteriorJson = idx >= 0 ? JSON.stringify(locais[idx]) : "";
         const novoJson = JSON.stringify(novo);
