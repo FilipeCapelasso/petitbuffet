@@ -1530,6 +1530,111 @@
             box-shadow: 0 16px 36px rgba(253, 29, 29, 0.3);
         }
 
+        /* --- CARROSSEL DE DEPOIMENTOS --- */
+        .carousel-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            padding: 10px 0;
+            margin: 0 auto;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 20px;
+            width: max-content;
+            animation: scrollCarousel 40s linear infinite;
+        }
+
+        .carousel-track:hover {
+            animation-play-state: paused;
+        }
+
+        .carousel-card {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(10, 10, 10, 0.9) 100%);
+            border: 2px solid rgba(232, 112, 10, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            width: 340px;
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .carousel-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--laranja);
+            box-shadow: 0 15px 40px rgba(232, 112, 10, 0.2);
+        }
+
+        @keyframes scrollCarousel {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } 
+        }
+
+        /* Review Details Modal */
+        .review-stats {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .review-stat-badge {
+            background: rgba(232, 112, 10, 0.15);
+            color: var(--laranja);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid rgba(232, 112, 10, 0.3);
+        }
+
+        .review-items-list {
+            text-align: left;
+            max-height: 280px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .review-items-list::-webkit-scrollbar { width: 4px; }
+        .review-items-list::-webkit-scrollbar-thumb { background: var(--laranja); border-radius: 4px; }
+
+        .review-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .review-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .review-item-title {
+            color: var(--laranja);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .review-stars {
+            color: #FFD700;
+            font-size: 13px;
+        }
+
+        .review-item-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+
         /* Responsive */
         @media (max-width: 768px) {
             #sidebar {
@@ -1660,15 +1765,12 @@
     </style>
 </head>
 <body>
-    <!-- Background Effects -->
     <div class="wireframe-bg">
         <canvas id="wireframeCanvas"></canvas>
     </div>
     <div class="particles" id="particlesContainer"></div>
 
-    <!-- App Container -->
     <div id="app">
-        <!-- Sidebar -->
         <div id="sidebar">
             <div class="sidebar-logo">
                 <div class="logo-titulo">Petit Buffet</div>
@@ -1717,7 +1819,6 @@
             </div>
         </div>
 
-        <!-- Principal -->
         <div id="principal">
             <div id="header">
                 <div style="display:flex;align-items:center;">
@@ -1746,7 +1847,6 @@
         </div>
     </div>
 
-    <!-- Modal Login -->
     <div id="modal-login" class="modal-overlay">
         <div class="modal-box">
             <button class="modal-fechar" onclick="fecharModal('modal-login')">×</button>
@@ -1759,7 +1859,20 @@
         </div>
     </div>
 
-    <!-- Modal Checkout -->
+    <div id="modal-depoimento" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-depoimento')">
+        <div class="modal-box">
+            <button class="modal-fechar" onclick="fecharModal('modal-depoimento')">×</button>
+            <div class="modal-icone" id="depoimento-avatar" style="font-size: 32px; width: 70px; height: 70px; margin: 0 auto 15px; border-radius: 50%; background: linear-gradient(135deg,var(--laranja),var(--laranja-escuro)); display: flex; align-items: center; justify-content: center; font-weight: 800; color: white;"></div>
+            <h3 class="modal-titulo" id="depoimento-nome">Nome</h3>
+            <div class="review-stats">
+                <span class="review-stat-badge" id="depoimento-compras">🛍️ 0 compras</span>
+                <span class="review-stat-badge">⭐ 5.0 Avaliação Geral</span>
+            </div>
+            <div class="review-items-list" id="depoimento-avaliacoes">
+                </div>
+        </div>
+    </div>
+
     <div id="modal-checkout" class="modal-overlay">
       <div class="modal-box">
         <button class="modal-fechar" onclick="fecharModal('modal-checkout')">×</button>
@@ -1877,10 +1990,53 @@ const IMGS = window.IMGS || {};
     }
   ];
 
+  // NOVA ESTRUTURA DOS DEPOIMENTOS
   const DEPOIMENTOS = [
-    { nome: "Mariana Silva", texto: "O atendimento foi impecável e o carrinho deixou nosso evento inesquecível." },
-    { nome: "Rafael Costa", texto: "Profissionalismo e sabor. Recomendo para festas e eventos corporativos." },
-    { nome: "Ana Pereira", texto: "Puntualidade e comida deliciosa. Meus convidados adoraram!" }
+    { 
+        nome: "Mariana Silva", 
+        texto: "O atendimento foi impecável e o carrinho deixou nosso evento inesquecível.",
+        compras: 3,
+        avaliacoes: [
+            { produto: "Pizza Artesanal", nota: 5, comentario: "As pizzas quentinhas feitas na hora fizeram o maior sucesso no aniversário!" },
+            { produto: "Picolé Gourmet", nota: 5, comentario: "Sabores maravilhosos, tanto as crianças quanto os adultos amaram." }
+        ]
+    },
+    { 
+        nome: "Rafael Costa", 
+        texto: "Profissionalismo e sabor. Recomendo para festas e eventos corporativos.",
+        compras: 5,
+        avaliacoes: [
+            { produto: "Hambúrguer", nota: 5, comentario: "Carne suculenta, pão macio e montagem super rápida. Todo mundo elogiou." },
+            { produto: "Sanduíche Natural", nota: 4, comentario: "Sempre peço pro lanche da tarde no escritório. Muito bem recheado." }
+        ]
+    },
+    { 
+        nome: "Ana Pereira", 
+        texto: "Pontualidade e comida deliciosa. Meus convidados adoraram!",
+        compras: 2,
+        avaliacoes: [
+            { produto: "Brigadeiro no Tacho", nota: 5, comentario: "O melhor brigadeiro que já comi, consistência e sabor perfeitos!" },
+            { produto: "Cachorro Quente", nota: 5, comentario: "Muito bem servido e tudo estava super fresquinho e organizado." }
+        ]
+    },
+    { 
+        nome: "Carlos Eduardo", 
+        texto: "Contratei para o aniversário do meu filho e foi um sucesso total.",
+        compras: 1,
+        avaliacoes: [
+            { produto: "Pipoca Doce", nota: 5, comentario: "O carrinho em si já é um charme à parte. Pipoca super crocante!" },
+            { produto: "Algodão Doce", nota: 5, comentario: "Feito na hora, grandão e colorido. Excelente atendimento do rapaz." }
+        ]
+    },
+    { 
+        nome: "Juliana Mendes", 
+        texto: "As empadas salvaram minha reunião de equipe. Todos elogiaram demais.",
+        compras: 4,
+        avaliacoes: [
+            { produto: "Empadas Artesanais", nota: 5, comentario: "Massa que derrete na boca de verdade e bem recheada." },
+            { produto: "Sanduíche Natural", nota: 5, comentario: "O de frango é o meu favorito. Leve e temperadinho." }
+        ]
+    }
   ];
 
   let paginaAtual = "home";
@@ -2078,6 +2234,29 @@ const IMGS = window.IMGS || {};
 
   function fecharModal(id) { document.getElementById(id).classList.remove("ativo"); }
   function fecharModalLogin() { document.getElementById("modal-login").classList.remove("ativo"); }
+
+  // Função para Popular e Abrir o Modal de Depoimento da pessoa
+  function abrirModalDepoimento(index) {
+      const d = DEPOIMENTOS[index];
+      if(!d) return;
+
+      document.getElementById('depoimento-avatar').innerText = d.nome.split(' ').map(n=>n[0]).slice(0,2).join('');
+      document.getElementById('depoimento-nome').innerText = d.nome;
+      document.getElementById('depoimento-compras').innerText = `🛍️ ${d.compras} compras`;
+
+      const lista = document.getElementById('depoimento-avaliacoes');
+      lista.innerHTML = d.avaliacoes.map(av => `
+          <div class="review-item">
+              <div class="review-item-header">
+                  <span class="review-item-title">${av.produto}</span>
+                  <span class="review-stars">${'⭐'.repeat(av.nota)}</span>
+              </div>
+              <div class="review-item-text">"${av.comentario}"</div>
+          </div>
+      `).join('');
+
+      document.getElementById('modal-depoimento').classList.add('ativo');
+  }
 
   function cadastrarUsuario() {
     const nome = document.getElementById("login-nome").value.trim();
@@ -2585,15 +2764,29 @@ const IMGS = window.IMGS || {};
     const carrinhosHTML = carrinhosIds.map(id => renderCardProduto(id, PRODUTOS[id])).join("");
     const lanchesHTML = lanchesIds.map(id => renderCardProduto(id, PRODUTOS[id])).join("");
 
-    const depoimentosHTML = DEPOIMENTOS.map(d => `
-      <div class="faq-chat-card" style="display:flex;align-items:flex-start;gap:12px;padding:18px;">
-        <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--laranja),var(--laranja-escuro));display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:18px;">${d.nome.split(' ').map(n=>n[0]).slice(0,2).join('')}</div>
-        <div>
-          <strong style="display:block;margin-bottom:6px;color:var(--laranja);">${d.nome}</strong>
-          <div style="color:rgba(255,255,255,0.8)">${d.texto}</div>
+    // GERANDO OS CARTÕES DO CARROSSEL ANIMADO
+    const depoimentosCartoes = DEPOIMENTOS.map((d, index) => `
+      <div class="carousel-card" onclick="abrirModalDepoimento(${index})">
+        <div style="display:flex;align-items:flex-start;gap:12px;">
+          <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--laranja),var(--laranja-escuro));display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:18px;flex-shrink:0;">${d.nome.split(' ').map(n=>n[0]).slice(0,2).join('')}</div>
+          <div>
+            <strong style="display:block;margin-bottom:6px;color:var(--laranja);">${d.nome}</strong>
+            <div style="color:rgba(255,255,255,0.8); font-size: 13px; line-height: 1.5; font-style: italic;">"${d.texto}"</div>
+            <div style="margin-top: 8px; font-size: 11px; color: var(--verde); font-weight: bold;">👆 Clique para ver perfil e avaliações</div>
+          </div>
         </div>
       </div>
     `).join("");
+
+    // O truque para scroll infinito é renderizar a lista 2 vezes e animar em CSS
+    const carrosselHTML = `
+      <div class="carousel-container">
+        <div class="carousel-track">
+            ${depoimentosCartoes}
+            ${depoimentosCartoes}
+        </div>
+      </div>
+    `;
 
     const faqHTML = FAQ_HOME.map(item => `
       <div class="faq-chat-card">
@@ -2625,10 +2818,8 @@ const IMGS = window.IMGS || {};
           ${lanchesHTML}
         </div>
 
-        <h2 class="home-section-title" style="margin: 60px 0 40px;">Depoimentos</h2>
-        <div class="faq-chat-grid">
-          ${depoimentosHTML}
-        </div>
+        <h2 class="home-section-title" style="margin: 60px 0 20px;">O que nossos clientes dizem</h2>
+        ${carrosselHTML}
 
         <h2 class="home-section-title" style="margin: 40px 0 30px;">Perguntas Frequentes</h2>
         <div class="faq-chat-grid">
@@ -3607,7 +3798,9 @@ const IMGS = window.IMGS || {};
           statusAtual: o.status_atual || o.status || anterior.statusAtual || anterior.status || 'pedido recebido',
           statusPrincipal: o.status_principal || anterior.statusPrincipal || '',
           fasePreparo: o.fase_preparo || anterior.fasePreparo || '',
-          entregaFinalizacao: o.entrega_finalizacao || anterior.entregaFinalizacao || '',
+          entrega: o.entrega || anterior.entrega || '',
+          finalizacao: o.finalizacao || anterior.finalizacao || '',
+          aCaminho: o.a_caminho || anterior.aCaminho || '',
           timeline: Array.isArray(o.timeline) ? o.timeline : (anterior.timeline || []),
           pagamentoValidado: pagamentoValidadoPedido(o),
           origemLocal: anterior.origemLocal === true || pedidoPertenceAoDispositivo(anterior),
