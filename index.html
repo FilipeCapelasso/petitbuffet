@@ -302,9 +302,9 @@
            ========================================================================== */
         .avaliacoes-section { margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--glass-border); width: 100%; }
         .carousel-wrapper { overflow: hidden; white-space: nowrap; width: 100%; padding: 20px 0; position: relative; mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
-        .carousel-track { display: inline-flex; gap: 20px; animation: scrollCarousel 60s linear infinite; }
+        .carousel-track { display: flex; gap: 20px; width: max-content; animation: scrollCarousel 35s linear infinite; }
         .carousel-track:hover { animation-play-state: paused; }
-        @keyframes scrollCarousel { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes scrollCarousel { from { transform: translateX(0); } to { transform: translateX(calc(-100% / 3)); } }
         
         .review-card { background: var(--bg-surface); border: 1px solid var(--glass-border); padding: 20px; border-radius: var(--radius-md); min-width: 320px; max-width: 320px; cursor: pointer; white-space: normal; display: flex; flex-direction: column; gap: 12px; transition: 0.2s; box-shadow: var(--glass-shadow); }
         .review-card:hover { transform: translateY(-4px); border-color: var(--brand-primary); background: var(--bg-surface-hover); }
@@ -714,7 +714,21 @@
     };
 
     let paginaAtual = "home";
-    let meuCarrinho = safeRead(STORAGE.cart, []);
+    let meuCarrinho = safeRead(STORAGE.cart, [
+]);
+
+function obterAvaliacoesOrganizadas() {
+    const fileira1 = avaliacoesGlobais.slice(0, 10);
+    const fileira2 = avaliacoesGlobais.slice(10, 20);
+    const fileira3 = avaliacoesGlobais.slice(20, 30);
+
+    return [
+        ...fileira1,
+        ...fileira2,
+        ...fileira3
+    ];
+}
+
     let pedidoAtual = null;
     let notaAtual = 5;
     let indexCompraEmAvaliacao = -1;
@@ -970,7 +984,7 @@
                 <div class="product-badges"><span class="product-badge">${dinheiro(precoProduto(id))}${p.minNum > 1 ? ' un' : ''}</span><span class="product-badge">Mín.: ${escapeHTML(p.minimoTex)}</span></div>
             </div>`;
         }).join("");
-        const reviews = avaliacoesGlobais.map((av, idx) => `<div class="review-card" onclick="abrirDepoimentoPorIndice(${idx})">
+        const reviews = obterAvaliacoesOrganizadas().map((av, idx) => `<div class="review-card" onclick="abrirDepoimentoPorIndice(${idx})">
             <div class="review-header"><div class="review-avatar">${escapeHTML(av.nome.charAt(0))}</div><div><strong style="color:#FFF;display:block;font-size:14px;">${escapeHTML(av.nome)}</strong><div class="review-stars">${"★".repeat(av.stars || 5)}</div></div></div>
             <p class="review-text">“${escapeHTML(av.texto)}”</p>
         </div>`).join("");
