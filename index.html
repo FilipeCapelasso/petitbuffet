@@ -1166,7 +1166,7 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         }).join("");
         const sinal = calcularSinal(total);
         pedidoAtual = montarPedidoBase(total, sinal);
-        v.innerHTML = `<div style="max-width:800px;margin:0 auto;"><h1 class="home-titulo">Carrinho</h1>${itens}<div class="cart-total">Total: ${dinheiro(total)}</div><div class="checkout-extra-box"><h3 style="font-family:var(--font-heading);margin-bottom:12px;">Resumo da reserva</h3><p style="color:var(--text-secondary);font-size:14px;line-height:1.6;">Agora (50%): <strong style="color:var(--success);">${dinheiro(sinal)}</strong><br>Saldo restante (50%): <strong style="color:var(--warning);">${dinheiro(total - sinal)}</strong></p><button class="modal-btn primary" style="margin-top:20px;" onclick="abrirModalCheckout()">Finalizar Pedido</button></div></div>`;
+        v.innerHTML = `<div style="max-width:800px;margin:0 auto;"><h1 class="home-titulo">Carrinho</h1>${itens}<div class="cart-total">Total: ${dinheiro(total)}</div><div class="checkout-extra-box"><h3 style="font-family:var(--font-heading);margin-bottom:12px;">Resumo do pedido</h3><p style="color:var(--text-secondary);font-size:14px;line-height:1.6;">Agora (50%): <strong style="color:var(--success);">${dinheiro(sinal)}</strong><br>Saldo restante (50%): <strong style="color:var(--warning);">${dinheiro(total - sinal)}</strong></p><button class="modal-btn primary" style="margin-top:20px;" onclick="abrirModalCheckout()">Finalizar Pedido</button></div></div>`;
     }
 
     function alterarQtdCart(i, delta) {
