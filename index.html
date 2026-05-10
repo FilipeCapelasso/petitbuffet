@@ -301,10 +301,38 @@
            7. CARROSSEL DE AVALIAÇÕES (INFINITO)
            ========================================================================== */
         .avaliacoes-section { margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--glass-border); width: 100%; }
-        .carousel-wrapper { overflow: hidden; white-space: nowrap; width: 100%; padding: 20px 0; position: relative; mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
-        .carousel-track { display: flex; gap: 20px; width: max-content; animation: scrollCarousel 35s linear infinite; }
-        .carousel-track:hover { animation-play-state: paused; }
-        @keyframes scrollCarousel { from { transform: translateX(0); } to { transform: translateX(calc(-100% / 3)); } }
+        
+.carousel-wrapper{
+    width:100%;
+    overflow:hidden;
+    position:relative;
+    padding:24px 0;
+    mask-image:linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-image:linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.carousel-track{
+    display:flex;
+    align-items:stretch;
+    gap:20px;
+    width:max-content;
+    animation:carouselInfinite 55s linear infinite;
+    will-change:transform;
+}
+
+.carousel-track:hover{
+    animation-play-state:paused;
+}
+
+@keyframes carouselInfinite{
+    from{
+        transform:translateX(0);
+    }
+    to{
+        transform:translateX(-50%);
+    }
+}
+
         
         .review-card { background: var(--bg-surface); border: 1px solid var(--glass-border); padding: 20px; border-radius: var(--radius-md); min-width: 320px; max-width: 320px; cursor: pointer; white-space: normal; display: flex; flex-direction: column; gap: 12px; transition: 0.2s; box-shadow: var(--glass-shadow); }
         .review-card:hover { transform: translateY(-4px); border-color: var(--brand-primary); background: var(--bg-surface-hover); }
@@ -714,22 +742,8 @@
     };
 
     let paginaAtual = "home";
-    let meuCarrinho = safeRead(STORAGE.cart, [
-]);
-
-function obterAvaliacoesOrganizadas() {
-    const fileira1 = avaliacoesGlobais.slice(0, 10);
-    const fileira2 = avaliacoesGlobais.slice(10, 20);
-    const fileira3 = avaliacoesGlobais.slice(20, 30);
-
-    return [
-        ...fileira1,
-        ...fileira2,
-        ...fileira3
-    ];
-}
-
-    let pedidoAtual = null;
+    let meuCarrinho = safeRead(STORAGE.cart, []);
+let pedidoAtual = null;
     let notaAtual = 5;
     let indexCompraEmAvaliacao = -1;
     let socket = null;
@@ -828,6 +842,29 @@ function obterAvaliacoesOrganizadas() {
         { nome: "Jéssica Pacheco", texto: "Atendimento simpático, comida boa e visual bonito. Ficou acima do esperado.", stars: 5, comprasNum: 4 },
         { nome: "Rogério Campos", texto: "O buffet trouxe praticidade para a festa. Não precisei me preocupar com nada.", stars: 5, comprasNum: 2 }
     ]);
+
+function gerarCardsAvaliacoes() {
+    const lista = avaliacoesGlobais.slice(0, 24);
+    const duplicadas = [...lista, ...lista];
+
+    return duplicadas.map(dep => {
+        return `
+            <div class="review-card" onclick="abrirDepoimento('${String(dep.nome).replace(/'/g, "\\'")}')">
+                <div class="review-header">
+                    <div class="review-avatar">${dep.nome.charAt(0).toUpperCase()}</div>
+                    <div>
+                        <div style="font-weight:700;color:var(--text-primary);font-size:15px;">
+                            ${dep.nome}
+                        </div>
+                        <div class="review-stars">${'★'.repeat(dep.stars || 5)}</div>
+                    </div>
+                </div>
+                <div class="review-text">“${dep.texto}”</div>
+            </div>
+        `;
+    }).join('');
+}
+
 
     // Controle do modal de detalhes com atualização automática do status.
     // Enquanto o cliente permanecer com a janela do pedido aberta, o site consulta
@@ -990,7 +1027,7 @@ function obterAvaliacoesOrganizadas() {
         </div>`).join("");
         v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><span style="color:var(--brand-primary)">Gourmet</span></h1><p class="home-sub">Transforme seu evento com carrinhos temáticos, lanches artesanais e atendimento premium.</p></div>
         <div class="products-grid">${cards}</div>
-        <div class="avaliacoes-section"><h2 style="font-family:var(--font-heading);font-size:32px;margin-bottom:8px;">Clientes que já viveram essa experiência</h2><div class="carousel-wrapper"><div class="carousel-track">${reviews}${reviews}</div></div></div>`;
+        <div class="avaliacoes-section"><h2 style="font-family:var(--font-heading);font-size:32px;margin-bottom:8px;">Clientes que já viveram essa experiência</h2><div class="carousel-wrapper"><div class="carousel-track">${gerarCardsAvaliacoes()}${reviews}${reviews}</div></div></div>`;
     }
 
     function abrirDepoimentoPorIndice(idx) {
