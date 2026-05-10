@@ -613,7 +613,7 @@
 
             <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
                 <div style="text-align:left;">
-                    <div style="font-size:11px; color:var(--text-secondary); text-transform: uppercase;">Pagar Agora (Reserva)</div>
+                    <div style="font-size:11px; color:var(--text-secondary); text-transform: uppercase;">Pagar Agora (50%)</div>
                     <div id="checkout-sinal-valor" style="font-size:24px; font-weight:700; color:var(--success);">R$ 0,00</div>
                 </div>
                 <div style="text-align:right;" id="checkout-saldo-box">
@@ -625,7 +625,7 @@
 
             <button class="modal-btn pix-copy" onclick="copiarChavePix()">📋 Copiar chave PIX</button>
             <button class="modal-btn outline" onclick="solicitarPagamentoCartao(this)">💳 Pagar com Cartão</button>
-            <button class="modal-btn success" onclick="confirmarPagamentoPix(this)">✅ Enviar Comprovante</button>
+            <button class="modal-btn success" onclick="confirmarPagamentoPix(this)">✅ Enviar Comprovante PIX</button>
         </div>
     </div>
 
@@ -1166,7 +1166,7 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         }).join("");
         const sinal = calcularSinal(total);
         pedidoAtual = montarPedidoBase(total, sinal);
-        v.innerHTML = `<div style="max-width:800px;margin:0 auto;"><h1 class="home-titulo">Carrinho</h1>${itens}<div class="cart-total">Total: ${dinheiro(total)}</div><div class="checkout-extra-box"><h3 style="font-family:var(--font-heading);margin-bottom:12px;">Resumo da reserva</h3><p style="color:var(--text-secondary);font-size:14px;line-height:1.6;">Agora: <strong style="color:var(--success);">${dinheiro(sinal)}</strong><br>Saldo restante: <strong style="color:var(--warning);">${dinheiro(total - sinal)}</strong></p><button class="modal-btn primary" style="margin-top:20px;" onclick="abrirModalCheckout()">Finalizar Pedido</button></div></div>`;
+        v.innerHTML = `<div style="max-width:800px;margin:0 auto;"><h1 class="home-titulo">Carrinho</h1>${itens}<div class="cart-total">Total: ${dinheiro(total)}</div><div class="checkout-extra-box"><h3 style="font-family:var(--font-heading);margin-bottom:12px;">Resumo da reserva</h3><p style="color:var(--text-secondary);font-size:14px;line-height:1.6;">Agora (50%): <strong style="color:var(--success);">${dinheiro(sinal)}</strong><br>Saldo restante (50%): <strong style="color:var(--warning);">${dinheiro(total - sinal)}</strong></p><button class="modal-btn primary" style="margin-top:20px;" onclick="abrirModalCheckout()">Finalizar Pedido</button></div></div>`;
     }
 
     function alterarQtdCart(i, delta) {
@@ -1178,7 +1178,10 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         safeWrite(STORAGE.cart, meuCarrinho); atualizarContadorCarrinho(); abrirPagina("carrinho");
     }
     function removerItemCart(i) { meuCarrinho.splice(i, 1); safeWrite(STORAGE.cart, meuCarrinho); atualizarContadorCarrinho(); abrirPagina("carrinho"); }
-    function calcularSinal(total) { return Math.max(30, Math.round((total * 0.3) * 100) / 100); }
+    function calcularSinal(total) {
+        // Regra da reserva: 50% do valor total do carrinho agora e 50% restante até 5 dias antes do evento.
+        return Math.round((Number(total || 0) / 2) * 100) / 100;
+    }
     function gerarPedidoNumero() { return `PB-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.random().toString(36).slice(2,6).toUpperCase()}`; }
 
     function montarPedidoBase(total, sinal) {
