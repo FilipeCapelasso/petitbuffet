@@ -976,6 +976,249 @@
             padding: 2px 5px; border-radius: var(--r-full); border: 2px solid #0D0B0F;
         }
 
+
+
+        /* ================================================================
+           ASSISTENTE VIRTUAL — SOFIA / ORÇAMENTO INTELIGENTE
+           Chat premium por regras, sem dependência de API externa.
+           ================================================================ */
+        .ai-assistant-launcher {
+            position: fixed;
+            right: 24px;
+            bottom: calc(24px + var(--sab));
+            z-index: 180;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 18px;
+            border-radius: var(--r-full);
+            border: 1px solid var(--glass-rim);
+            background: linear-gradient(135deg, rgba(201,168,76,0.20), rgba(20,17,24,0.96));
+            color: var(--text-bright);
+            box-shadow: 0 14px 42px rgba(0,0,0,0.55), 0 0 30px rgba(201,168,76,0.18);
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .ai-assistant-launcher:hover {
+            transform: translateY(-3px);
+            border-color: var(--gold-primary);
+            box-shadow: 0 18px 50px rgba(0,0,0,0.62), 0 0 38px rgba(201,168,76,0.28);
+        }
+        .ai-launcher-orb {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+            color: var(--bg-void);
+            box-shadow: 0 0 18px rgba(201,168,76,0.45);
+            flex-shrink: 0;
+        }
+        .ai-launcher-text { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.1; }
+        .ai-launcher-text strong { font-size: 12.5px; color: var(--text-bright); }
+        .ai-launcher-text span { font-size: 10px; color: var(--gold-primary); margin-top: 3px; font-weight: 600; }
+        .ai-launcher-pulse {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 0 0 rgba(78,205,160,0.65);
+            animation: aiPulse 2s infinite;
+        }
+        @keyframes aiPulse {
+            0% { box-shadow: 0 0 0 0 rgba(78,205,160,0.65); }
+            70% { box-shadow: 0 0 0 10px rgba(78,205,160,0); }
+            100% { box-shadow: 0 0 0 0 rgba(78,205,160,0); }
+        }
+
+        .ai-assistant-panel {
+            position: fixed;
+            right: 24px;
+            bottom: calc(92px + var(--sab));
+            width: min(390px, calc(100vw - 32px));
+            height: min(640px, calc(100dvh - 125px));
+            z-index: 181;
+            background: linear-gradient(160deg, rgba(20,17,24,0.98), rgba(10,8,12,0.98));
+            border: 1px solid var(--glass-rim);
+            border-radius: 28px;
+            box-shadow: 0 32px 85px rgba(0,0,0,0.78), 0 0 0 1px rgba(201,168,76,0.08);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(26px);
+            -webkit-backdrop-filter: blur(26px);
+        }
+        .ai-assistant-panel.ativo {
+            display: flex;
+            animation: aiPanelIn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes aiPanelIn {
+            from { opacity: 0; transform: translateY(18px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .ai-panel-header {
+            padding: 18px 18px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--glass-rim-soft);
+            background: rgba(201,168,76,0.06);
+        }
+        .ai-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+            color: var(--bg-void);
+            font-weight: 900;
+            box-shadow: 0 0 20px rgba(201,168,76,0.32);
+            flex-shrink: 0;
+        }
+        .ai-panel-title { flex: 1; min-width: 0; }
+        .ai-panel-title strong { display: block; font-size: 14px; color: var(--text-bright); }
+        .ai-panel-title span { display: block; font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+        .ai-close {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid var(--glass-rim-soft);
+            background: rgba(255,255,255,0.04);
+            color: var(--text-mid);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .ai-close:hover { color: var(--danger); border-color: rgba(224,92,106,0.4); background: rgba(224,92,106,0.10); }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .ai-msg {
+            max-width: 88%;
+            padding: 12px 14px;
+            border-radius: 18px;
+            font-size: 13px;
+            line-height: 1.55;
+            white-space: pre-line;
+            animation: aiMsgIn 0.25s ease;
+        }
+        @keyframes aiMsgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .ai-msg.bot {
+            align-self: flex-start;
+            background: rgba(255,255,255,0.045);
+            border: 1px solid var(--glass-rim-soft);
+            color: var(--text-bright);
+            border-bottom-left-radius: 6px;
+        }
+        .ai-msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+            color: var(--bg-void);
+            border-bottom-right-radius: 6px;
+            font-weight: 600;
+        }
+        .ai-quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 18px 14px;
+            border-bottom: 1px solid var(--glass-rim-soft);
+        }
+        .ai-chip {
+            border: 1px solid var(--glass-rim);
+            background: rgba(201,168,76,0.06);
+            color: var(--gold-primary);
+            padding: 8px 10px;
+            border-radius: var(--r-full);
+            font-family: var(--font-body);
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .ai-chip:hover { background: var(--gold-pale); border-color: var(--gold-primary); transform: translateY(-1px); }
+        .ai-form {
+            padding: 14px;
+            display: flex;
+            gap: 8px;
+            background: rgba(0,0,0,0.28);
+            border-top: 1px solid var(--glass-rim-soft);
+        }
+        .ai-input {
+            flex: 1;
+            min-width: 0;
+            border: 1px solid var(--glass-rim-soft);
+            background: rgba(255,255,255,0.04);
+            color: var(--text-bright);
+            border-radius: var(--r-full);
+            padding: 12px 14px;
+            outline: none;
+            font-family: var(--font-body);
+            font-size: 13px;
+        }
+        .ai-input:focus { border-color: var(--gold-primary); background: rgba(201,168,76,0.055); }
+        .ai-send {
+            border: none;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+            color: var(--bg-void);
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 0.18s;
+        }
+        .ai-send:active { transform: scale(0.94); }
+        .ai-whatsapp-btn {
+            display: block;
+            margin-top: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--bg-void);
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .ai-assistant-launcher {
+                right: 14px;
+                bottom: calc(78px + var(--sab));
+                padding: 12px;
+            }
+            .ai-launcher-text { display: none; }
+            .ai-assistant-panel {
+                right: 10px;
+                left: 10px;
+                bottom: calc(78px + var(--sab));
+                width: auto;
+                height: min(620px, calc(100dvh - 100px));
+                border-radius: 24px;
+            }
+            body.ai-aberto #mobile-bottom-nav { display: none; }
+        }
+
         /* ================================================================
            RESPONSIVE
            ================================================================ */
@@ -1190,6 +1433,37 @@
         </div>
     </div>
 
+
+
+    <!-- ASSISTENTE VIRTUAL PETIT BUFFET -->
+    <button id="ai-assistant-launcher" class="ai-assistant-launcher" type="button" onclick="toggleAssistenteIA(true)" aria-label="Abrir assistente virtual Sofia">
+        <span class="ai-launcher-orb">✦</span>
+        <span class="ai-launcher-text"><strong>Assistente Sofia</strong><span>orçamento rápido</span></span>
+        <span class="ai-launcher-pulse"></span>
+    </button>
+
+    <section id="ai-assistant-panel" class="ai-assistant-panel" aria-live="polite">
+        <div class="ai-panel-header">
+            <div class="ai-avatar">S</div>
+            <div class="ai-panel-title">
+                <strong>Sofia • Assistente Petit Buffet</strong>
+                <span>Explica, sugere carrinhos e envia orçamento ao WhatsApp</span>
+            </div>
+            <button class="ai-close" type="button" onclick="toggleAssistenteIA(false)" aria-label="Fechar assistente">×</button>
+        </div>
+        <div id="ai-messages" class="ai-messages"></div>
+        <div class="ai-quick-actions">
+            <button class="ai-chip" type="button" onclick="atalhoAssistenteIA('Como funciona o aluguel gratuito?')">Aluguel grátis</button>
+            <button class="ai-chip" type="button" onclick="atalhoAssistenteIA('Quais são os pedidos mínimos?')">Pedidos mínimos</button>
+            <button class="ai-chip" type="button" onclick="atalhoAssistenteIA('Quero montar um orçamento')">Montar orçamento</button>
+            <button class="ai-chip" type="button" onclick="atalhoAssistenteIA('Enviar para WhatsApp')">WhatsApp</button>
+        </div>
+        <form class="ai-form" onsubmit="enviarMensagemAssistenteIA(event)">
+            <input id="ai-input" class="ai-input" type="text" autocomplete="off" placeholder="Pergunte sobre valores, mínimos ou orçamento...">
+            <button class="ai-send" type="submit">➤</button>
+        </form>
+    </section>
+
     <script src="/socket.io/socket.io.js" onerror="console.warn('Socket.io não encontrado, rodando em modo API Sheets direto.')"></script>
     <script src="imagens-base64.js"></script>
 
@@ -1330,6 +1604,7 @@
         iniciarSocketSeguro();
         verificarUsuarioLogado();
         abrirPagina("home");
+        iniciarAssistenteIA();
     });
 
     function safeRead(key, fallback) {
@@ -1964,6 +2239,193 @@
         safeWrite(STORAGE.reviews, avaliacoesGlobais);
         fecharModal("modal-compra-detalhe"); feedback("Avaliação publicada na vitrine. Obrigado!"); abrirPagina("home");
     }
+
+
+    /* ================================================================
+       ASSISTENTE VIRTUAL SOFIA — CHAT INTELIGENTE LOCAL
+       ================================================================ */
+    const IA_SITE_URL = "https://petitbuffet.vercel.app/";
+    const iaEstado = { iniciado: false, fluxo: null, etapa: 0, dados: {} };
+
+    function iniciarAssistenteIA() {
+        if (iaEstado.iniciado) return;
+        iaEstado.iniciado = true;
+        setTimeout(() => {
+            iaAddMsg("bot", "Olá! Sou a Sofia, assistente virtual do Petit Buffet. ✨\n\nPosso explicar como funciona o aluguel gratuito, mostrar pedidos mínimos ou montar um pré-orçamento para enviar ao WhatsApp.");
+        }, 350);
+    }
+
+    function toggleAssistenteIA(abrir) {
+        const painel = document.getElementById("ai-assistant-panel");
+        const input = document.getElementById("ai-input");
+        if (!painel) return;
+        const deveAbrir = typeof abrir === "boolean" ? abrir : !painel.classList.contains("ativo");
+        painel.classList.toggle("ativo", deveAbrir);
+        document.body.classList.toggle("ai-aberto", deveAbrir);
+        if (deveAbrir) {
+            iniciarAssistenteIA();
+            setTimeout(() => input && input.focus(), 120);
+        }
+    }
+
+    function iaAddMsg(tipo, texto, htmlExtra = "") {
+        const area = document.getElementById("ai-messages");
+        if (!area) return;
+        const div = document.createElement("div");
+        div.className = `ai-msg ${tipo}`;
+        div.innerHTML = `${escapeHTML(texto)}${htmlExtra || ""}`;
+        area.appendChild(div);
+        area.scrollTop = area.scrollHeight;
+    }
+
+    function atalhoAssistenteIA(texto) {
+        toggleAssistenteIA(true);
+        processarAssistenteIA(texto);
+    }
+
+    function enviarMensagemAssistenteIA(event) {
+        event.preventDefault();
+        const input = document.getElementById("ai-input");
+        const texto = input ? input.value.trim() : "";
+        if (!texto) return;
+        input.value = "";
+        processarAssistenteIA(texto);
+    }
+
+    function processarAssistenteIA(texto) {
+        iaAddMsg("user", texto);
+        setTimeout(() => responderAssistenteIA(texto), 220);
+    }
+
+    function normalizarIA(texto) {
+        return String(texto || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function responderAssistenteIA(texto) {
+        const t = normalizarIA(texto);
+        if (iaEstado.fluxo === "orcamento") return fluxoOrcamentoIA(texto);
+
+        if (t.includes("orcamento") || t.includes("orcamento") || t.includes("evento") || t.includes("convidado") || t.includes("montar")) {
+            iaEstado.fluxo = "orcamento";
+            iaEstado.etapa = 1;
+            iaEstado.dados = {};
+            return iaAddMsg("bot", "Perfeito. Vou montar uma sugestão rápida para seu evento.\n\nPrimeiro: qual a data do evento? Pode responder como 25/06, sábado, ou ainda não definida.");
+        }
+
+        if (t.includes("gratis") || t.includes("gratuito") || t.includes("aluguel") || t.includes("carrinho e gratis")) {
+            return iaAddMsg("bot", "O aluguel dos carrinhos gourmet é 100% gratuito. Você investe apenas nos alimentos contratados para os convidados.\n\nNós levamos, montamos e deixamos a estrutura pronta para o início da festa.");
+        }
+
+        if (t.includes("minimo") || t.includes("quantidade") || t.includes("unidade")) {
+            return iaAddMsg("bot", montarTextoMinimosIA());
+        }
+
+        if (t.includes("pizza") || t.includes("hamburguer") || t.includes("hambúrguer") || t.includes("serve") || t.includes("equipe")) {
+            return iaAddMsg("bot", "Nos carrinhos de Pizza e Hambúrguer, nossa equipe prepara e distribui no local. Assim tudo sai organizado, quentinho e com padrão de qualidade.\n\nNos demais carrinhos, entregamos a estrutura montada e os insumos; a distribuição pode ficar com sua equipe de apoio ou buffet.");
+        }
+
+        if (t.includes("whatsapp") || t.includes("zap") || t.includes("falar") || t.includes("contato") || t.includes("enviar")) {
+            return iaEnviarWhatsAppResumo();
+        }
+
+        if (t.includes("valor") || t.includes("preco") || t.includes("preço") || t.includes("custa")) {
+            return iaAddMsg("bot", montarTextoValoresIA());
+        }
+
+        iaAddMsg("bot", "Posso te ajudar com: aluguel gratuito, pedidos mínimos, valores, diferença entre os carrinhos ou montar um pré-orçamento.\n\nPara começar agora, digite: quero montar um orçamento.");
+    }
+
+    function montarTextoMinimosIA() {
+        const linhas = Object.entries(PRODUTOS).map(([id, p]) => {
+            if (id === "brigadeiro") return "• Brigadeiro no Tacho: opções pequeno, médio e grande";
+            return `• ${p.nome}: mínimo de ${p.minimoTex || p.minNum + " un"}`;
+        });
+        return "Cada categoria possui uma quantidade mínima para garantir a montagem e a qualidade artesanal.\n\n" + linhas.join("\n");
+    }
+
+    function montarTextoValoresIA() {
+        const linhas = Object.entries(PRODUTOS).map(([id, p]) => {
+            if (id === "brigadeiro") return "• Brigadeiro no Tacho: a partir de R$ 185,00";
+            return `• ${p.nome}: ${dinheiro(precoProduto(id))} por unidade`;
+        });
+        return "Nosso orçamento é por unidade, com valor transparente.\n\n" + linhas.join("\n") + "\n\nCatálogo completo: " + IA_SITE_URL;
+    }
+
+    function fluxoOrcamentoIA(texto) {
+        const resposta = String(texto || "").trim();
+        if (iaEstado.etapa === 1) {
+            iaEstado.dados.data = resposta;
+            iaEstado.etapa = 2;
+            return iaAddMsg("bot", "Boa. Agora me diga a quantidade aproximada de convidados.");
+        }
+        if (iaEstado.etapa === 2) {
+            const qtd = parseInt(onlyDigits(resposta), 10);
+            iaEstado.dados.convidados = Number.isFinite(qtd) && qtd > 0 ? qtd : resposta;
+            iaEstado.etapa = 3;
+            return iaAddMsg("bot", "Quais carrinhos você tem interesse? Exemplo: hambúrguer, pizza, cachorro-quente, picolé, brigadeiro...");
+        }
+        if (iaEstado.etapa === 3) {
+            iaEstado.dados.carrinhos = resposta;
+            iaEstado.etapa = 4;
+            return iaAddMsg("bot", "Qual bairro ou cidade do evento? Pode responder só o bairro se ainda não tiver o endereço completo.");
+        }
+        if (iaEstado.etapa === 4) {
+            iaEstado.dados.local = resposta;
+            iaEstado.etapa = 5;
+            return iaAddMsg("bot", montarResumoOrcamentoIA(), montarBotaoWhatsAppIA());
+        }
+        iaEstado.fluxo = null;
+        iaEstado.etapa = 0;
+        return iaAddMsg("bot", "Pré-orçamento finalizado. Para fazer outro, digite: quero montar um orçamento.");
+    }
+
+    function sugerirQuantidadesIA() {
+        const convidadosRaw = iaEstado.dados.convidados;
+        const convidados = parseInt(onlyDigits(convidadosRaw), 10);
+        const interesse = normalizarIA(iaEstado.dados.carrinhos || "");
+        const linhas = [];
+        Object.entries(PRODUTOS).forEach(([id, p]) => {
+            const nomeNorm = normalizarIA(p.nome);
+            const citado = interesse.includes(id) || nomeNorm.split(" ").some(parte => parte.length > 4 && interesse.includes(parte));
+            if (!citado) return;
+            if (id === "brigadeiro") return linhas.push("• Brigadeiro no Tacho: escolher tamanho pequeno, médio ou grande");
+            const base = Number.isFinite(convidados) && convidados > 0 ? Math.max(p.minNum || 1, convidados) : (p.minNum || 1);
+            linhas.push(`• ${p.nome}: sugestão inicial de ${base} unidade(s), mínimo ${p.minimoTex}`);
+        });
+        if (!linhas.length) {
+            linhas.push("• Hambúrguer ou Cachorro-Quente: sugestão inicial próxima ao número de convidados, respeitando o mínimo de cada categoria");
+            linhas.push("• Pizza: confirmar quantidade desejada conforme perfil do evento");
+        }
+        return linhas.join("\n");
+    }
+
+    function montarResumoOrcamentoIA() {
+        return `Pré-orçamento montado ✨\n\nData: ${iaEstado.dados.data || "não informada"}\nConvidados: ${iaEstado.dados.convidados || "não informado"}\nCarrinhos de interesse: ${iaEstado.dados.carrinhos || "não informado"}\nLocal: ${iaEstado.dados.local || "não informado"}\n\nSugestão inicial:\n${sugerirQuantidadesIA()}\n\nO aluguel dos carrinhos é gratuito. Você paga apenas pelos alimentos contratados.`;
+    }
+
+    function montarMensagemWhatsAppIA() {
+        const nome = localStorage.getItem(STORAGE.name) || "Cliente";
+        const telefone = localStorage.getItem(STORAGE.phone) || "";
+        let msg = `Olá! Vim pelo site Petit Buffet e gostaria de atendimento.\n\nNome: ${nome}`;
+        if (telefone) msg += `\nWhatsApp informado: ${telefone}`;
+        if (iaEstado.dados && Object.keys(iaEstado.dados).length) {
+            msg += `\n\nPré-orçamento:\nData: ${iaEstado.dados.data || "não informada"}\nConvidados: ${iaEstado.dados.convidados || "não informado"}\nCarrinhos: ${iaEstado.dados.carrinhos || "não informado"}\nLocal: ${iaEstado.dados.local || "não informado"}\n\nSugestão inicial:\n${sugerirQuantidadesIA()}`;
+        } else if (meuCarrinho && meuCarrinho.length) {
+            msg += `\n\nItens no carrinho:\n${meuCarrinho.map(i => `• ${i.qtd}x ${i.nome} - ${dinheiro(i.subtotal)}`).join("\n")}`;
+        }
+        msg += `\n\nCatálogo: ${IA_SITE_URL}`;
+        return msg;
+    }
+
+    function montarBotaoWhatsAppIA() {
+        const url = `https://wa.me/55${CONFIG.whatsapp}?text=${encodeURIComponent(montarMensagemWhatsAppIA())}`;
+        return `<a class="ai-whatsapp-btn" href="${url}" target="_blank" rel="noopener">Enviar conversa no WhatsApp</a>`;
+    }
+
+    function iaEnviarWhatsAppResumo() {
+        iaAddMsg("bot", "Pronto. Preparei uma mensagem organizada para continuar no WhatsApp.", montarBotaoWhatsAppIA());
+    }
+
     </script>
 </body>
 </html>
