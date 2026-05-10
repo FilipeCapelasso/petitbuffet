@@ -131,6 +131,62 @@
             opacity: 0.8;
         }
 
+
+
+        /* ================================================================
+           NUMBERS — LINING / TABULAR FIX
+           Mantém o visual original, mas força números estáveis, alinhados
+           e sem variação de altura/posição causada pela fonte display.
+           ================================================================ */
+        body,
+        input,
+        textarea,
+        button,
+        .hero-stat-num,
+        .product-price,
+        .product-min,
+        .prod-badge,
+        .cart-price,
+        .cart-total,
+        .order-badge,
+        .status-badge,
+        .badge,
+        #qtd-carrinho,
+        #badge-bottom-cart,
+        #checkout-pedido-numero,
+        #checkout-sinal-valor,
+        #checkout-saldo-valor,
+        #dep-compras-badge,
+        .checkout-field,
+        .modal-input,
+        .chat-opcao strong,
+        .cart-info,
+        .compra-card,
+        .msg,
+        [style*="R$"],
+        [id*="valor"],
+        [id*="numero"],
+        [id*="qtd"],
+        [id*="total"],
+        [id*="saldo"],
+        [id*="sinal"] {
+            font-variant-numeric: lining-nums tabular-nums;
+            font-feature-settings: "lnum" 1, "tnum" 1;
+            font-synthesis: none;
+        }
+
+        .hero-stat-num,
+        .product-price,
+        .cart-price,
+        .cart-total,
+        #checkout-sinal-valor,
+        #checkout-saldo-valor,
+        .order-badge {
+            font-family: var(--font-body) !important;
+            letter-spacing: 0.01em;
+            line-height: 1.05;
+        }
+
         /* ================================================================
            SCROLLBAR
            ================================================================ */
