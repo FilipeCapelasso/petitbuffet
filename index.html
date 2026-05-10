@@ -244,6 +244,7 @@
         }
 
         .prod-foto-wrap {
+            position: relative;
             width: 100%; border-radius: var(--radius-lg); overflow: hidden;
             border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);
             background: var(--bg-surface); aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;
@@ -434,7 +435,13 @@
             .home-sub { font-size: 15px; }
 
             .prod-titulo { font-size: 28px; }
-            #chat-container { height: 60vh; }
+
+            #chat-container { height: auto; min-height: 320px; max-height: none; }
+            #chat-area { max-height: 280px; }
+            #form-chat { position: sticky; bottom: 0; }
+            .prod-foto-wrap::after { opacity: 1; transform: translateY(0); }
+            .modal-imagem-box { width: 96vw; max-height: 88vh; }
+            #imagem-produto-expandida { max-height: 88vh; }
             
             .checkout-address-grid { grid-template-columns: 1fr; }
             
@@ -443,6 +450,64 @@
         }
 
         .hide { display: none !important; }
+
+        /* ==========================================================================
+           12. IMAGEM EXPANDIDA DO PRODUTO
+           ========================================================================== */
+        .modal-imagem-box {
+            width: min(94vw, 980px);
+            max-height: 92vh;
+            padding: 0;
+            background: rgba(10,10,12,0.96);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            position: relative;
+            box-shadow: 0 28px 70px rgba(0,0,0,0.7);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #imagem-produto-expandida {
+            width: 100%;
+            max-height: 92vh;
+            object-fit: contain;
+            display: block;
+            background: #050505;
+        }
+
+        .modal-fechar-imagem {
+            top: 12px;
+            right: 12px;
+            z-index: 2;
+            background: rgba(0,0,0,0.55);
+            border: 1px solid rgba(255,255,255,0.16);
+        }
+
+        .prod-foto-wrap::after {
+            content: 'Toque para ampliar';
+            position: absolute;
+            right: 14px;
+            bottom: 14px;
+            background: rgba(0,0,0,0.58);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 7px 10px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(255,255,255,0.12);
+            opacity: 0;
+            transform: translateY(6px);
+            transition: all 0.2s ease;
+            pointer-events: none;
+        }
+
+        .prod-foto-wrap:hover::after {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
     </style>
 </head>
 <body>
@@ -595,6 +660,14 @@
         </div>
     </div>
 
+
+    <div id="modal-imagem-produto" class="modal-overlay" onclick="if(event.target===this) fecharImagemProdutoExpandida()">
+        <div class="modal-imagem-box">
+            <button class="modal-fechar modal-fechar-imagem" onclick="fecharImagemProdutoExpandida()">×</button>
+            <img id="imagem-produto-expandida" src="" alt="Imagem do produto ampliada">
+        </div>
+    </div>
+
     <script src="/socket.io/socket.io.js" onerror="console.warn('Socket.io não encontrado, rodando em modo API Sheets direto.')"></script>
     
     <script src="imagens-base64.js"></script>
@@ -665,6 +738,13 @@
     let detalheStatusAssinatura = "";
     const DETALHE_STATUS_INTERVALO_MS = 1200;
 
+
+    window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            fecharImagemProdutoExpandida();
+        }
+    });
+
     window.addEventListener("load", () => {
         document.getElementById("btn-wpp").href = `https://wa.me/55${CONFIG.whatsapp}`;
         iniciarSocketSeguro();
@@ -684,6 +764,28 @@
     function fallbackProduto(p) { return `<div class="product-icon" aria-label="Produto">${p.icone || "🍽️"}</div>`; }
     function imagemProduto(p, classe = "product-img-card") { return p.imgKey && IMGS[p.imgKey] ? `<img src="${IMGS[p.imgKey]}" class="${classe}" alt="${escapeHTML(p.nome)}">` : fallbackProduto(p); }
     function feedback(msg, tipo = "info") { alert(msg); }
+
+    function abrirImagemProdutoExpandida(src, alt = "Imagem do produto") {
+        if (!src) return;
+        const modal = document.getElementById("modal-imagem-produto");
+        const img = document.getElementById("imagem-produto-expandida");
+        if (!modal || !img) return;
+        img.src = src;
+        img.alt = alt;
+        modal.classList.add("ativo");
+    }
+
+    function fecharImagemProdutoExpandida() {
+        const modal = document.getElementById("modal-imagem-produto");
+        const img = document.getElementById("imagem-produto-expandida");
+        if (modal) modal.classList.remove("ativo");
+        if (img) setTimeout(() => { img.src = ""; }, 180);
+    }
+
+    function deveFocarChatAutomaticamente() {
+        return window.matchMedia && window.matchMedia("(min-width: 769px)").matches;
+    }
+
 
     function iniciarSocketSeguro() {
         if (typeof window.io !== "function") {
@@ -806,12 +908,12 @@
         const preco = precoProduto(id);
         const saborHTML = id === "sanduiche" ? `<div class="msg-acoes">${SABORES_SANDUICHE.map(s => `<button class="chat-opcao" onclick="selecionarSaborSanduiche('${s.id}')"><strong>${escapeHTML(s.nome)}</strong><span>${escapeHTML(s.descricao)}</span></button>`).join("")}</div>` : "";
         v.innerHTML = `<div class="product-detail">
-            <div class="prod-foto-wrap">${p.imgKey && IMGS[p.imgKey] ? `<img src="${IMGS[p.imgKey]}" class="prod-foto" alt="${escapeHTML(p.nome)}">` : `<div class="product-icon" style="font-size:96px;">${p.icone}</div>`}</div>
+            <div class="prod-foto-wrap" onclick="${p.imgKey && IMGS[p.imgKey] ? `abrirImagemProdutoExpandida('${IMGS[p.imgKey]}', '${escapeHTML(p.nome).replace(/'/g, "\\'")}')` : ''}">${p.imgKey && IMGS[p.imgKey] ? `<img src="${IMGS[p.imgKey]}" class="prod-foto" alt="${escapeHTML(p.nome)}" loading="eager">` : `<div class="product-icon" style="font-size:96px;">${p.icone}</div>`}</div>
             <div class="prod-info-lateral"><h2 class="prod-titulo">${p.icone} ${escapeHTML(p.nome)}</h2><p class="prod-desc">${escapeHTML(p.desc)}</p><div class="prod-detalhes"><span class="prod-badge">${dinheiro(preco)}</span><span class="prod-badge">Mínimo: ${escapeHTML(p.minimoTex)}</span></div></div>
             <div id="chat-container"><div id="chat-area"><div class="msg recebida" style="opacity:1;transform:none;"><small>${CONFIG.atendimento}</small>Olá! Para reservar ${escapeHTML(p.nome)}, informe a quantidade desejada. ${id === 'sanduiche' ? 'Você também pode escolher um sabor abaixo.' : ''}${saborHTML}</div></div>
             <form id="form-chat" onsubmit="enviarMensagemChat(event, '${id}')"><input id="input-msg" placeholder="Digite a quantidade ou uma dúvida..." autocomplete="off"><button class="btn-enviar">Enviar</button></form></div>
         </div>`;
-        setTimeout(() => document.getElementById("input-msg")?.focus(), 100);
+        setTimeout(() => { if (deveFocarChatAutomaticamente()) document.getElementById("input-msg")?.focus(); }, 100);
     }
 
     function selecionarSaborSanduiche(idSabor) {
