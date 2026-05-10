@@ -608,6 +608,7 @@
                     <div class="checkout-field-wrap-full"><input id="checkout-rua" class="checkout-field" placeholder="Rua / Avenida"></div>
                     <div><input id="checkout-numero" class="checkout-field" placeholder="Número"></div>
                     <div><input id="checkout-bairro" class="checkout-field" placeholder="Bairro"></div>
+                    <div class="checkout-field-wrap-full"><input id="checkout-data-evento" class="checkout-field" placeholder="Data do evento (DD/MM)" maxlength="5" inputmode="numeric" autocomplete="off" oninput="mascararDataEvento(this)"></div>
                 </div>
             </div>
 
@@ -885,6 +886,17 @@
     function safeWrite(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
     function dinheiro(v) { return `R$ ${Number(v || 0).toFixed(2).replace('.', ',')}`; }
     function onlyDigits(v) { return String(v || "").replace(/\D/g, ""); }
+    function mascararDataEvento(campo) {
+        let valor = onlyDigits(campo.value).slice(0, 4);
+        if (valor.length >= 3) valor = `${valor.slice(0, 2)}/${valor.slice(2)}`;
+        campo.value = valor;
+    }
+    function dataEventoValida(valor) {
+        if (!/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])$/.test(valor)) return false;
+        const [dia, mes] = valor.split("/").map(Number);
+        const ultimoDiaMes = new Date(new Date().getFullYear(), mes, 0).getDate();
+        return dia <= ultimoDiaMes;
+    }
     function escapeHTML(v) { return String(v ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c])); }
     function produtoDisponivel(id) { return estoqueProdutos[id] !== false; }
     function precoProduto(id) { return Number(precosSocket[id] ?? PRODUTOS[id].valorNum); }
@@ -1205,14 +1217,16 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         const rua = document.getElementById("checkout-rua").value.trim();
         const numero = document.getElementById("checkout-numero").value.trim();
         const bairro = document.getElementById("checkout-bairro").value.trim();
+        const dataEvento = document.getElementById("checkout-data-evento").value.trim();
         const endereco = [rua, numero, bairro].filter(Boolean).join(", ");
         const nome = localStorage.getItem(STORAGE.name) || "";
         const telefone = onlyDigits(localStorage.getItem(STORAGE.phone));
         if (nome.length < 3) throw new Error("Nome inválido. Atualize seu perfil.");
         if (telefone.length < 10) throw new Error("Telefone inválido. Atualize seu perfil.");
         if (!rua || !numero || !bairro) throw new Error("Preencha rua, número e bairro do evento.");
+        if (!dataEventoValida(dataEvento)) throw new Error("Informe a data do evento no formato DD/MM.");
         if (!meuCarrinho.length) throw new Error("Carrinho vazio.");
-        return { action: "saveOrder", pedido: pedidoAtual.numero, order_id: pedidoAtual.numero, id: pedidoAtual.numero, nome, telefone, endereco, itens: pedidoAtual.itensStr, forma_pagamento: formaPagamento, total: pedidoAtual.total, status_principal: "pedido recebido", fase_preparo: "", pronto: "", entrega: "", finalizado: "", sinal: pedidoAtual.valorCobradoAgora, saldo: pedidoAtual.total - pedidoAtual.valorCobradoAgora, timestamp: new Date().toISOString() };
+        return { action: "saveOrder", pedido: pedidoAtual.numero, order_id: pedidoAtual.numero, id: pedidoAtual.numero, nome, telefone, endereco, data_evento: dataEvento, dataEvento, itens: pedidoAtual.itensStr, forma_pagamento: formaPagamento, total: pedidoAtual.total, status_principal: "pedido recebido", fase_preparo: "", pronto: "", entrega: "", finalizado: "", sinal: pedidoAtual.valorCobradoAgora, saldo: pedidoAtual.total - pedidoAtual.valorCobradoAgora, timestamp: new Date().toISOString() };
     }
 
     async function enviarParaPlanilhaGoogle(payload) {
@@ -1310,7 +1324,7 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
     function normalizarPedido(order) {
         const pedido = String(order.pedido || order.order_id || order.id || "").trim();
         const total = Number(String(order.total ?? 0).replace(/[^0-9.,-]/g, '').replace('.', '').replace(',', '.')) || Number(order.total) || 0;
-        return { ...order, pedido, order_id: pedido, id: pedido, total, status_principal: order.status_principal || order.status_atual || order.status || "pedido recebido", dataHora: order.dataHora || order.created_at || new Date().toLocaleString('pt-BR'), avaliado: !!order.avaliado };
+        return { ...order, pedido, order_id: pedido, id: pedido, total, data_evento: order.data_evento || order.dataEvento || order.data_evento_cliente || "", status_principal: order.status_principal || order.status_atual || order.status || "pedido recebido", dataHora: order.dataHora || order.created_at || new Date().toLocaleString('pt-BR'), avaliado: !!order.avaliado };
     }
 
     function unificarPedidos(novos, antigos) {
@@ -1441,6 +1455,9 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
             <br>
             <strong style="color:var(--text-primary);margin-top:12px;display:block;">Endereço:</strong>
             ${escapeHTML(c.endereco || 'Não informado')}
+            <br>
+            <strong style="color:var(--text-primary);margin-top:12px;display:block;">Data do evento:</strong>
+            ${escapeHTML(c.data_evento || c.dataEvento || 'Não informado')}
             <br>
             <strong style="color:var(--text-primary);margin-top:12px;display:block;">Pagamento:</strong>
             ${escapeHTML(c.forma_pagamento || 'Não informado')}
