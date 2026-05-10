@@ -186,13 +186,14 @@
         .btn-wpp:hover { background: var(--success); color: #FFF; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3); transform: translateY(-2px); }
 
         .btn-login-icon {
-            width: 44px; height: 44px; border-radius: var(--radius-full);
-            background: var(--bg-surface); border: 1px solid var(--glass-border);
-            color: var(--text-primary); font-size: 16px; font-weight: 700;
+            width: auto; height: 44px; min-width: 44px; padding: 0 4px;
+            border-radius: var(--radius-full);
+            background: transparent; border: none;
+            color: var(--text-primary); font-size: 18px; font-weight: 800;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
         }
-        .btn-login-icon:hover { background: var(--brand-primary); border-color: var(--brand-primary); color: #FFF; transform: scale(1.05); }
+        .btn-login-icon:hover { color: var(--brand-primary); transform: scale(1.08); opacity: 0.95; }
 
         /* ==========================================================================
            5. VITRINE (BENTO GRID & CARDS)
@@ -378,6 +379,8 @@
         .modal-btn:active { transform: scale(0.98); }
         .modal-btn.primary { background: var(--brand-primary); color: #FFF; }
         .modal-btn.success { background: var(--success); color: #FFF; }
+        .modal-btn.pix-copy { background: rgba(255, 122, 0, 0.10); color: var(--brand-primary); border: 1px solid rgba(255, 122, 0, 0.35); }
+        .modal-btn.pix-copy:hover { background: rgba(255, 122, 0, 0.16); border-color: var(--brand-primary); }
         .modal-btn.outline { background: transparent; color: var(--text-primary); border: 1px solid var(--glass-border); }
 
         .order-badge { display: inline-block; background: rgba(255,255,255,0.1); padding: 6px 16px; border-radius: var(--radius-full); font-size: 14px; font-weight: 700; margin-bottom: 16px; letter-spacing: 1px; }
@@ -557,7 +560,6 @@
                 </div>
                 <div class="header-actions">
                     <a id="btn-wpp" class="btn-wpp" href="#" target="_blank">💬 <span class="hide-mobile">Fale Conosco</span></a>
-                    <button id="btn-login-user" class="btn-login-icon" onclick="abrirModalLogin()" title="Perfil">👤</button>
                 </div>
             </header>
             
@@ -611,7 +613,7 @@
 
             <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
                 <div style="text-align:left;">
-                    <div style="font-size:11px; color:var(--text-secondary); text-transform: uppercase;">Pagar Agora (Reserva)</div>
+                    <div style="font-size:11px; color:var(--text-secondary); text-transform: uppercase;">Pagar Agora (50%)</div>
                     <div id="checkout-sinal-valor" style="font-size:24px; font-weight:700; color:var(--success);">R$ 0,00</div>
                 </div>
                 <div style="text-align:right;" id="checkout-saldo-box">
@@ -621,6 +623,7 @@
                 </div>
             </div>
 
+            <button class="modal-btn pix-copy" onclick="copiarChavePix()">📋 Copiar chave PIX</button>
             <button class="modal-btn outline" onclick="solicitarPagamentoCartao(this)">💳 Pagar com Cartão</button>
             <button class="modal-btn success" onclick="confirmarPagamentoPix(this)">✅ Enviar Comprovante PIX</button>
         </div>
@@ -934,9 +937,12 @@
         const user = localStorage.getItem(STORAGE.name);
         const btnUser = document.getElementById("btn-login-user");
         if (user) {
-            btnUser.innerHTML = escapeHTML(user.charAt(0).toUpperCase());
-            btnUser.style.background = "var(--brand-primary)";
-            btnUser.style.borderColor = "var(--brand-primary)";
+            if (btnUser) {
+                btnUser.innerHTML = escapeHTML(user.charAt(0).toUpperCase());
+                btnUser.title = `Perfil: ${user}`;
+                btnUser.style.background = "transparent";
+                btnUser.style.border = "none";
+            }
             document.getElementById("mi-compras").style.display = "flex";
             document.getElementById("bn-compras").style.display = "flex";
         }
@@ -1160,7 +1166,7 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         }).join("");
         const sinal = calcularSinal(total);
         pedidoAtual = montarPedidoBase(total, sinal);
-        v.innerHTML = `<div style="max-width:800px;margin:0 auto;"><h1 class="home-titulo">Carrinho</h1>${itens}<div class="cart-total">Total: ${dinheiro(total)}</div><div class="checkout-extra-box"><h3 style="font-family:var(--font-heading);margin-bottom:12px;">Resumo da reserva</h3><p style="color:var(--text-secondary);font-size:14px;line-height:1.6;">Agora: <strong style="color:var(--success);">${dinheiro(sinal)}</strong><br>Saldo restante: <strong style="color:var(--warning);">${dinheiro(total - sinal)}</strong></p><button class="modal-btn primary" style="margin-top:20px;" onclick="abrirModalCheckout()">Finalizar Pedido</button></div></div>`;
+        v.innerHTML = `<div style="max-width:800px;margin:0 auto;"><h1 class="home-titulo">Carrinho</h1>${itens}<div class="cart-total">Total: ${dinheiro(total)}</div><div class="checkout-extra-box"><h3 style="font-family:var(--font-heading);margin-bottom:12px;">Resumo da reserva</h3><p style="color:var(--text-secondary);font-size:14px;line-height:1.6;">Agora (50%): <strong style="color:var(--success);">${dinheiro(sinal)}</strong><br>Saldo restante (50%): <strong style="color:var(--warning);">${dinheiro(total - sinal)}</strong></p><button class="modal-btn primary" style="margin-top:20px;" onclick="abrirModalCheckout()">Finalizar Pedido</button></div></div>`;
     }
 
     function alterarQtdCart(i, delta) {
@@ -1172,7 +1178,10 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         safeWrite(STORAGE.cart, meuCarrinho); atualizarContadorCarrinho(); abrirPagina("carrinho");
     }
     function removerItemCart(i) { meuCarrinho.splice(i, 1); safeWrite(STORAGE.cart, meuCarrinho); atualizarContadorCarrinho(); abrirPagina("carrinho"); }
-    function calcularSinal(total) { return Math.max(30, Math.round((total * 0.3) * 100) / 100); }
+    function calcularSinal(total) {
+        // Regra da reserva: 50% do valor total do carrinho agora e 50% restante até 5 dias antes do evento.
+        return Math.round((Number(total || 0) / 2) * 100) / 100;
+    }
     function gerarPedidoNumero() { return `PB-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.random().toString(36).slice(2,6).toUpperCase()}`; }
 
     function montarPedidoBase(total, sinal) {
@@ -1235,6 +1244,31 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         } finally {
             btn.disabled = false; btn.innerHTML = textoOriginal;
         }
+    }
+
+    function copiarChavePix() {
+        const chavePix = "6892626612";
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(chavePix).catch(() => copiarChavePixFallback(chavePix));
+            return;
+        }
+
+        copiarChavePixFallback(chavePix);
+    }
+
+    function copiarChavePixFallback(valor) {
+        const campoTemporario = document.createElement("textarea");
+        campoTemporario.value = valor;
+        campoTemporario.setAttribute("readonly", "");
+        campoTemporario.style.position = "fixed";
+        campoTemporario.style.top = "-9999px";
+        campoTemporario.style.opacity = "0";
+        document.body.appendChild(campoTemporario);
+        campoTemporario.focus();
+        campoTemporario.select();
+        try { document.execCommand("copy"); } catch (_) {}
+        document.body.removeChild(campoTemporario);
     }
 
     function solicitarPagamentoCartao(btn) { finalizarPedido("Cartão", btn, "💳 Pagar com Cartão"); }
@@ -1527,4 +1561,3 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
     </script>
 </body>
 </html>
-
