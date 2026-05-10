@@ -1277,7 +1277,7 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
     function abrirWhatsAppPagamento(payload) {
         const msg = payload.forma_pagamento === "PIX"
             ? `Olá! Meu pedido é o ${payload.pedido}.\nItens: ${payload.itens}\nVou enviar o comprovante PIX da reserva de ${dinheiro(payload.sinal)}.`
-            : `Olá! Meu pedido é o ${payload.pedido}.\nItens: ${payload.itens}\nTotal: ${dinheiro(payload.total)}\nComo funciona para pagar a reserva de ${dinheiro(payload.sinal)} no cartão?`;
+            : `Olá! Meu pedido é o ${payload.pedido}.\nItens: ${payload.itens}\nTotal: ${dinheiro(payload.total)}\nComo funciona para pagar ${dinheiro(payload.sinal)} no cartão?`;
         window.open(`https://wa.me/55${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`, "_blank");
     }
 
