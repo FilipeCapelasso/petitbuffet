@@ -186,14 +186,13 @@
         .btn-wpp:hover { background: var(--success); color: #FFF; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3); transform: translateY(-2px); }
 
         .btn-login-icon {
-            width: auto; height: 44px; min-width: 44px; padding: 0 4px;
-            border-radius: var(--radius-full);
-            background: transparent; border: none;
-            color: var(--text-primary); font-size: 18px; font-weight: 800;
+            width: 44px; height: 44px; border-radius: var(--radius-full);
+            background: var(--bg-surface); border: 1px solid var(--glass-border);
+            color: var(--text-primary); font-size: 16px; font-weight: 700;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
-            transition: color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .btn-login-icon:hover { color: var(--brand-primary); transform: scale(1.08); opacity: 0.95; }
+        .btn-login-icon:hover { background: var(--brand-primary); border-color: var(--brand-primary); color: #FFF; transform: scale(1.05); }
 
         /* ==========================================================================
            5. VITRINE (BENTO GRID & CARDS)
@@ -379,8 +378,6 @@
         .modal-btn:active { transform: scale(0.98); }
         .modal-btn.primary { background: var(--brand-primary); color: #FFF; }
         .modal-btn.success { background: var(--success); color: #FFF; }
-        .modal-btn.pix-copy { background: rgba(255, 122, 0, 0.10); color: var(--brand-primary); border: 1px solid rgba(255, 122, 0, 0.35); }
-        .modal-btn.pix-copy:hover { background: rgba(255, 122, 0, 0.16); border-color: var(--brand-primary); }
         .modal-btn.outline { background: transparent; color: var(--text-primary); border: 1px solid var(--glass-border); }
 
         .order-badge { display: inline-block; background: rgba(255,255,255,0.1); padding: 6px 16px; border-radius: var(--radius-full); font-size: 14px; font-weight: 700; margin-bottom: 16px; letter-spacing: 1px; }
@@ -512,148 +509,6 @@
             transform: translateY(0);
         }
 
-
-        /* ==========================================================================
-           13. REDESIGN ESTRUTURAL 2026 - APP PREMIUM OPERACIONAL
-           Mantém integração Google Sheets e imagens originais intactas.
-           ========================================================================== */
-        :root {
-            --bg-base: #070604;
-            --bg-deep: #0d0a07;
-            --bg-panel: rgba(18, 14, 10, 0.72);
-            --bg-card-strong: rgba(255, 255, 255, 0.075);
-            --line-soft: rgba(255, 255, 255, 0.105);
-            --line-warm: rgba(255, 122, 0, 0.34);
-            --brand-glow: 0 18px 70px rgba(255, 122, 0, 0.18);
-            --shadow-premium: 0 22px 80px rgba(0,0,0,.46);
-        }
-
-        body { background: radial-gradient(circle at 20% 0%, rgba(255,122,0,.12), transparent 34%), var(--bg-base); }
-        body::before {
-            content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-            background-image:
-                linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-            background-size: 46px 46px;
-            mask-image: linear-gradient(to bottom, black, transparent 82%);
-        }
-
-        #sidebar { width: 300px; background: linear-gradient(180deg, rgba(20,14,9,.82), rgba(9,9,11,.72)); box-shadow: inset -1px 0 0 rgba(255,255,255,.04); }
-        .sidebar-logo { padding-top: 34px; }
-        .logo-titulo { font-size: 30px; }
-        .menu-item { min-height: 46px; }
-
-        #header {
-            padding: 22px 38px 16px;
-            background: linear-gradient(180deg, rgba(7,6,4,.76), rgba(7,6,4,0));
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        }
-        #titulo-pagina { font-size: clamp(24px, 3vw, 34px); }
-        .btn-wpp { box-shadow: inset 0 0 0 1px rgba(16,185,129,.1); }
-
-        #vitrine { padding-top: 8px; }
-        .home-shell { max-width: 1180px; margin: 0 auto; }
-        .hero-redesign {
-            min-height: 430px; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr); gap: 26px; align-items: stretch; padding: 18px 0 34px;
-        }
-        .hero-copy, .hero-panel, .premium-strip, .checkout-extra-box, .insight-card, .mini-cart-panel {
-            background: linear-gradient(145deg, rgba(255,255,255,.095), rgba(255,255,255,.035));
-            border: 1px solid var(--line-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-premium);
-            backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
-        }
-        .hero-copy { padding: clamp(28px, 5vw, 54px); position: relative; overflow: hidden; }
-        .hero-copy::after { content:""; position:absolute; right:-120px; top:-140px; width:320px; height:320px; background: radial-gradient(circle, rgba(255,122,0,.28), transparent 62%); filter: blur(8px); }
-        .hero-kicker { color: var(--brand-accent); font-size: 12px; text-transform: uppercase; letter-spacing: 2.2px; font-weight: 800; margin-bottom: 18px; }
-        .hero-title { font-family: var(--font-heading); font-size: clamp(46px, 7vw, 86px); line-height: .94; letter-spacing: -2px; max-width: 780px; }
-        .hero-title span { color: var(--brand-primary); text-shadow: 0 0 36px rgba(255,122,0,.18); }
-        .hero-text { color: var(--text-secondary); font-size: clamp(15px, 1.45vw, 18px); line-height: 1.75; max-width: 650px; margin-top: 24px; }
-        .hero-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:30px; }
-        .action-primary, .action-secondary, .qty-pill button, .qty-pill input {
-            border: 1px solid var(--line-soft); border-radius: var(--radius-full); font-family: var(--font-body); font-weight: 800;
-        }
-        .action-primary { background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary)); color:#fff; padding:14px 22px; cursor:pointer; box-shadow: var(--brand-glow); }
-        .action-secondary { background: rgba(255,255,255,.06); color: var(--text-primary); padding:14px 20px; cursor:pointer; }
-        .action-primary:hover, .action-secondary:hover { transform: translateY(-2px); }
-        .hero-panel { padding: 24px; display:flex; flex-direction:column; gap:14px; justify-content:space-between; }
-        .metric-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; }
-        .metric-card { background: rgba(0,0,0,.24); border: 1px solid var(--line-soft); border-radius: 22px; padding:18px; }
-        .metric-card strong { font-size: 28px; color: #fff; display:block; }
-        .metric-card span { color: var(--text-secondary); font-size: 12px; line-height:1.4; }
-        .flow-card { border:1px solid var(--line-warm); background: rgba(255,122,0,.08); padding:18px; border-radius: 24px; }
-        .flow-card h3 { font-family: var(--font-heading); font-size: 24px; margin-bottom: 8px; }
-        .flow-card p { color: var(--text-secondary); line-height:1.55; font-size: 13px; }
-
-        .section-head { display:flex; justify-content:space-between; align-items:end; gap:18px; margin: 28px 0 18px; }
-        .section-title { font-family:var(--font-heading); font-size: clamp(30px, 4vw, 48px); line-height:1; }
-        .section-sub { color:var(--text-secondary); font-size:14px; max-width:520px; line-height:1.65; }
-        .products-grid { grid-template-columns: repeat(12, 1fr); gap: 18px; }
-        .product-card { grid-column: span 4; min-height: 360px; padding: 18px; border-radius: 28px; overflow:hidden; }
-        .product-card:nth-child(1), .product-card:nth-child(8) { grid-column: span 6; }
-        .product-card:nth-child(1) .product-img-card, .product-card:nth-child(8) .product-img-card { height: 210px; }
-        .product-img-card { height: 178px; border-radius: 22px; box-shadow: 0 14px 40px rgba(0,0,0,.34); }
-        .product-name { font-size: 25px; margin-top: 2px; }
-        .product-card::after { content:"Ver detalhes →"; color: var(--brand-primary); font-size: 12px; font-weight: 900; margin-top: 18px; }
-        .product-badge { border-radius: 999px; background: rgba(255,122,0,.08); border-color: rgba(255,122,0,.18); }
-
-        .premium-strip { margin: 10px 0 24px; padding: 18px; display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .strip-item { padding: 14px; border-radius: 18px; background: rgba(0,0,0,.18); border: 1px solid rgba(255,255,255,.06); }
-        .strip-item strong { display:block; margin-bottom:4px; color:#fff; }
-        .strip-item span { color:var(--text-secondary); font-size:12px; line-height:1.45; }
-
-        .product-detail { max-width: 1120px; display:grid; grid-template-columns: minmax(320px,.95fr) minmax(360px,1.05fr); align-items:start; gap:24px; }
-        .prod-foto-wrap { aspect-ratio: 4/5; position: sticky; top: 16px; }
-        .prod-info-lateral { align-items:flex-start; text-align:left; background: linear-gradient(145deg, rgba(255,255,255,.085), rgba(255,255,255,.035)); border: 1px solid var(--line-soft); border-radius: var(--radius-lg); padding: 26px; box-shadow: var(--shadow-premium); }
-        .prod-titulo { justify-content:flex-start; font-size: clamp(34px, 4vw, 54px); }
-        #chat-container { height:auto; min-height: 430px; border-radius: var(--radius-lg); box-shadow: var(--shadow-premium); }
-        .msg { font-size: 14.5px; }
-        .chat-opcao { border-radius: 18px; }
-        .quick-order-box { display:grid; gap:12px; padding: 16px; border-radius: 24px; background: rgba(0,0,0,.22); border:1px solid var(--line-soft); width:100%; }
-        .qty-pill { display:flex; gap:8px; align-items:center; }
-        .qty-pill button { width:42px; height:42px; background: rgba(255,255,255,.08); color:#fff; cursor:pointer; font-size:18px; }
-        .qty-pill input { flex:1; height:42px; background: rgba(0,0,0,.22); color:#fff; text-align:center; outline:none; }
-
-        .cart-redesign { max-width: 1040px; margin: 0 auto; display:grid; grid-template-columns: minmax(0,1fr) 340px; gap:22px; align-items:start; }
-        .cart-list-panel, .mini-cart-panel { padding: 22px; border-radius: var(--radius-lg); }
-        .cart-item { border-radius: 24px; cursor: default; }
-        .cart-item:hover { transform: translateY(-2px); }
-        .cart-price { color: var(--brand-accent); }
-        .deposit-row { display:flex; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.07); font-size:14px; }
-        .deposit-row strong { color:#fff; }
-        .modal-box { max-width: 470px; background: linear-gradient(145deg, rgba(23,18,14,.98), rgba(10,10,12,.98)); }
-        #modal-checkout .modal-box { max-height: 92vh; overflow:auto; }
-
-        .toast-stack { position: fixed; right: 18px; bottom: calc(18px + var(--sab)); z-index: 10000; display:grid; gap:10px; pointer-events:none; }
-        .toast-msg { pointer-events:auto; max-width: 340px; background: rgba(18,18,20,.94); border:1px solid var(--line-soft); color:#fff; padding: 13px 15px; border-radius: 18px; box-shadow: var(--shadow-premium); animation: toastIn .22s ease both; font-size:13px; line-height:1.45; }
-        .toast-msg.success { border-color: rgba(16,185,129,.35); }
-        .toast-msg.error { border-color: rgba(239,68,68,.35); }
-        @keyframes toastIn { from { opacity:0; transform: translateY(10px) scale(.96); } to { opacity:1; transform:none; } }
-
-        @media (max-width: 1080px) {
-            .hero-redesign, .product-detail, .cart-redesign { grid-template-columns: 1fr; }
-            .prod-foto-wrap { position:relative; top:auto; aspect-ratio:16/10; }
-            .product-card, .product-card:nth-child(1), .product-card:nth-child(8) { grid-column: span 6; }
-        }
-        @media (max-width: 768px) {
-            #header { padding: 14px 18px; }
-            #vitrine { padding: 0 16px 18px; }
-            .hero-redesign { min-height: auto; padding-top: 8px; gap:16px; }
-            .hero-copy, .hero-panel, .cart-list-panel, .mini-cart-panel { border-radius: 26px; padding:22px; }
-            .hero-title { font-size: 45px; letter-spacing: -1px; }
-            .metric-grid, .premium-strip { grid-template-columns:1fr 1fr; }
-            .products-grid { grid-template-columns:1fr; }
-            .product-card, .product-card:nth-child(1), .product-card:nth-child(8) { grid-column:auto; min-height:auto; }
-            .product-img-card, .product-card:nth-child(1) .product-img-card, .product-card:nth-child(8) .product-img-card { height: 185px; }
-            .section-head { display:block; }
-            .section-sub { margin-top:10px; }
-            .prod-info-lateral { padding:20px; }
-            .prod-foto-wrap { aspect-ratio: 1/1; }
-            .prod-titulo { font-size: 34px; }
-            .cart-item { align-items:flex-start; flex-direction:column; gap:14px; }
-            .cart-item > div:last-child { width:100%; justify-content:space-between; }
-            .toast-stack { left: 14px; right: 14px; bottom: calc(82px + var(--sab)); }
-            .toast-msg { max-width:none; }
-        }
-
     </style>
 </head>
 <body>
@@ -702,6 +557,7 @@
                 </div>
                 <div class="header-actions">
                     <a id="btn-wpp" class="btn-wpp" href="#" target="_blank">💬 <span class="hide-mobile">Fale Conosco</span></a>
+                    <button id="btn-login-user" class="btn-login-icon" onclick="abrirModalLogin()" title="Perfil">👤</button>
                 </div>
             </header>
             
@@ -755,7 +611,7 @@
 
             <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
                 <div style="text-align:left;">
-                    <div style="font-size:11px; color:var(--text-secondary); text-transform: uppercase;">Pagar Agora (50%)</div>
+                    <div style="font-size:11px; color:var(--text-secondary); text-transform: uppercase;">Pagar Agora (Reserva)</div>
                     <div id="checkout-sinal-valor" style="font-size:24px; font-weight:700; color:var(--success);">R$ 0,00</div>
                 </div>
                 <div style="text-align:right;" id="checkout-saldo-box">
@@ -765,7 +621,6 @@
                 </div>
             </div>
 
-            <button class="modal-btn pix-copy" onclick="copiarChavePix()">📋 Copiar chave PIX</button>
             <button class="modal-btn outline" onclick="solicitarPagamentoCartao(this)">💳 Pagar com Cartão</button>
             <button class="modal-btn success" onclick="confirmarPagamentoPix(this)">✅ Enviar Comprovante PIX</button>
         </div>
@@ -1079,12 +934,9 @@
         const user = localStorage.getItem(STORAGE.name);
         const btnUser = document.getElementById("btn-login-user");
         if (user) {
-            if (btnUser) {
-                btnUser.innerHTML = escapeHTML(user.charAt(0).toUpperCase());
-                btnUser.title = `Perfil: ${user}`;
-                btnUser.style.background = "transparent";
-                btnUser.style.border = "none";
-            }
+            btnUser.innerHTML = escapeHTML(user.charAt(0).toUpperCase());
+            btnUser.style.background = "var(--brand-primary)";
+            btnUser.style.borderColor = "var(--brand-primary)";
             document.getElementById("mi-compras").style.display = "flex";
             document.getElementById("bn-compras").style.display = "flex";
         }
@@ -1308,7 +1160,7 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         }).join("");
         const sinal = calcularSinal(total);
         pedidoAtual = montarPedidoBase(total, sinal);
-        v.innerHTML = `<div style="max-width:800px;margin:0 auto;"><h1 class="home-titulo">Carrinho</h1>${itens}<div class="cart-total">Total: ${dinheiro(total)}</div><div class="checkout-extra-box"><h3 style="font-family:var(--font-heading);margin-bottom:12px;">Resumo da reserva</h3><p style="color:var(--text-secondary);font-size:14px;line-height:1.6;">Agora (50%): <strong style="color:var(--success);">${dinheiro(sinal)}</strong><br>Saldo restante (50%): <strong style="color:var(--warning);">${dinheiro(total - sinal)}</strong></p><button class="modal-btn primary" style="margin-top:20px;" onclick="abrirModalCheckout()">Finalizar Pedido</button></div></div>`;
+        v.innerHTML = `<div style="max-width:800px;margin:0 auto;"><h1 class="home-titulo">Carrinho</h1>${itens}<div class="cart-total">Total: ${dinheiro(total)}</div><div class="checkout-extra-box"><h3 style="font-family:var(--font-heading);margin-bottom:12px;">Resumo da reserva</h3><p style="color:var(--text-secondary);font-size:14px;line-height:1.6;">Agora: <strong style="color:var(--success);">${dinheiro(sinal)}</strong><br>Saldo restante: <strong style="color:var(--warning);">${dinheiro(total - sinal)}</strong></p><button class="modal-btn primary" style="margin-top:20px;" onclick="abrirModalCheckout()">Finalizar Pedido</button></div></div>`;
     }
 
     function alterarQtdCart(i, delta) {
@@ -1320,10 +1172,7 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         safeWrite(STORAGE.cart, meuCarrinho); atualizarContadorCarrinho(); abrirPagina("carrinho");
     }
     function removerItemCart(i) { meuCarrinho.splice(i, 1); safeWrite(STORAGE.cart, meuCarrinho); atualizarContadorCarrinho(); abrirPagina("carrinho"); }
-    function calcularSinal(total) {
-        // Regra da reserva: 50% do valor total do carrinho agora e 50% restante até 5 dias antes do evento.
-        return Math.round((Number(total || 0) / 2) * 100) / 100;
-    }
+    function calcularSinal(total) { return Math.max(30, Math.round((total * 0.3) * 100) / 100); }
     function gerarPedidoNumero() { return `PB-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.random().toString(36).slice(2,6).toUpperCase()}`; }
 
     function montarPedidoBase(total, sinal) {
@@ -1386,31 +1235,6 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         } finally {
             btn.disabled = false; btn.innerHTML = textoOriginal;
         }
-    }
-
-    function copiarChavePix() {
-        const chavePix = "6892626612";
-
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(chavePix).catch(() => copiarChavePixFallback(chavePix));
-            return;
-        }
-
-        copiarChavePixFallback(chavePix);
-    }
-
-    function copiarChavePixFallback(valor) {
-        const campoTemporario = document.createElement("textarea");
-        campoTemporario.value = valor;
-        campoTemporario.setAttribute("readonly", "");
-        campoTemporario.style.position = "fixed";
-        campoTemporario.style.top = "-9999px";
-        campoTemporario.style.opacity = "0";
-        document.body.appendChild(campoTemporario);
-        campoTemporario.focus();
-        campoTemporario.select();
-        try { document.execCommand("copy"); } catch (_) {}
-        document.body.removeChild(campoTemporario);
     }
 
     function solicitarPagamentoCartao(btn) { finalizarPedido("Cartão", btn, "💳 Pagar com Cartão"); }
@@ -1700,237 +1524,7 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         feedback("Avaliação publicada na vitrine. Obrigado!");
         abrirPagina("home");
     }
-
-    /* ==========================================================================
-       REDESIGN ESTRUTURAL 2026 - OVERRIDES SEGUROS
-       Não altera GOOGLE_SCRIPT_URL, payload da planilha, socket nem imagens.
-       ========================================================================== */
-
-    function ensureToastStack() {
-        let stack = document.getElementById('toast-stack');
-        if (!stack) {
-            stack = document.createElement('div');
-            stack.id = 'toast-stack';
-            stack.className = 'toast-stack';
-            document.body.appendChild(stack);
-        }
-        return stack;
-    }
-
-    feedback = function(msg, tipo = "info") {
-        const stack = ensureToastStack();
-        const toast = document.createElement('div');
-        toast.className = `toast-msg ${tipo}`;
-        toast.textContent = msg;
-        stack.appendChild(toast);
-        window.setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(8px) scale(.97)';
-            window.setTimeout(() => toast.remove(), 220);
-        }, 3300);
-    };
-
-    function nomeClienteCurto() {
-        const nome = localStorage.getItem(STORAGE.name) || '';
-        return nome ? nome.split(/\s+/)[0] : 'seu evento';
-    }
-
-    function resumoProdutosHome() {
-        const total = Object.keys(PRODUTOS).length;
-        const disponiveis = Object.keys(PRODUTOS).filter(produtoDisponivel).length;
-        const min = Math.min(...Object.keys(PRODUTOS).map(id => precoProduto(id) || PRODUTOS[id].valorNum));
-        return { total, disponiveis, min };
-    }
-
-    function produtoCardPremium(id, p, index) {
-        const indisponivel = !produtoDisponivel(id);
-        const preco = id === "brigadeiro" ? "A partir de R$ 185,00" : `${dinheiro(precoProduto(id))}${p.minNum > 1 ? ' un' : ''}`;
-        const minimo = id === "brigadeiro" ? "3 tamanhos" : `Mín.: ${escapeHTML(p.minimoTex)}`;
-        const selo = index < 3 ? '<span class="product-badge">Mais pedido</span>' : '<span class="product-badge">Evento premium</span>';
-        return `<div class="product-card ${indisponivel ? 'esgotado' : ''}" onclick="${indisponivel ? '' : `abrirPagina('${id}')`}">
-            ${indisponivel ? '<span class="produto-status-badge">Indisponível</span>' : ''}
-            ${imagemProduto(p)}
-            <h3 class="product-name">${escapeHTML(p.nome)}</h3>
-            <p class="product-desc">${escapeHTML(p.desc)}</p>
-            <div class="product-badges">
-                <span class="product-badge">${preco}</span>
-                <span class="product-badge">${minimo}</span>
-                ${selo}
-            </div>
-        </div>`;
-    }
-
-    renderHome = function(v) {
-        const stats = resumoProdutosHome();
-        const cards = Object.entries(PRODUTOS).map(([id, p], index) => produtoCardPremium(id, p, index)).join('');
-        const reviews = renderCarouselAvaliacoes();
-        v.innerHTML = `<div class="home-shell">
-            <section class="hero-redesign">
-                <div class="hero-copy">
-                    <div class="hero-kicker">Petit Buffet • Reserva inteligente</div>
-                    <h1 class="hero-title">Carrinhos gourmet para transformar <span>${escapeHTML(nomeClienteCurto())}</span> em experiência.</h1>
-                    <p class="hero-text">Escolha o carrinho, informe a quantidade, pague 50% da reserva e acompanhe o pedido. Sim, um fluxo que parece app de verdade, milagre raro na civilização dos formulários tortos.</p>
-                    <div class="hero-actions">
-                        <button class="action-primary" onclick="document.getElementById('catalogo-produtos')?.scrollIntoView({behavior:'smooth'})">Ver carrinhos</button>
-                        <button class="action-secondary" onclick="abrirPagina('carrinho')">Abrir checkout</button>
-                    </div>
-                </div>
-                <aside class="hero-panel">
-                    <div class="metric-grid">
-                        <div class="metric-card"><strong>${stats.total}</strong><span>opções de carrinhos e lanches</span></div>
-                        <div class="metric-card"><strong>${stats.disponiveis}</strong><span>disponíveis agora no catálogo</span></div>
-                        <div class="metric-card"><strong>50%</strong><span>na reserva inicial</span></div>
-                        <div class="metric-card"><strong>${dinheiro(stats.min)}</strong><span>menor valor unitário</span></div>
-                    </div>
-                    <div class="flow-card">
-                        <h3>Fluxo mais claro</h3>
-                        <p>O cliente escolhe, adiciona, copia o PIX ou chama no cartão, e depois acompanha o status em Minhas Compras.</p>
-                    </div>
-                </aside>
-            </section>
-
-            <section class="premium-strip">
-                <div class="strip-item"><strong>1. Escolha</strong><span>Produtos em cards grandes, com preço e mínimo visíveis.</span></div>
-                <div class="strip-item"><strong>2. Reserve</strong><span>O sistema divide 50% agora e 50% para 5 dias antes.</span></div>
-                <div class="strip-item"><strong>3. Confirme</strong><span>PIX, cartão e comprovante continuam no mesmo painel.</span></div>
-                <div class="strip-item"><strong>4. Acompanhe</strong><span>Status sincronizado com a planilha sem mexer nela.</span></div>
-            </section>
-
-            <div class="section-head" id="catalogo-produtos">
-                <div><h2 class="section-title">Catálogo curado</h2></div>
-                <p class="section-sub">Uma vitrine em estilo bento, mais editorial e menos “lista jogada na tela porque alguém desistiu no CSS”.</p>
-            </div>
-            <div class="products-grid">${cards}</div>
-
-            <div class="avaliacoes-section">
-                <div class="section-head"><h2 class="section-title">Clientes reais, vitrine forte</h2><p class="section-sub">Depoimentos sem nomes repetidos e com rolagem contínua para dar prova social sem gritar no ouvido do visitante.</p></div>
-                <div class="carousel-wrapper"><div class="carousel-track">${reviews}</div></div>
-            </div>
-        </div>`;
-    };
-
-    function quickOrderControls(id) {
-        if (id === 'brigadeiro' || id === 'sanduiche') return '';
-        const min = PRODUTOS[id]?.minNum || 1;
-        return `<div class="quick-order-box">
-            <strong style="font-family:var(--font-heading);font-size:22px;">Reserva rápida</strong>
-            <span style="color:var(--text-secondary);font-size:13px;line-height:1.55;">Comece pelo mínimo recomendado e ajuste. O chat continua funcionando abaixo, infelizmente ainda precisamos conversar com computadores.</span>
-            <div class="qty-pill">
-                <button type="button" onclick="ajustarQtdRapida('${id}', -1)">−</button>
-                <input id="quick-qtd-${id}" inputmode="numeric" value="${min}" aria-label="Quantidade">
-                <button type="button" onclick="ajustarQtdRapida('${id}', 1)">+</button>
-            </div>
-            <button class="action-primary" type="button" onclick="adicionarRapidoPeloPainel('${id}', this)">Adicionar reserva</button>
-        </div>`;
-    }
-
-    window.ajustarQtdRapida = function(id, delta) {
-        const input = document.getElementById(`quick-qtd-${id}`);
-        if (!input) return;
-        const min = PRODUTOS[id]?.minNum || 1;
-        const atual = parseInt(onlyDigits(input.value), 10) || min;
-        input.value = Math.max(min, atual + delta);
-    };
-
-    window.adicionarRapidoPeloPainel = function(id, btn) {
-        const input = document.getElementById(`quick-qtd-${id}`);
-        const min = PRODUTOS[id]?.minNum || 1;
-        const qtd = Math.max(min, parseInt(onlyDigits(input?.value), 10) || min);
-        addCarrinhoRapido(id, qtd, btn);
-        feedback(`${qtd} unidade(s) adicionadas ao carrinho.`, 'success');
-    };
-
-    renderProduto = function(v, id) {
-        const p = PRODUTOS[id];
-        const preco = precoProduto(id);
-        const opcoesHTML = (() => {
-            if (id === "sanduiche") return `<div class="msg-acoes">${SABORES_SANDUICHE.map(s => `<button class="chat-opcao" onclick="selecionarSaborSanduiche('${s.id}')"><strong>${escapeHTML(s.nome)}</strong><span>${escapeHTML(s.descricao)}</span></button>`).join("")}</div>`;
-            if (id === "brigadeiro") return `<div class="msg-acoes">${OPCOES_BRIGADEIRO.map(op => `<button class="chat-opcao" onclick="selecionarBrigadeiroTamanho('${op.id}')"><strong>${escapeHTML(op.titulo)} • ${dinheiro(op.valor)}</strong><span>${escapeHTML(op.descricao)}</span></button>`).join("")}</div>`;
-            return "";
-        })();
-        const detalhePreco = id === "brigadeiro" ? "A partir de R$ 185,00" : dinheiro(preco);
-        const mensagemInicial = id === "brigadeiro"
-            ? "Escolha pequeno, médio ou grande. Eu prometo não transformar isso em um questionário de 12 páginas."
-            : `Informe a quantidade desejada para ${escapeHTML(p.nome)}. ${id === 'sanduiche' ? 'Você também pode escolher um sabor abaixo.' : 'Também deixei uma reserva rápida acima para agilizar.'}`;
-        const imgHTML = p.imgKey && IMGS[p.imgKey]
-            ? `<img src="${IMGS[p.imgKey]}" class="prod-foto" alt="${escapeHTML(p.nome)}" loading="eager">`
-            : `<div class="product-icon" style="font-size:96px;">${p.icone}</div>`;
-        v.innerHTML = `<div class="product-detail">
-            <div class="prod-foto-wrap" onclick="${p.imgKey && IMGS[p.imgKey] ? `abrirImagemProdutoExpandida('${IMGS[p.imgKey]}', '${escapeHTML(p.nome).replace(/'/g, "\\'")}')` : ''}">${imgHTML}</div>
-            <div style="display:grid;gap:18px;width:100%;">
-                <div class="prod-info-lateral">
-                    <div class="hero-kicker">Carrinho selecionado</div>
-                    <h2 class="prod-titulo">${p.icone} ${escapeHTML(p.nome)}</h2>
-                    <p class="prod-desc">${escapeHTML(p.desc)}</p>
-                    <div class="prod-detalhes"><span class="prod-badge">${escapeHTML(detalhePreco)}</span><span class="prod-badge">${id === "brigadeiro" ? "Pequeno • Médio • Grande" : `Mínimo: ${escapeHTML(p.minimoTex)}`}</span><span class="prod-badge">Reserva 50/50</span></div>
-                    ${quickOrderControls(id)}
-                </div>
-                <div id="chat-container"><div id="chat-area"><div class="msg recebida" style="opacity:1;transform:none;"><small>${CONFIG.atendimento}</small>${mensagemInicial}${opcoesHTML}</div></div>
-                <form id="form-chat" onsubmit="enviarMensagemChat(event, '${id}')"><input id="input-msg" placeholder="${id === "brigadeiro" ? "Digite pequeno, médio ou grande..." : "Digite a quantidade ou uma dúvida..."}" autocomplete="off"><button class="btn-enviar">Enviar</button></form></div>
-            </div>
-        </div>`;
-        setTimeout(() => { if (deveFocarChatAutomaticamente()) document.getElementById("input-msg")?.focus(); }, 100);
-    };
-
-    function linhaDivisaoItem(item) {
-        const subtotal = Number(item.subtotal || 0);
-        const agora = calcularSinal(subtotal);
-        const depois = subtotal - agora;
-        return `<div class="deposit-row"><span>${escapeHTML(item.nome)} <small style="color:var(--text-tertiary);">${item.qtd}x</small></span><strong>${dinheiro(agora)} agora / ${dinheiro(depois)} depois</strong></div>`;
-    }
-
-    renderCarrinho = function(v) {
-        if (!meuCarrinho.length) {
-            v.innerHTML = `<div class="home-shell" style="text-align:center;padding-top:44px;"><div class="hero-copy"><div style="font-size:72px;margin-bottom:18px;">🛒</div><h2 class="section-title">Carrinho vazio.</h2><p class="section-sub" style="margin:14px auto 0;">Volte ao catálogo e escolha um carrinho. Tragicamente, o checkout ainda não adivinha desejos humanos.</p><button class="action-primary" style="margin-top:22px;" onclick="abrirPagina('home')">Ver catálogo</button></div></div>`;
-            return;
-        }
-        let total = 0;
-        const itens = meuCarrinho.map((item, i) => {
-            if (!item.valorUnitFixo) item.valorUnit = precoProduto(item.id) || item.valorUnit;
-            item.subtotal = Number(item.qtd) * Number(item.valorUnit);
-            total += item.subtotal;
-            return `<div class="cart-item"><div class="cart-info"><h4>${escapeHTML(item.nome)}</h4><div style="font-size:12px;color:var(--text-secondary);">${item.qtd} x ${dinheiro(item.valorUnit)} • Reserva: ${dinheiro(calcularSinal(item.subtotal))} agora</div><button class="btn-remover" onclick="removerItemCart(${i})">Remover</button></div><div style="display:flex;align-items:center;gap:10px;"><button class="btn-remover" onclick="alterarQtdCart(${i}, -1)">−</button><strong>${item.qtd}</strong><button class="btn-remover" onclick="alterarQtdCart(${i}, 1)">+</button><div class="cart-price">${dinheiro(item.subtotal)}</div></div></div>`;
-        }).join('');
-        const sinal = calcularSinal(total);
-        pedidoAtual = montarPedidoBase(total, sinal);
-        const linhasDeposito = meuCarrinho.map(linhaDivisaoItem).join('');
-        v.innerHTML = `<div class="cart-redesign">
-            <section class="cart-list-panel hero-copy" style="padding:24px;">
-                <div class="hero-kicker">Checkout</div>
-                <h1 class="section-title">Resumo da reserva</h1>
-                <p class="section-sub" style="margin-top:10px;">A divisão é calculada item por item e também no total: 50% agora, 50% até 5 dias antes do evento.</p>
-                <div style="margin-top:22px;">${itens}</div>
-            </section>
-            <aside class="mini-cart-panel">
-                <h3 style="font-family:var(--font-heading);font-size:28px;margin-bottom:12px;">Pagamento</h3>
-                <div class="deposit-row"><span>Total</span><strong>${dinheiro(total)}</strong></div>
-                <div class="deposit-row"><span>Pagar agora</span><strong style="color:var(--success);">${dinheiro(sinal)}</strong></div>
-                <div class="deposit-row"><span>5 dias antes</span><strong style="color:var(--warning);">${dinheiro(total - sinal)}</strong></div>
-                <div style="margin:16px 0;">${linhasDeposito}</div>
-                <button class="modal-btn primary" onclick="abrirModalCheckout()">Finalizar Pedido</button>
-                <button class="modal-btn outline" onclick="abrirPagina('home')">Adicionar mais itens</button>
-            </aside>
-        </div>`;
-    };
-
-    const finalizarPedidoOriginalPremium = finalizarPedido;
-    finalizarPedido = async function(formaPagamento, btn, textoOriginal) {
-        try {
-            await finalizarPedidoOriginalPremium(formaPagamento, btn, textoOriginal);
-        } catch (error) {
-            feedback(`Não foi possível finalizar: ${error.message}`, 'error');
-        }
-    };
-
-    copiarChavePix = function() {
-        const chavePix = "6892626612";
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(chavePix).catch(() => copiarChavePixFallback(chavePix));
-            return;
-        }
-        copiarChavePixFallback(chavePix);
-    };
-
     </script>
 </body>
 </html>
+
