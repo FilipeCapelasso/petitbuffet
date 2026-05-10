@@ -702,13 +702,19 @@
         { id: "frango", nome: "Sanduíche Natural de Frango", descricao: "Frango desfiado temperado com toque artesanal." }
     ];
 
+    const OPCOES_BRIGADEIRO = [
+        { id: "pequeno", nome: "Brigadeiro no Tacho Pequeno", titulo: "Pequeno", valor: 185, descricao: "Ideal para eventos menores, mesas de doces compactas e comemorações intimistas." },
+        { id: "medio", nome: "Brigadeiro no Tacho Médio", titulo: "Médio", valor: 220, descricao: "Opção equilibrada para festas médias, com ótima presença na mesa e rendimento confortável." },
+        { id: "grande", nome: "Brigadeiro no Tacho Grande", titulo: "Grande", valor: 250, descricao: "Perfeito para eventos maiores, com mais volume, impacto visual e experiência completa no tacho." }
+    ];
+
     const PRODUTOS = {
         hamburguer: { nome: "Hambúrguer", icone: "🍔", imgKey: "hamburguer", desc: "Carrinho de hambúrgueres artesanais montados na hora.", valorTex: "R$ 6,00 un", minimoTex: "100 un", valorNum: 6, minNum: 100 },
         cachorroquente: { nome: "Cachorro Quente", icone: "🌭", imgKey: "cachorroquente", desc: "Cachorro quente gourmet com acompanhamentos variados.", valorTex: "R$ 6,00 un", minimoTex: "80 un", valorNum: 6, minNum: 80 },
         pipoca: { nome: "Pipoca Doce", icone: "🍿", imgKey: "pipoca", desc: "Carrinho com pipocas coloridas super crocantes.", valorTex: "R$ 150,00 fixo", minimoTex: "Sem mínimo", valorNum: 150, minNum: 1 },
         picole: { nome: "Picolé Gourmet", icone: "🍦", imgKey: "picole", desc: "Carrinho charmoso com picolés artesanais refrescantes.", valorTex: "R$ 5,00 un", minimoTex: "60 un", valorNum: 5, minNum: 60 },
         algodao: { nome: "Algodão Doce", icone: "☁️", imgKey: "algodao", desc: "Feito na hora, grande, colorido e perfeito para festas.", valorTex: "R$ 5,00 un", minimoTex: "60 un", valorNum: 5, minNum: 60 },
-        brigadeiro: { nome: "Brigadeiro Tacho", icone: "🍫", imgKey: "brigadeiro", desc: "No tacho quentinho, com possibilidade de até 3 sabores.", valorTex: "R$ 6,00 un", minimoTex: "Sem mínimo", valorNum: 6, minNum: 1 },
+        brigadeiro: { nome: "Brigadeiro no Tacho", icone: "🍫", imgKey: "brigadeiro", desc: "No tacho quentinho, com escolha de tamanho para combinar com o seu evento.", valorTex: "A partir de R$ 185,00", minimoTex: "Escolha o tamanho", valorNum: 185, minNum: 1, integral: true },
         pizza: { nome: "Pizza Artesanal", icone: "🍕", imgKey: "pizza", desc: "Massa fininha e ingredientes selecionados.", valorTex: "R$ 6,00 un", minimoTex: "60 un", valorNum: 6, minNum: 60 },
         sanduiche: { nome: "Sanduíche Natural", icone: "🥪", imgKey: "sanduiche", desc: "Proteínas magras, vegetais e temperos especiais.", valorTex: "R$ 10,00 un", minimoTex: "Sem mínimo", valorNum: 10, minNum: 1, integral: true },
         empada: { nome: "Empadas", icone: SVG_EMPADA, imgKey: "empada", desc: "Massa amanteigada que derrete na boca.", valorTex: "R$ 8,00 un", minimoTex: "Sem mínimo", valorNum: 8, minNum: 1, integral: true }
@@ -999,7 +1005,7 @@
                 ${imagemProduto(p)}
                 <h3 class="product-name">${escapeHTML(p.nome)}</h3>
                 <p class="product-desc">${escapeHTML(p.desc)}</p>
-                <div class="product-badges"><span class="product-badge">${dinheiro(precoProduto(id))}${p.minNum > 1 ? ' un' : ''}</span><span class="product-badge">Mín.: ${escapeHTML(p.minimoTex)}</span></div>
+                <div class="product-badges"><span class="product-badge">${id === "brigadeiro" ? "A partir de R$ 185,00" : `${dinheiro(precoProduto(id))}${p.minNum > 1 ? ' un' : ''}`}</span><span class="product-badge">${id === "brigadeiro" ? "3 tamanhos" : `Mín.: ${escapeHTML(p.minimoTex)}`}</span></div>
             </div>`;
         }).join("");
         const reviews = renderCarouselAvaliacoes();
@@ -1021,12 +1027,25 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
     function renderProduto(v, id) {
         const p = PRODUTOS[id];
         const preco = precoProduto(id);
-        const saborHTML = id === "sanduiche" ? `<div class="msg-acoes">${SABORES_SANDUICHE.map(s => `<button class="chat-opcao" onclick="selecionarSaborSanduiche('${s.id}')"><strong>${escapeHTML(s.nome)}</strong><span>${escapeHTML(s.descricao)}</span></button>`).join("")}</div>` : "";
+        const opcoesHTML = (() => {
+            if (id === "sanduiche") {
+                return `<div class="msg-acoes">${SABORES_SANDUICHE.map(s => `<button class="chat-opcao" onclick="selecionarSaborSanduiche('${s.id}')"><strong>${escapeHTML(s.nome)}</strong><span>${escapeHTML(s.descricao)}</span></button>`).join("")}</div>`;
+            }
+            if (id === "brigadeiro") {
+                return `<div class="msg-acoes">${OPCOES_BRIGADEIRO.map(op => `<button class="chat-opcao" onclick="selecionarBrigadeiroTamanho('${op.id}')"><strong>${escapeHTML(op.titulo)} • ${dinheiro(op.valor)}</strong><span>${escapeHTML(op.descricao)}</span></button>`).join("")}</div>`;
+            }
+            return "";
+        })();
+        const detalhePreco = id === "brigadeiro" ? "A partir de R$ 185,00" : dinheiro(preco);
+        const mensagemInicial = id === "brigadeiro"
+            ? "Olá! Escolha uma opção de tamanho abaixo para ver o valor, descrição e adicionar ao carrinho."
+            : `Olá! Para reservar ${escapeHTML(p.nome)}, informe a quantidade desejada. ${id === 'sanduiche' ? 'Você também pode escolher um sabor abaixo.' : ''}`;
+
         v.innerHTML = `<div class="product-detail">
             <div class="prod-foto-wrap" onclick="${p.imgKey && IMGS[p.imgKey] ? `abrirImagemProdutoExpandida('${IMGS[p.imgKey]}', '${escapeHTML(p.nome).replace(/'/g, "\\'")}')` : ''}">${p.imgKey && IMGS[p.imgKey] ? `<img src="${IMGS[p.imgKey]}" class="prod-foto" alt="${escapeHTML(p.nome)}" loading="eager">` : `<div class="product-icon" style="font-size:96px;">${p.icone}</div>`}</div>
-            <div class="prod-info-lateral"><h2 class="prod-titulo">${p.icone} ${escapeHTML(p.nome)}</h2><p class="prod-desc">${escapeHTML(p.desc)}</p><div class="prod-detalhes"><span class="prod-badge">${dinheiro(preco)}</span><span class="prod-badge">Mínimo: ${escapeHTML(p.minimoTex)}</span></div></div>
-            <div id="chat-container"><div id="chat-area"><div class="msg recebida" style="opacity:1;transform:none;"><small>${CONFIG.atendimento}</small>Olá! Para reservar ${escapeHTML(p.nome)}, informe a quantidade desejada. ${id === 'sanduiche' ? 'Você também pode escolher um sabor abaixo.' : ''}${saborHTML}</div></div>
-            <form id="form-chat" onsubmit="enviarMensagemChat(event, '${id}')"><input id="input-msg" placeholder="Digite a quantidade ou uma dúvida..." autocomplete="off"><button class="btn-enviar">Enviar</button></form></div>
+            <div class="prod-info-lateral"><h2 class="prod-titulo">${p.icone} ${escapeHTML(p.nome)}</h2><p class="prod-desc">${escapeHTML(p.desc)}</p><div class="prod-detalhes"><span class="prod-badge">${escapeHTML(detalhePreco)}</span><span class="prod-badge">${id === "brigadeiro" ? "Pequeno • Médio • Grande" : `Mínimo: ${escapeHTML(p.minimoTex)}`}</span></div></div>
+            <div id="chat-container"><div id="chat-area"><div class="msg recebida" style="opacity:1;transform:none;"><small>${CONFIG.atendimento}</small>${mensagemInicial}${opcoesHTML}</div></div>
+            <form id="form-chat" onsubmit="enviarMensagemChat(event, '${id}')"><input id="input-msg" placeholder="${id === "brigadeiro" ? "Escolha pequeno, médio ou grande..." : "Digite a quantidade ou uma dúvida..."}" autocomplete="off"><button class="btn-enviar">Enviar</button></form></div>
         </div>`;
         setTimeout(() => { if (deveFocarChatAutomaticamente()) document.getElementById("input-msg")?.focus(); }, 100);
     }
@@ -1034,6 +1053,45 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
     function selecionarSaborSanduiche(idSabor) {
         const sabor = SABORES_SANDUICHE.find(s => s.id === idSabor);
         if (sabor) adicionarBolaoChat({ tipo: "recebida", texto: `Sabor selecionado: ${sabor.nome}. Agora me diga a quantidade desejada.`, de: CONFIG.atendimento });
+    }
+
+    function selecionarBrigadeiroTamanho(idOpcao) {
+        const opcao = OPCOES_BRIGADEIRO.find(o => o.id === idOpcao);
+        if (!opcao) return;
+        const btn = `<button onclick="addBrigadeiroCarrinho('${opcao.id}', this)" style="margin-top:12px;width:100%;background:var(--brand-primary);color:#fff;padding:12px;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-family:var(--font-body);">🛒 Adicionar ao Carrinho</button>`;
+        adicionarBolaoChat({
+            tipo: "recebida",
+            texto: `${opcao.nome}: ${dinheiro(opcao.valor)}. ${opcao.descricao}`,
+            htmlBotao: btn,
+            de: CONFIG.atendimento
+        });
+    }
+
+    function addBrigadeiroCarrinho(idOpcao, btn) {
+        const opcao = OPCOES_BRIGADEIRO.find(o => o.id === idOpcao);
+        if (!opcao) return feedback("Opção de brigadeiro não encontrada.");
+        const itemKey = `brigadeiro-${opcao.id}`;
+        const idx = meuCarrinho.findIndex(i => i.key === itemKey);
+        const item = {
+            key: itemKey,
+            id: "brigadeiro",
+            opcaoId: opcao.id,
+            nome: opcao.nome,
+            qtd: 1,
+            valorUnit: opcao.valor,
+            valorUnitFixo: true,
+            subtotal: opcao.valor,
+            minNum: 1
+        };
+        if (idx >= 0) {
+            const novaQtd = Number(meuCarrinho[idx].qtd || 0) + 1;
+            meuCarrinho[idx] = { ...meuCarrinho[idx], qtd: novaQtd, subtotal: novaQtd * opcao.valor, valorUnit: opcao.valor, valorUnitFixo: true };
+        } else {
+            meuCarrinho.push(item);
+        }
+        safeWrite(STORAGE.cart, meuCarrinho);
+        atualizarContadorCarrinho();
+        if (btn) { btn.disabled = true; btn.innerHTML = "✓ Adicionado"; }
     }
 
     function enviarMensagemChat(e, idProd) {
@@ -1059,6 +1117,13 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         const p = PRODUTOS[idProd];
         const qtd = parseInt(onlyDigits(txt), 10);
         if (!produtoDisponivel(idProd)) return adicionarBolaoChat({ tipo: "recebida", texto: "Este produto está temporariamente indisponível.", de: CONFIG.atendimento });
+        if (idProd === "brigadeiro") {
+            const termo = String(txt || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const opcao = OPCOES_BRIGADEIRO.find(o => termo.includes(o.id));
+            if (opcao) return selecionarBrigadeiroTamanho(opcao.id);
+            const botoes = `<div class="msg-acoes">${OPCOES_BRIGADEIRO.map(op => `<button class="chat-opcao" onclick="selecionarBrigadeiroTamanho('${op.id}')"><strong>${escapeHTML(op.titulo)} • ${dinheiro(op.valor)}</strong><span>${escapeHTML(op.descricao)}</span></button>`).join("")}</div>`;
+            return adicionarBolaoChat({ tipo: "recebida", texto: "Para o Brigadeiro no Tacho, escolha uma das opções: pequeno, médio ou grande.", htmlBotao: botoes, de: CONFIG.atendimento });
+        }
         if (Number.isFinite(qtd) && qtd > 0) {
             if (qtd < p.minNum) return adicionarBolaoChat({ tipo: "recebida", texto: `Para ${p.nome}, a quantidade mínima é ${p.minNum}.`, de: CONFIG.atendimento });
             const total = qtd * precoProduto(idProd);
@@ -1088,7 +1153,7 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         }
         let total = 0;
         const itens = meuCarrinho.map((item, i) => {
-            item.valorUnit = precoProduto(item.id) || item.valorUnit;
+            if (!item.valorUnitFixo) item.valorUnit = precoProduto(item.id) || item.valorUnit;
             item.subtotal = Number(item.qtd) * Number(item.valorUnit);
             total += item.subtotal;
             return `<div class="cart-item"><div class="cart-info"><h4>${escapeHTML(item.nome)}</h4><div style="font-size:12px;color:var(--text-secondary);">${item.qtd} x ${dinheiro(item.valorUnit)}</div><button class="btn-remover" onclick="removerItemCart(${i})">Remover</button></div><div style="display:flex;align-items:center;gap:10px;"><button class="btn-remover" onclick="alterarQtdCart(${i}, -1)">−</button><strong>${item.qtd}</strong><button class="btn-remover" onclick="alterarQtdCart(${i}, 1)">+</button><div class="cart-price">${dinheiro(item.subtotal)}</div></div></div>`;
