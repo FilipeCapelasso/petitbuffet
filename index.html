@@ -301,38 +301,10 @@
            7. CARROSSEL DE AVALIAÇÕES (INFINITO)
            ========================================================================== */
         .avaliacoes-section { margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--glass-border); width: 100%; }
-        
-.carousel-wrapper{
-    width:100%;
-    overflow:hidden;
-    position:relative;
-    padding:24px 0;
-    mask-image:linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-    -webkit-mask-image:linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-}
-
-.carousel-track{
-    display:flex;
-    align-items:stretch;
-    gap:20px;
-    width:max-content;
-    animation:carouselInfinite 55s linear infinite;
-    will-change:transform;
-}
-
-.carousel-track:hover{
-    animation-play-state:paused;
-}
-
-@keyframes carouselInfinite{
-    from{
-        transform:translateX(0);
-    }
-    to{
-        transform:translateX(-50%);
-    }
-}
-
+        .carousel-wrapper { overflow: hidden; white-space: nowrap; width: 100%; padding: 20px 0; position: relative; mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
+        .carousel-track { display: flex; gap: 20px; width: max-content; animation: scrollCarousel 35s linear infinite; }
+        .carousel-track:hover { animation-play-state: paused; }
+        @keyframes scrollCarousel { from { transform: translateX(0); } to { transform: translateX(calc(-100% / 3)); } }
         
         .review-card { background: var(--bg-surface); border: 1px solid var(--glass-border); padding: 20px; border-radius: var(--radius-md); min-width: 320px; max-width: 320px; cursor: pointer; white-space: normal; display: flex; flex-direction: column; gap: 12px; transition: 0.2s; box-shadow: var(--glass-shadow); }
         .review-card:hover { transform: translateY(-4px); border-color: var(--brand-primary); background: var(--bg-surface-hover); }
@@ -743,7 +715,7 @@
 
     let paginaAtual = "home";
     let meuCarrinho = safeRead(STORAGE.cart, []);
-let pedidoAtual = null;
+    let pedidoAtual = null;
     let notaAtual = 5;
     let indexCompraEmAvaliacao = -1;
     let socket = null;
@@ -761,109 +733,69 @@ let pedidoAtual = null;
         { nome: "Diego Fernandes", texto: "O carrinho de hambúrguer trouxe uma experiência diferente para o evento da empresa. Excelente apresentação.", stars: 5, comprasNum: 2 },
         { nome: "Patrícia Lima", texto: "O brigadeiro no tacho foi simplesmente maravilhoso. Crianças e adultos ficaram encantados.", stars: 5, comprasNum: 4 },
         { nome: "Eduardo Nunes", texto: "Gostei muito da pontualidade e da organização. O carrinho de picolé foi perfeito para o calor.", stars: 5, comprasNum: 1 },
-        { nome: "Larissa Monteiro", texto: "Os sanduíches naturais vieram bem montados, frescos e com ótima apresentação. Recomendo demais.", stars: 5, comprasNum: 2 },
-        { nome: "Gustavo Henrique", texto: "A pipoca doce deixou a decoração ainda mais bonita e o sabor surpreendeu. Serviço muito profissional.", stars: 5, comprasNum: 3 },
-        { nome: "Aline Carvalho", texto: "O algodão doce foi um charme na festa. As cores ficaram lindas e as crianças amaram.", stars: 5, comprasNum: 1 },
-        { nome: "Marcelo Vieira", texto: "Fizemos uma confraternização pequena e mesmo assim o atendimento foi premium. Tudo muito bem cuidado.", stars: 5, comprasNum: 2 },
-        { nome: "Renata Paiva", texto: "A equipe foi educada, discreta e muito ágil. A mesa ficou linda com os produtos servidos.", stars: 5, comprasNum: 5 },
-        { nome: "Thiago Barros", texto: "O carrinho de hambúrguer surpreendeu pela qualidade. Carne no ponto certo e montagem impecável.", stars: 5, comprasNum: 1 },
-        { nome: "Sofia Andrade", texto: "As crianças ficaram encantadas com o algodão doce e os adultos elogiaram muito o atendimento.", stars: 5, comprasNum: 2 },
-        { nome: "Vinícius Lopes", texto: "Pedido feito com facilidade, confirmação rápida e entrega muito organizada. Experiência excelente.", stars: 5, comprasNum: 3 },
-        { nome: "Helena Duarte", texto: "As pizzas ficaram lindas e saborosas. A apresentação combinou perfeitamente com nosso evento.", stars: 5, comprasNum: 2 },
-        { nome: "Rodrigo Azevedo", texto: "Contratei para um evento corporativo e foi um sucesso. Produtos bem servidos e equipe pontual.", stars: 5, comprasNum: 4 },
-        { nome: "Mônica Reis", texto: "O carrinho de brigadeiro trouxe aquele toque especial. Tudo muito limpo, bonito e saboroso.", stars: 5, comprasNum: 1 },
-        { nome: "Felipe Moraes", texto: "Gostei da clareza no pedido e do acompanhamento pelo site. Passou muita confiança.", stars: 5, comprasNum: 2 },
-        { nome: "Bianca Farias", texto: "As empadas chegaram perfeitas para servir. O sabor de frango foi o preferido dos convidados.", stars: 5, comprasNum: 3 },
-        { nome: "André Moreira", texto: "O carrinho de picolé foi simples, bonito e muito funcional. Ideal para evento ao ar livre.", stars: 5, comprasNum: 1 },
-        { nome: "Isabela Prado", texto: "Atendimento atencioso do começo ao fim. A experiência realmente parece de buffet premium.", stars: 5, comprasNum: 2 },
-        { nome: "Leonardo Ramos", texto: "A pipoca colorida chamou atenção na decoração e ainda estava muito gostosa. Recomendo.", stars: 5, comprasNum: 2 },
-        { nome: "Nathália Campos", texto: "Os lanches naturais foram uma ótima escolha para uma reunião mais leve. Tudo fresco e saboroso.", stars: 5, comprasNum: 1 },
-        { nome: "Ricardo Melo", texto: "O cachorro-quente foi servido com capricho e rapidez. Não formou fila e todos aproveitaram.", stars: 5, comprasNum: 3 },
-        { nome: "Priscila Gomes", texto: "A comunicação foi excelente. Gostei de acompanhar o status do pedido pelo próprio site.", stars: 5, comprasNum: 2 },
-        { nome: "Caio Ribeiro", texto: "O evento ficou mais descontraído com os carrinhos. Visual bonito e comida de qualidade.", stars: 5, comprasNum: 4 },
-        { nome: "Vanessa Oliveira", texto: "O brigadeiro no tacho foi servido com muito carinho. Meus convidados perguntaram o contato.", stars: 5, comprasNum: 1 },
-        { nome: "Alexandre Pinto", texto: "Picolés saborosos, boa variedade e atendimento muito educado. Foi perfeito para o aniversário.", stars: 5, comprasNum: 2 },
-        { nome: "Tatiane Borges", texto: "As pizzas foram servidas no tempo certo e com ótima aparência. A experiência valeu muito.", stars: 5, comprasNum: 3 },
-        { nome: "João Pedro Lima", texto: "A reserva foi simples e o pedido chegou conforme combinado. Tudo muito profissional.", stars: 5, comprasNum: 1 },
-        { nome: "Débora Martins", texto: "Amei o cuidado com os detalhes. Desde o atendimento até a entrega, tudo foi bem feito.", stars: 5, comprasNum: 2 },
-        { nome: "Henrique Sousa", texto: "O carrinho de hambúrguer deu um clima moderno para a festa. Produtos bem preparados.", stars: 5, comprasNum: 2 },
-        { nome: "Lívia Teixeira", texto: "Os convidados elogiaram muito as empadas. Cheiro bom, massa delicada e recheio generoso.", stars: 5, comprasNum: 4 },
-        { nome: "Samuel Batista", texto: "Contratamos algodão doce e pipoca. Ficou bonito visualmente e muito gostoso.", stars: 5, comprasNum: 1 },
-        { nome: "Carolina Freitas", texto: "Foi tudo muito prático. Escolhi pelo site, acompanhei o pedido e recebi tudo certinho.", stars: 5, comprasNum: 3 },
-        { nome: "Matheus Cardoso", texto: "O atendimento no WhatsApp foi rápido e o serviço no evento foi ainda melhor.", stars: 5, comprasNum: 2 },
-        { nome: "Amanda Pires", texto: "Gostei da apresentação dos carrinhos e da limpeza. Passou muito profissionalismo.", stars: 5, comprasNum: 1 },
-        { nome: "Otávio Martins", texto: "Os sanduíches naturais foram ideais para nosso coffee break. Bem embalados e saborosos.", stars: 5, comprasNum: 2 },
-        { nome: "Marina Albuquerque", texto: "A experiência ficou elegante sem perder o clima divertido. O buffet foi muito elogiado.", stars: 5, comprasNum: 5 },
-        { nome: "Paulo César", texto: "A pontualidade fez diferença. Chegaram antes, organizaram tudo e serviram muito bem.", stars: 5, comprasNum: 3 },
-        { nome: "Evelyn Santos", texto: "As crianças não queriam sair de perto do carrinho de algodão doce. Foi um sucesso.", stars: 5, comprasNum: 1 },
-        { nome: "Lucas Ferreira", texto: "A comida estava ótima e a equipe trabalhou com muita simpatia. Recomendo para eventos.", stars: 5, comprasNum: 4 },
-        { nome: "Sabrina Tavares", texto: "O pedido ficou exatamente como combinamos. Gostei muito da organização e do cuidado.", stars: 5, comprasNum: 2 },
-        { nome: "Igor Mendes", texto: "O carrinho de cachorro-quente foi prático e agradou todo mundo. Molhos e acompanhamentos bons.", stars: 5, comprasNum: 1 },
-        { nome: "Clarice Nogueira", texto: "As fotos do evento ficaram lindas com os carrinhos. Além de bonito, estava tudo delicioso.", stars: 5, comprasNum: 3 },
-        { nome: "Roberta Machado", texto: "Amei poder avaliar depois de finalizado. Mostra cuidado com a experiência do cliente.", stars: 5, comprasNum: 2 },
-        { nome: "Danilo Araújo", texto: "O carrinho de pizza deixou o evento com cara de experiência gourmet mesmo. Todos repetiram.", stars: 5, comprasNum: 3 },
-        { nome: "Beatriz Cunha", texto: "A mesa de brigadeiro ficou muito bonita e o sabor estava maravilhoso, bem caseiro.", stars: 5, comprasNum: 1 },
-        { nome: "Rômulo Dias", texto: "Boa comunicação, entrega tranquila e produtos exatamente como anunciados. Contrataria de novo.", stars: 5, comprasNum: 2 },
-        { nome: "Natasha Ribeiro", texto: "O algodão doce colorido deu vida para a festa. Ficou lindo nas fotos.", stars: 5, comprasNum: 2 },
-        { nome: "César Augusto", texto: "As empadas foram elogiadas até no dia seguinte. Qualidade muito acima do esperado.", stars: 5, comprasNum: 4 },
-        { nome: "Letícia Barbosa", texto: "O carrinho de cachorro-quente foi uma escolha certeira. Serviu rápido e agradou todas as idades.", stars: 5, comprasNum: 3 },
-        { nome: "Murilo Cavalcante", texto: "O visual dos carrinhos chamou atenção logo na chegada. Muito organizado e sofisticado.", stars: 5, comprasNum: 2 },
-        { nome: "Gabriela Mendes", texto: "Os picolés estavam cremosos e bem apresentados. Foram perfeitos para uma festa durante o dia.", stars: 5, comprasNum: 1 },
-        { nome: "Alan Rodrigues", texto: "A equipe chegou no horário e montou tudo sem atrapalhar a organização do evento.", stars: 5, comprasNum: 4 },
-        { nome: "Paula Cristina", texto: "A experiência foi leve, bonita e deliciosa. O atendimento fez toda a diferença.", stars: 5, comprasNum: 2 },
-        { nome: "Renan Figueiredo", texto: "O hambúrguer foi servido fresquinho, com boa quantidade e montagem caprichada.", stars: 5, comprasNum: 3 },
-        { nome: "Talita Fernandes", texto: "Os convidados elogiaram a variedade e a qualidade. A festa ficou muito mais especial.", stars: 5, comprasNum: 2 },
-        { nome: "Márcio Guedes", texto: "A reserva pelo site foi prática e o suporte pelo WhatsApp respondeu rápido.", stars: 5, comprasNum: 1 },
-        { nome: "Giovana Castro", texto: "O carrinho de pipoca combinou muito com o tema infantil. Ficou lindo e gostoso.", stars: 5, comprasNum: 3 },
-        { nome: "Fábio Martins", texto: "Produto bem feito, equipe educada e atendimento sem enrolação. Recomendo para eventos corporativos.", stars: 5, comprasNum: 2 },
-        { nome: "Raquel Nascimento", texto: "As empadas tinham aparência artesanal e sabor de comida feita com cuidado.", stars: 5, comprasNum: 4 },
-        { nome: "Victor Hugo", texto: "O pedido foi acompanhado em tempo real e isso passou muita segurança.", stars: 5, comprasNum: 1 },
-        { nome: "Elaine Moura", texto: "O brigadeiro no tacho foi a atração da mesa. Textura perfeita e sabor marcante.", stars: 5, comprasNum: 3 },
-        { nome: "Wesley Oliveira", texto: "Tudo chegou bem acondicionado e no horário combinado. Experiência muito profissional.", stars: 5, comprasNum: 2 },
-        { nome: "Mirella Dias", texto: "A apresentação dos produtos foi impecável. Ficou bonito para servir e para fotografar.", stars: 5, comprasNum: 5 },
-        { nome: "Leandro Costa", texto: "Contratamos para uma reunião interna e todos comentaram positivamente.", stars: 5, comprasNum: 1 },
-        { nome: "Tainá Alves", texto: "Os sanduíches naturais estavam leves, frescos e bem recheados. Ótimos para evento diurno.", stars: 5, comprasNum: 2 },
-        { nome: "Márcia Duarte", texto: "A comunicação foi clara desde o primeiro contato. Gostei muito da seriedade.", stars: 5, comprasNum: 3 },
-        { nome: "Pedro Henrique", texto: "O carrinho de picolé deixou o ambiente mais divertido e refrescante.", stars: 5, comprasNum: 1 },
-        { nome: "Cíntia Melo", texto: "Os detalhes do atendimento mostram carinho. Foi tudo bem apresentado e saboroso.", stars: 5, comprasNum: 2 },
-        { nome: "Adriano Silva", texto: "A experiência no site é simples e bonita. O pedido ficou fácil de acompanhar.", stars: 5, comprasNum: 2 },
-        { nome: "Luana Batista", texto: "O cachorro-quente veio muito bem servido e com acompanhamentos que agradaram bastante.", stars: 5, comprasNum: 3 },
-        { nome: "Guilherme Rocha", texto: "O carrinho de hambúrguer foi o preferido dos adolescentes. Muito bem executado.", stars: 5, comprasNum: 4 },
-        { nome: "Sandra Moraes", texto: "A festa ficou com clima de buffet premium. Os convidados pediram indicação.", stars: 5, comprasNum: 2 },
-        { nome: "Kleber Ramos", texto: "A entrega foi organizada e a equipe demonstrou muito cuidado com higiene.", stars: 5, comprasNum: 1 },
-        { nome: "Yasmin Azevedo", texto: "O algodão doce ficou lindo na decoração e as crianças ficaram encantadas.", stars: 5, comprasNum: 3 },
-        { nome: "Mauro Peixoto", texto: "Pedi para um evento pequeno e mesmo assim o atendimento foi muito atencioso.", stars: 5, comprasNum: 2 },
-        { nome: "Bárbara Reis", texto: "A pizza artesanal chegou muito bonita e o sabor surpreendeu os convidados.", stars: 5, comprasNum: 4 },
-        { nome: "José Antônio", texto: "Serviço pontual, produtos bons e equipe educada. Cumpriram tudo que prometeram.", stars: 5, comprasNum: 1 },
-        { nome: "Elisa Cardoso", texto: "O carrinho de brigadeiro deixou a comemoração mais aconchegante e elegante.", stars: 5, comprasNum: 3 },
-        { nome: "Vitor Nascimento", texto: "Gostei da organização do pedido e da forma como tudo foi confirmado.", stars: 5, comprasNum: 2 },
-        { nome: "Marta Farias", texto: "As empadas foram servidas em ótima temperatura e com apresentação muito boa.", stars: 5, comprasNum: 2 },
-        { nome: "Samuel Correia", texto: "O carrinho de pipoca foi simples de contratar e fez muito sucesso no evento.", stars: 5, comprasNum: 1 },
-        { nome: "Jéssica Pacheco", texto: "Atendimento simpático, comida boa e visual bonito. Ficou acima do esperado.", stars: 5, comprasNum: 4 },
-        { nome: "Rogério Campos", texto: "O buffet trouxe praticidade para a festa. Não precisei me preocupar com nada.", stars: 5, comprasNum: 2 }
+
+        { nome: "Larissa Monteiro", texto: "Os sanduíches naturais vieram bem montados, frescos e com ótima apresentação.", stars: 5, comprasNum: 2 },
+        { nome: "Gustavo Henrique", texto: "A pipoca doce deixou a decoração mais bonita e o sabor surpreendeu.", stars: 5, comprasNum: 3 },
+        { nome: "Aline Carvalho", texto: "O algodão doce foi um charme na festa. As cores ficaram lindas.", stars: 5, comprasNum: 1 },
+        { nome: "Marcelo Vieira", texto: "Mesmo em uma confraternização pequena, o atendimento foi premium.", stars: 5, comprasNum: 2 },
+        { nome: "Renata Paiva", texto: "Equipe educada, discreta e ágil. A mesa ficou linda com os produtos.", stars: 5, comprasNum: 5 },
+        { nome: "Thiago Barros", texto: "O hambúrguer surpreendeu pela qualidade e pela montagem impecável.", stars: 5, comprasNum: 1 },
+        { nome: "Sofia Andrade", texto: "As crianças ficaram encantadas e os adultos elogiaram o atendimento.", stars: 5, comprasNum: 2 },
+        { nome: "Vinícius Lopes", texto: "Pedido fácil, confirmação rápida e entrega muito organizada.", stars: 5, comprasNum: 3 },
+        { nome: "Helena Duarte", texto: "As pizzas ficaram lindas e saborosas, perfeitas para o nosso evento.", stars: 5, comprasNum: 2 },
+        { nome: "Rodrigo Azevedo", texto: "Evento corporativo aprovado. Produtos bem servidos e equipe pontual.", stars: 5, comprasNum: 4 },
+
+        { nome: "Mônica Reis", texto: "O carrinho de brigadeiro trouxe um toque especial para a comemoração.", stars: 5, comprasNum: 1 },
+        { nome: "Felipe Moraes", texto: "Gostei da clareza do pedido e do acompanhamento pelo site.", stars: 5, comprasNum: 2 },
+        { nome: "Bianca Farias", texto: "As empadas chegaram perfeitas e foram as preferidas dos convidados.", stars: 5, comprasNum: 3 },
+        { nome: "André Moreira", texto: "O carrinho de picolé foi ideal para um evento ao ar livre.", stars: 5, comprasNum: 1 },
+        { nome: "Isabela Prado", texto: "Atendimento atencioso do início ao fim, com cara de buffet premium.", stars: 5, comprasNum: 2 },
+        { nome: "Leonardo Ramos", texto: "A pipoca colorida chamou atenção na decoração e estava deliciosa.", stars: 5, comprasNum: 2 },
+        { nome: "Nathália Campos", texto: "Os lanches naturais foram leves, frescos e muito bem recheados.", stars: 5, comprasNum: 1 },
+        { nome: "Ricardo Melo", texto: "O cachorro-quente foi servido rápido, sem fila e com muito capricho.", stars: 5, comprasNum: 3 },
+        { nome: "Priscila Gomes", texto: "A comunicação foi excelente e acompanhar o status passou confiança.", stars: 5, comprasNum: 2 },
+        { nome: "Caio Ribeiro", texto: "Os carrinhos deixaram o evento mais descontraído e visualmente bonito.", stars: 5, comprasNum: 4 }
     ]);
 
-function gerarCardsAvaliacoes() {
-    const lista = avaliacoesGlobais.slice(0, 24);
-    const duplicadas = [...lista, ...lista];
+    function avaliacoesFixasOrdenadas() {
+        const base = Array.isArray(avaliacoesGlobais) ? avaliacoesGlobais : [];
+        const semDuplicados = [];
+        const vistos = new Set();
 
-    return duplicadas.map(dep => {
-        return `
-            <div class="review-card" onclick="abrirDepoimento('${String(dep.nome).replace(/'/g, "\\'")}')">
-                <div class="review-header">
-                    <div class="review-avatar">${dep.nome.charAt(0).toUpperCase()}</div>
-                    <div>
-                        <div style="font-weight:700;color:var(--text-primary);font-size:15px;">
-                            ${dep.nome}
-                        </div>
-                        <div class="review-stars">${'★'.repeat(dep.stars || 5)}</div>
-                    </div>
+        base.forEach((item) => {
+            const chave = `${String(item.nome || "").trim().toLowerCase()}|${String(item.texto || "").trim().toLowerCase()}`;
+            if (!vistos.has(chave) && item.nome && item.texto) {
+                vistos.add(chave);
+                semDuplicados.push(item);
+            }
+        });
+
+        return semDuplicados.slice(0, 30);
+    }
+
+    function renderCardAvaliacao(av, idx) {
+        const nome = escapeHTML(av.nome || "Cliente");
+        const inicial = escapeHTML(String(av.nome || "C").trim().charAt(0).toUpperCase() || "C");
+        const texto = escapeHTML(av.texto || "");
+        const estrelas = "★".repeat(Number(av.stars || 5));
+        return `<div class="review-card" onclick="abrirDepoimentoPorIndice(${idx})">
+            <div class="review-header">
+                <div class="review-avatar">${inicial}</div>
+                <div>
+                    <strong style="color:#FFF;display:block;font-size:14px;">${nome}</strong>
+                    <div class="review-stars">${estrelas}</div>
                 </div>
-                <div class="review-text">“${dep.texto}”</div>
             </div>
-        `;
-    }).join('');
-}
+            <p class="review-text">“${texto}”</p>
+        </div>`;
+    }
+
+    function renderCarouselAvaliacoes() {
+        const lista = avaliacoesFixasOrdenadas();
+        const cardsOriginais = lista.map((av, idx) => renderCardAvaliacao(av, idx)).join("");
+        const cardsClone = lista.map((av, idx) => renderCardAvaliacao(av, idx)).join("");
+        return cardsOriginais + cardsClone;
+    }
 
 
     // Controle do modal de detalhes com atualização automática do status.
@@ -1021,17 +953,14 @@ function gerarCardsAvaliacoes() {
                 <div class="product-badges"><span class="product-badge">${dinheiro(precoProduto(id))}${p.minNum > 1 ? ' un' : ''}</span><span class="product-badge">Mín.: ${escapeHTML(p.minimoTex)}</span></div>
             </div>`;
         }).join("");
-        const reviews = obterAvaliacoesOrganizadas().map((av, idx) => `<div class="review-card" onclick="abrirDepoimentoPorIndice(${idx})">
-            <div class="review-header"><div class="review-avatar">${escapeHTML(av.nome.charAt(0))}</div><div><strong style="color:#FFF;display:block;font-size:14px;">${escapeHTML(av.nome)}</strong><div class="review-stars">${"★".repeat(av.stars || 5)}</div></div></div>
-            <p class="review-text">“${escapeHTML(av.texto)}”</p>
-        </div>`).join("");
-        v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><span style="color:var(--brand-primary)">Gourmet</span></h1><p class="home-sub">Transforme seu evento com carrinhos temáticos, lanches artesanais e atendimento premium.</p></div>
+        const reviews = renderCarouselAvaliacoes();
+v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><span style="color:var(--brand-primary)">Gourmet</span></h1><p class="home-sub">Transforme seu evento com carrinhos temáticos, lanches artesanais e atendimento premium.</p></div>
         <div class="products-grid">${cards}</div>
-        <div class="avaliacoes-section"><h2 style="font-family:var(--font-heading);font-size:32px;margin-bottom:8px;">Clientes que já viveram essa experiência</h2><div class="carousel-wrapper"><div class="carousel-track">${gerarCardsAvaliacoes()}${reviews}${reviews}</div></div></div>`;
+        <div class="avaliacoes-section"><h2 style="font-family:var(--font-heading);font-size:32px;margin-bottom:8px;">Clientes que já viveram essa experiência</h2><div class="carousel-wrapper"><div class="carousel-track">${reviews}</div></div></div>`;
     }
 
     function abrirDepoimentoPorIndice(idx) {
-        const av = avaliacoesGlobais[idx]; if (!av) return;
+        const av = avaliacoesFixasOrdenadas()[idx]; if (!av) return;
         document.getElementById("dep-avatar").innerText = av.nome.charAt(0);
         document.getElementById("dep-nome").innerText = av.nome;
         document.getElementById("dep-compras-badge").innerText = `${av.comprasNum || 1} compra(s) realizada(s)`;
