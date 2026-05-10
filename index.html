@@ -608,7 +608,14 @@
                     <div class="checkout-field-wrap-full"><input id="checkout-rua" class="checkout-field" placeholder="Rua / Avenida"></div>
                     <div><input id="checkout-numero" class="checkout-field" placeholder="Número"></div>
                     <div><input id="checkout-bairro" class="checkout-field" placeholder="Bairro"></div>
-                    <div class="checkout-field-wrap-full"><input id="checkout-data-evento" class="checkout-field" placeholder="Data do evento (DD/MM)" maxlength="5" inputmode="numeric" autocomplete="off" oninput="mascararDataEvento(this)"></div>
+                </div>
+            </div>
+
+            <div style="text-align:left; margin-bottom: 24px;">
+                <label id="checkout-data-label" style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Data do evento</label>
+                <div class="checkout-address-grid">
+                    <div><input id="checkout-data-evento" class="checkout-field" placeholder="DD/MM" inputmode="numeric" maxlength="5" autocomplete="off" oninput="mascararDataEvento(this)"></div>
+                    <div><input id="checkout-hora-evento" class="checkout-field" placeholder="HH:MM" inputmode="numeric" maxlength="5" autocomplete="off" oninput="mascararHoraPedido(this)"></div>
                 </div>
             </div>
 
@@ -886,17 +893,6 @@
     function safeWrite(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
     function dinheiro(v) { return `R$ ${Number(v || 0).toFixed(2).replace('.', ',')}`; }
     function onlyDigits(v) { return String(v || "").replace(/\D/g, ""); }
-    function mascararDataEvento(campo) {
-        let valor = onlyDigits(campo.value).slice(0, 4);
-        if (valor.length >= 3) valor = `${valor.slice(0, 2)}/${valor.slice(2)}`;
-        campo.value = valor;
-    }
-    function dataEventoValida(valor) {
-        if (!/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])$/.test(valor)) return false;
-        const [dia, mes] = valor.split("/").map(Number);
-        const ultimoDiaMes = new Date(new Date().getFullYear(), mes, 0).getDate();
-        return dia <= ultimoDiaMes;
-    }
     function escapeHTML(v) { return String(v ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c])); }
     function produtoDisponivel(id) { return estoqueProdutos[id] !== false; }
     function precoProduto(id) { return Number(precosSocket[id] ?? PRODUTOS[id].valorNum); }
@@ -1196,6 +1192,40 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
     }
     function gerarPedidoNumero() { return `PB-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.random().toString(36).slice(2,6).toUpperCase()}`; }
 
+    function pedidoSomenteSanduiche() {
+        return meuCarrinho.length > 0 && meuCarrinho.every(item => item.id === "sanduiche" || String(item.key || "").startsWith("sanduiche"));
+    }
+
+    function textoDataPedidoAtual() {
+        return pedidoSomenteSanduiche() ? "Data para entrega" : "Data do evento";
+    }
+
+    function mascararDataEvento(input) {
+        const numeros = onlyDigits(input.value).slice(0, 4);
+        input.value = numeros.length > 2 ? `${numeros.slice(0, 2)}/${numeros.slice(2)}` : numeros;
+    }
+
+    function mascararHoraPedido(input) {
+        const numeros = onlyDigits(input.value).slice(0, 4);
+        input.value = numeros.length > 2 ? `${numeros.slice(0, 2)}:${numeros.slice(2)}` : numeros;
+    }
+
+    function dataPedidoValida(valor) {
+        const match = /^(\d{2})\/(\d{2})$/.exec(String(valor || "").trim());
+        if (!match) return false;
+        const dia = Number(match[1]);
+        const mes = Number(match[2]);
+        return dia >= 1 && dia <= 31 && mes >= 1 && mes <= 12;
+    }
+
+    function horaPedidoValida(valor) {
+        const match = /^(\d{2}):(\d{2})$/.exec(String(valor || "").trim());
+        if (!match) return false;
+        const hora = Number(match[1]);
+        const minuto = Number(match[2]);
+        return hora >= 0 && hora <= 23 && minuto >= 0 && minuto <= 59;
+    }
+
     function montarPedidoBase(total, sinal) {
         const itensStr = meuCarrinho.map(i => `${i.qtd}x ${i.nome} (${dinheiro(i.subtotal)})`).join(" | ");
         return { numero: gerarPedidoNumero(), total, valorCobradoAgora: sinal, itensStr };
@@ -1210,6 +1240,8 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         const saldo = pedidoAtual.total - pedidoAtual.valorCobradoAgora;
         document.getElementById("checkout-saldo-box").style.display = saldo > 0 ? "block" : "none";
         document.getElementById("checkout-saldo-valor").innerText = dinheiro(saldo);
+        const labelData = document.getElementById("checkout-data-label");
+        if (labelData) labelData.innerText = textoDataPedidoAtual();
         document.getElementById("modal-checkout").classList.add("ativo");
     }
 
@@ -1217,16 +1249,27 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         const rua = document.getElementById("checkout-rua").value.trim();
         const numero = document.getElementById("checkout-numero").value.trim();
         const bairro = document.getElementById("checkout-bairro").value.trim();
-        const dataEvento = document.getElementById("checkout-data-evento").value.trim();
+        const dataAgendada = document.getElementById("checkout-data-evento").value.trim();
+        const horaAgendada = document.getElementById("checkout-hora-evento").value.trim();
+        const labelData = textoDataPedidoAtual();
         const endereco = [rua, numero, bairro].filter(Boolean).join(", ");
         const nome = localStorage.getItem(STORAGE.name) || "";
         const telefone = onlyDigits(localStorage.getItem(STORAGE.phone));
         if (nome.length < 3) throw new Error("Nome inválido. Atualize seu perfil.");
         if (telefone.length < 10) throw new Error("Telefone inválido. Atualize seu perfil.");
         if (!rua || !numero || !bairro) throw new Error("Preencha rua, número e bairro do evento.");
-        if (!dataEventoValida(dataEvento)) throw new Error("Informe a data do evento no formato DD/MM.");
+        if (!dataPedidoValida(dataAgendada)) throw new Error(`Preencha ${labelData.toLowerCase()} no formato DD/MM.`);
+        if (!horaPedidoValida(horaAgendada)) throw new Error("Preencha a hora no formato HH:MM.");
         if (!meuCarrinho.length) throw new Error("Carrinho vazio.");
-        return { action: "saveOrder", pedido: pedidoAtual.numero, order_id: pedidoAtual.numero, id: pedidoAtual.numero, nome, telefone, endereco, data_evento: dataEvento, dataEvento, itens: pedidoAtual.itensStr, forma_pagamento: formaPagamento, total: pedidoAtual.total, status_principal: "pedido recebido", fase_preparo: "", pronto: "", entrega: "", finalizado: "", sinal: pedidoAtual.valorCobradoAgora, saldo: pedidoAtual.total - pedidoAtual.valorCobradoAgora, timestamp: new Date().toISOString() };
+        return {
+            action: "saveOrder", pedido: pedidoAtual.numero, order_id: pedidoAtual.numero, id: pedidoAtual.numero,
+            nome, telefone, endereco, itens: pedidoAtual.itensStr, forma_pagamento: formaPagamento, total: pedidoAtual.total,
+            tipo_agendamento: labelData, data_agendada: dataAgendada, hora_agendada: horaAgendada,
+            data_evento: pedidoSomenteSanduiche() ? "" : dataAgendada, hora_evento: pedidoSomenteSanduiche() ? "" : horaAgendada,
+            data_entrega: pedidoSomenteSanduiche() ? dataAgendada : "", hora_entrega: pedidoSomenteSanduiche() ? horaAgendada : "",
+            status_principal: "pedido recebido", fase_preparo: "", pronto: "", entrega: "", finalizado: "",
+            sinal: pedidoAtual.valorCobradoAgora, saldo: pedidoAtual.total - pedidoAtual.valorCobradoAgora, timestamp: new Date().toISOString()
+        };
     }
 
     async function enviarParaPlanilhaGoogle(payload) {
@@ -1324,7 +1367,7 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
     function normalizarPedido(order) {
         const pedido = String(order.pedido || order.order_id || order.id || "").trim();
         const total = Number(String(order.total ?? 0).replace(/[^0-9.,-]/g, '').replace('.', '').replace(',', '.')) || Number(order.total) || 0;
-        return { ...order, pedido, order_id: pedido, id: pedido, total, data_evento: order.data_evento || order.dataEvento || order.data_evento_cliente || "", status_principal: order.status_principal || order.status_atual || order.status || "pedido recebido", dataHora: order.dataHora || order.created_at || new Date().toLocaleString('pt-BR'), avaliado: !!order.avaliado };
+        return { ...order, pedido, order_id: pedido, id: pedido, total, status_principal: order.status_principal || order.status_atual || order.status || "pedido recebido", dataHora: order.dataHora || order.created_at || new Date().toLocaleString('pt-BR'), avaliado: !!order.avaliado };
     }
 
     function unificarPedidos(novos, antigos) {
@@ -1456,8 +1499,8 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
             <strong style="color:var(--text-primary);margin-top:12px;display:block;">Endereço:</strong>
             ${escapeHTML(c.endereco || 'Não informado')}
             <br>
-            <strong style="color:var(--text-primary);margin-top:12px;display:block;">Data do evento:</strong>
-            ${escapeHTML(c.data_evento || c.dataEvento || 'Não informado')}
+            <strong style="color:var(--text-primary);margin-top:12px;display:block;">${escapeHTML(c.tipo_agendamento || (c.data_entrega ? 'Data para entrega' : 'Data do evento'))}:</strong>
+            ${escapeHTML(c.data_agendada || c.data_evento || c.data_entrega || 'Não informado')} às ${escapeHTML(c.hora_agendada || c.hora_evento || c.hora_entrega || 'Não informado')}
             <br>
             <strong style="color:var(--text-primary);margin-top:12px;display:block;">Pagamento:</strong>
             ${escapeHTML(c.forma_pagamento || 'Não informado')}
