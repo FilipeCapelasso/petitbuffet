@@ -558,7 +558,6 @@
                 </div>
                 <div class="header-actions">
                     <a id="btn-wpp" class="btn-wpp" href="#" target="_blank">💬 <span class="hide-mobile">Fale Conosco</span></a>
-                    <button id="btn-login-user" class="btn-login-icon" onclick="abrirModalLogin()" title="Perfil">👤</button>
                 </div>
             </header>
             
@@ -935,10 +934,12 @@
         const user = localStorage.getItem(STORAGE.name);
         const btnUser = document.getElementById("btn-login-user");
         if (user) {
-            btnUser.innerHTML = escapeHTML(user.charAt(0).toUpperCase());
-            btnUser.title = `Perfil: ${user}`;
-            btnUser.style.background = "transparent";
-            btnUser.style.border = "none";
+            if (btnUser) {
+                btnUser.innerHTML = escapeHTML(user.charAt(0).toUpperCase());
+                btnUser.title = `Perfil: ${user}`;
+                btnUser.style.background = "transparent";
+                btnUser.style.border = "none";
+            }
             document.getElementById("mi-compras").style.display = "flex";
             document.getElementById("bn-compras").style.display = "flex";
         }
