@@ -379,6 +379,8 @@
         .modal-btn:active { transform: scale(0.98); }
         .modal-btn.primary { background: var(--brand-primary); color: #FFF; }
         .modal-btn.success { background: var(--success); color: #FFF; }
+        .modal-btn.pix-copy { background: rgba(255, 122, 0, 0.10); color: var(--brand-primary); border: 1px solid rgba(255, 122, 0, 0.35); }
+        .modal-btn.pix-copy:hover { background: rgba(255, 122, 0, 0.16); border-color: var(--brand-primary); }
         .modal-btn.outline { background: transparent; color: var(--text-primary); border: 1px solid var(--glass-border); }
 
         .order-badge { display: inline-block; background: rgba(255,255,255,0.1); padding: 6px 16px; border-radius: var(--radius-full); font-size: 14px; font-weight: 700; margin-bottom: 16px; letter-spacing: 1px; }
@@ -621,6 +623,7 @@
                 </div>
             </div>
 
+            <button class="modal-btn pix-copy" onclick="copiarChavePix()">📋 Copiar chave PIX</button>
             <button class="modal-btn outline" onclick="solicitarPagamentoCartao(this)">💳 Pagar com Cartão</button>
             <button class="modal-btn success" onclick="confirmarPagamentoPix(this)">✅ Enviar Comprovante PIX</button>
         </div>
@@ -1238,6 +1241,31 @@ v.innerHTML = `<div class="home-hero"><h1 class="home-titulo">Experiência<br><s
         } finally {
             btn.disabled = false; btn.innerHTML = textoOriginal;
         }
+    }
+
+    function copiarChavePix() {
+        const chavePix = "6892626612";
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(chavePix).catch(() => copiarChavePixFallback(chavePix));
+            return;
+        }
+
+        copiarChavePixFallback(chavePix);
+    }
+
+    function copiarChavePixFallback(valor) {
+        const campoTemporario = document.createElement("textarea");
+        campoTemporario.value = valor;
+        campoTemporario.setAttribute("readonly", "");
+        campoTemporario.style.position = "fixed";
+        campoTemporario.style.top = "-9999px";
+        campoTemporario.style.opacity = "0";
+        document.body.appendChild(campoTemporario);
+        campoTemporario.focus();
+        campoTemporario.select();
+        try { document.execCommand("copy"); } catch (_) {}
+        document.body.removeChild(campoTemporario);
     }
 
     function solicitarPagamentoCartao(btn) { finalizarPedido("Cartão", btn, "💳 Pagar com Cartão"); }
