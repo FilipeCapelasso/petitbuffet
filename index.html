@@ -642,7 +642,11 @@ window.addEventListener("load", async () => {
   await Promise.all([carregarCatalogoSupabase(), carregarConfiguracoesLoja()]); // popula PRODUTOS/CATEGORIAS e settings reais antes de desenhar a home
   await carregarCardapioConfig();
   abrirPagina("home");
-  restaurarSessaoAdmin();
+  await restaurarSessaoAdmin();
+  // Acesso administrativo via URL: abrindo o site com #admin (ex: seusite.com/#admin)
+  // a tela de login do admin abre sozinha. Se a sessão já estiver ativa, vai
+  // direto para o painel.
+  if (location.hash === "#admin") { isAdminLogado() ? openAdminPanel() : openAdminLogin(); }
 });
 
 /* Restaura sessão do admin (se houver) ao recarregar a página — a verdadeira
