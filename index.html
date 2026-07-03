@@ -367,6 +367,25 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .adm-kpi-val{font-family:var(--font-mono);font-size:24px;font-weight:700;color:var(--pine);}
 .adm-centro-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);gap:10px;flex-wrap:wrap;}
 .adm-centro-row:last-child{border-bottom:none;}
+/* -------- Tabela de produtos (estilo "Gerenciar Serviços") -------- */
+.adm-section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.adm-section-title{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--ink);}
+.adm-section-title em{font-style:normal;color:var(--pine);}
+.adm-section-sub{font-size:12px;color:var(--ink-faint);margin-top:2px;}
+.adm-table-wrap{background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;margin-bottom:26px;}
+.adm-table{width:100%;border-collapse:collapse;}
+.adm-table thead th{text-align:left;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-faint);font-family:var(--font-mono);padding:14px 16px;border-bottom:1px solid var(--line);background:var(--paper-alt);}
+.adm-table tbody td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:middle;}
+.adm-table tbody tr:last-child td{border-bottom:none;}
+.adm-table tbody tr:hover{background:var(--paper-alt);}
+.adm-thumb{width:52px;height:52px;object-fit:cover;border-radius:10px;display:block;}
+.adm-thumb-fallback{width:52px;height:52px;border-radius:10px;background:var(--paper-alt);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.adm-badge{display:inline-block;padding:4px 11px;border-radius:var(--r-full);font-size:10.5px;font-weight:700;letter-spacing:.3px;}
+.adm-badge.on{background:var(--success-pale);color:var(--success);}
+.adm-badge.off{background:var(--danger-pale);color:var(--danger);}
+.adm-icon-btn{width:32px;height:32px;border-radius:var(--r-full);border:1px solid var(--line);background:var(--white);color:var(--ink-soft);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s;}
+.adm-icon-btn:hover{border-color:var(--pine);color:var(--pine);background:var(--pine-pale);}
+.adm-icon-btn.danger:hover{border-color:var(--danger);color:var(--danger);background:var(--danger-pale);}
 @media (max-width:720px){.adm-top{flex-direction:column;align-items:stretch;} .adm-tabs{order:3;} .adm-content{padding:16px;}}
 </style>
 </head>
@@ -1522,6 +1541,7 @@ async function renderAdminCatalogo(){
     categorias = cat||[]; produtos = prod||[];
   } catch(e) { c.innerHTML = catalogoNaoConfigurado(); return; }
 
+  ULTIMAS_CATEGORIAS_ADMIN = categorias; // usado pelo modal de edição de produto
   const catOptions = categorias.map(cat=>`<option value="${cat.id}">${escapeHTML(cat.nome)}</option>`).join('');
   const catRows = categorias.map(cat=>`
     <div class="adm-centro-row">
@@ -1533,26 +1553,29 @@ async function renderAdminCatalogo(){
     </div>`).join('') || `<p style="font-size:12.5px;color:var(--ink-faint);">Nenhuma categoria cadastrada ainda.</p>`;
 
   const prodRows = produtos.map(p=>{
-    const disp = produtoDisponivel(p.id); const qtdCentros = (PRODUTOS[p.id]?.centros||[]).length;
-    return `
-    <div style="background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin-bottom:12px;display:flex;gap:14px;align-items:center;">
-      ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0;">` : `<div style="width:56px;height:56px;border-radius:10px;background:var(--paper-alt);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">${escapeHTML(p.icone||'◈')}</div>`}
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="width:8px;height:8px;border-radius:99px;flex-shrink:0;background:${disp?'var(--success)':'var(--danger)'};" title="${disp?'Disponível':'Indisponível'}"></span>
-          <strong style="font-family:var(--font-display);font-size:15.5px;">${escapeHTML(p.nome)}</strong>
+    const disp = produtoDisponivel(p.id);
+    const centros = (PRODUTOS[p.id]?.centros||[]);
+    const menor = centros.length ? Math.min(...centros.map(c=>precoCentro(p.id,c.id))) : null;
+    const catNome = (categorias.find(k=>k.id===p.categoria_id)||{}).nome || 'Sem categoria';
+    return `<tr>
+      <td>${p.imagem_url ? `<img src="${p.imagem_url}" class="adm-thumb" alt="${escapeHTML(p.nome)}">` : `<div class="adm-thumb-fallback">${escapeHTML(p.icone||'◈')}</div>`}</td>
+      <td><strong style="font-family:var(--font-display);font-size:14.5px;">${escapeHTML(p.nome)}</strong><div class="adm-sub" style="color:var(--pine);text-transform:uppercase;font-size:10px;letter-spacing:.4px;">${escapeHTML(catNome)}</div></td>
+      <td class="mono" style="font-size:13px;">${menor!==null ? dinheiro(menor)+' +' : '<span style="color:var(--ink-faint);">sem preço</span>'}</td>
+      <td class="mono" style="font-size:12px;color:var(--ink-faint);">${centros.length} tamanho${centros.length===1?'':'s'}</td>
+      <td><span class="adm-badge ${disp?'on':'off'}">${disp?'Ativo':'Inativo'}</span></td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          <button class="adm-icon-btn" title="${disp?'Desativar':'Ativar'}" onclick="admAlternarDisponibilidade('${p.id}')">${disp?'⏻':'○'}</button>
+          <button class="adm-icon-btn" title="Editar preços e Centros" onclick="admAbrirCentrosModal('${p.id}')">✎</button>
+          <button class="adm-icon-btn" title="Editar produto" onclick="admAbrirEdicaoProduto('${p.id}')">🖼</button>
+          <button class="adm-icon-btn danger" title="Excluir" onclick="admExcluirProduto('${p.id}')">🗑</button>
         </div>
-        <div class="adm-sub">${p.id} · ${escapeHTML((categorias.find(k=>k.id===p.categoria_id)||{}).nome || 'sem categoria')}${p.ativo?'':' · oculto'} · ${qtdCentros} preço${qtdCentros===1?'':'s'} cadastrado${qtdCentros===1?'':'s'}</div>
-      </div>
-      <div style="display:flex;gap:8px;flex-shrink:0;">
-        <button class="adm-btn sm" title="Editar preços e Centros" onclick="admAbrirCentrosModal('${p.id}')">✎ Preços</button>
-        <button class="adm-btn sm" onclick="admAbrirEdicaoProduto('${p.id}')">Editar</button>
-        <button class="adm-btn sm danger" onclick="admExcluirProduto('${p.id}')">Excluir</button>
-      </div>
-    </div>`;}).join('') || `<p style="font-size:12.5px;color:var(--ink-faint);">Nenhum produto cadastrado ainda.</p>`;
+      </td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);padding:30px;">Nenhum produto cadastrado ainda.</td></tr>`;
 
   c.innerHTML = `
-    <div class="adm-notice">Categorias e produtos criados aqui aparecem na loja para todos os visitantes assim que salvos. Depois de criar um produto, defina ao menos um preço em <strong>Preços &amp; Estoque</strong> para ele aparecer na vitrine (sem preço, não é possível comprar).</div>
+    <div class="adm-notice">Categorias e produtos criados aqui aparecem na loja para todos os visitantes assim que salvos. Clique em <strong>✎</strong> para cadastrar os preços (Centros) de um produto — sem preço, ele não aparece na vitrine.</div>
 
     <h4 style="font-family:var(--font-display);font-size:18px;margin-bottom:10px;">Categorias</h4>
     <div style="background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin-bottom:14px;">${catRows}</div>
@@ -1562,8 +1585,20 @@ async function renderAdminCatalogo(){
       <button class="adm-btn" onclick="admCriarCategoria()">+ Nova categoria</button>
     </div>
 
-    <h4 style="font-family:var(--font-display);font-size:18px;margin-bottom:10px;">Produtos</h4>
-    ${prodRows}
+    <div class="adm-section-head">
+      <div>
+        <div class="adm-section-title">Gerenciar <em>Produtos</em></div>
+        <div class="adm-section-sub">${produtos.length} produto(s) — preços, fotos, categorias e disponibilidade</div>
+      </div>
+      <button class="adm-btn" onclick="document.getElementById('novo-prod-nome').scrollIntoView({behavior:'smooth',block:'center'})">+ Novo Produto</button>
+    </div>
+    <div class="adm-table-wrap">
+      <table class="adm-table">
+        <thead><tr><th>Foto</th><th>Produto</th><th>A partir de</th><th>Tamanhos</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody>${prodRows}</tbody>
+      </table>
+    </div>
+
     <div style="background:var(--paper-alt);border:1px dashed var(--line-strong);border-radius:var(--r-md);padding:18px;margin-top:10px;">
       <h5 style="font-family:var(--font-display);font-size:15px;margin-bottom:12px;">+ Novo produto</h5>
       <div style="display:flex;flex-direction:column;gap:8px;max-width:440px;">
@@ -1585,6 +1620,17 @@ async function renderAdminCatalogo(){
       <button class="adm-btn sm" style="width:fit-content;" onclick="admSalvarConfiguracoes()">Salvar configurações</button>
     </div>
   `;
+}
+let ULTIMAS_CATEGORIAS_ADMIN = [];
+async function admAlternarDisponibilidade(produtoId){
+  const disp = !produtoDisponivel(produtoId); estoqueProdutos[produtoId] = disp;
+  try { safeWrite("pb-produtos-estoque", estoqueProdutos); } catch(e){}
+  if (sb) {
+    try { await sb.from("produtos_estoque").upsert({ produto_id: produtoId, disponivel: disp }, { onConflict:"produto_id" }); logAudit("estoque_atualizado","produtos_estoque",`${PRODUTOS[produtoId]?.nome||produtoId}: ${disp?'disponível':'indisponível'}`); }
+    catch(e) { console.warn("Supabase: falha ao salvar disponibilidade.", e); }
+  }
+  if (paginaAtual==="home") abrirPagina("home");
+  renderAdminCatalogo();
 }
 
 async function admCriarCategoria(){
@@ -1635,15 +1681,58 @@ async function admUploadImagemProduto(produtoId, arquivo){
   const { data } = sb.storage.from("produtos").getPublicUrl(path);
   return data?.publicUrl || null;
 }
-function admAbrirEdicaoProduto(id){
-  const p = PRODUTOS[id] || {};
-  const novoNome = prompt("Nome do produto:", p.nome||id); if (novoNome===null) return;
-  const novaDesc = prompt("Descrição:", p.desc||""); if (novaDesc===null) return;
-  const ativo = confirm("Produto visível na loja? OK = sim, Cancelar = ocultar");
-  (async()=>{ try {
-    const { error } = await sb.from("produtos").update({ nome:novoNome, descricao:novaDesc, ativo, atualizado_em:new Date().toISOString() }).eq("id", id);
-    if (error) throw error; logAudit("produto_editado","produtos",novoNome); renderAdminCatalogo();
-  } catch(e){ feedback("Não foi possível salvar."); } })();
+async function admAbrirEdicaoProduto(id){
+  let p;
+  try { const { data, error } = await sb.from("produtos").select("*").eq("id", id).single(); if (error) throw error; p = data; }
+  catch(e) { return feedback("Não foi possível carregar o produto."); }
+  const catOptions = ULTIMAS_CATEGORIAS_ADMIN.map(cat=>`<option value="${cat.id}" ${cat.id===p.categoria_id?'selected':''}>${escapeHTML(cat.nome)}</option>`).join('');
+  document.getElementById("editar-produto-modal-content").innerHTML = `
+    <button class="modal-fechar" onclick="fecharModal('modal-editar-produto')">×</button>
+    <h3 style="font-family:var(--font-display);font-size:20px;color:var(--ink);margin-bottom:18px;font-weight:700;">✎ Editar Produto</h3>
+    <div style="display:flex;gap:16px;margin-bottom:16px;align-items:center;">
+      ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:76px;height:76px;object-fit:cover;border-radius:12px;">` : `<div style="width:76px;height:76px;border-radius:12px;background:var(--paper-alt);display:flex;align-items:center;justify-content:center;font-size:32px;">${escapeHTML(p.icone||'◈')}</div>`}
+      <div style="flex:1;">
+        <label style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:6px;">Trocar foto</label>
+        <input type="file" accept="image/*" id="edt-prod-foto" class="adm-input-sm" style="width:100%;">
+      </div>
+    </div>
+    <label style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:6px;">Nome do produto *</label>
+    <input class="modal-input" id="edt-prod-nome" value="${escapeHTML(p.nome||'')}" style="margin-bottom:14px;">
+    <label style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:6px;">Categoria</label>
+    <select class="modal-input" id="edt-prod-categoria" style="margin-bottom:14px;">${catOptions}</select>
+    <label style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:6px;">Ícone (usado se não houver foto)</label>
+    <input class="modal-input" id="edt-prod-icone" value="${escapeHTML(p.icone||'◈')}" maxlength="2" style="margin-bottom:14px;max-width:100px;">
+    <label style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:6px;">Descrição</label>
+    <textarea class="modal-input" id="edt-prod-desc" style="resize:vertical;min-height:70px;margin-bottom:14px;">${escapeHTML(p.descricao||'')}</textarea>
+    <label style="display:flex;align-items:center;gap:9px;font-size:13px;margin-bottom:18px;">
+      <input type="checkbox" id="edt-prod-ativo" ${p.ativo?'checked':''}> Produto ativo (visível na loja)
+    </label>
+    <button class="modal-btn primary" onclick="admSalvarEdicaoProduto('${id}')">Salvar alterações →</button>
+  `;
+  document.getElementById("modal-editar-produto").classList.add("ativo");
+}
+async function admSalvarEdicaoProduto(id){
+  const nome = document.getElementById("edt-prod-nome").value.trim();
+  const categoriaId = document.getElementById("edt-prod-categoria").value;
+  const icone = document.getElementById("edt-prod-icone").value.trim() || "◈";
+  const descricao = document.getElementById("edt-prod-desc").value.trim();
+  const ativo = document.getElementById("edt-prod-ativo").checked;
+  const arquivo = document.getElementById("edt-prod-foto").files[0];
+  if (!nome) return feedback("Informe o nome do produto.");
+  try {
+    let imagemUrl;
+    if (arquivo) imagemUrl = await admUploadImagemProduto(id, arquivo);
+    const row = { nome, categoria_id: categoriaId||null, icone, descricao, ativo, atualizado_em: new Date().toISOString() };
+    if (imagemUrl) row.imagem_url = imagemUrl;
+    const { error } = await sb.from("produtos").update(row).eq("id", id);
+    if (error) throw error;
+    logAudit("produto_editado","produtos",nome);
+    fecharModal("modal-editar-produto");
+    await carregarCatalogoSupabase();
+    renderAdminCatalogo();
+    if (paginaAtual==="home") abrirPagina("home");
+    feedback("Produto atualizado.");
+  } catch(e) { feedback("Não foi possível salvar: " + (e.message||"")); }
 }
 async function admExcluirProduto(id){
   if (!confirm("Excluir este produto definitivamente? Os preços (Centros) associados também deixarão de aparecer.")) return;
@@ -1907,6 +1996,10 @@ async function renderAdminRegistros(){
 
 <!-- BOTÃO E PAINEL DE PERSONALIZAÇÃO VISUAL -->
 <button id="btn-tema" onclick="abrirPainelTema()" title="Personalizar visual">✦</button>
+<div id="modal-editar-produto" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-editar-produto')">
+  <div class="modal-box" style="max-width:480px;" id="editar-produto-modal-content"><!-- gerado por admAbrirEdicaoProduto() --></div>
+</div>
+
 <div id="modal-centros-produto" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-centros-produto')">
   <div class="modal-box" style="max-width:480px;" id="centros-modal-content"><!-- gerado por admAbrirCentrosModal() --></div>
 </div>
