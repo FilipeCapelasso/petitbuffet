@@ -229,7 +229,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 /* ==========================================================================
    MODALS
    ========================================================================== */
-.modal-overlay{position:fixed;inset:0;background:rgba(20,22,18,.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay{position:fixed;inset:0;background:rgba(20,22,18,.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:20050;opacity:0;pointer-events:none;transition:opacity .25s;}
 /* -------- Botão flutuante de personalização visual + painel -------- */
 #btn-tema{position:fixed;right:24px;bottom:24px;width:52px;height:52px;border-radius:var(--r-full);background:var(--pine);color:#fff;border:none;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow-lift);z-index:400;transition:transform .2s;}
 #btn-tema:hover{transform:rotate(35deg) scale(1.06);background:var(--pine-deep);}
@@ -1566,8 +1566,7 @@ async function renderAdminCatalogo(){
       <td>
         <div style="display:flex;gap:6px;">
           <button class="adm-icon-btn" title="${disp?'Desativar':'Ativar'}" onclick="admAlternarDisponibilidade('${p.id}')">${disp?'⏻':'○'}</button>
-          <button class="adm-icon-btn" title="Editar preços e Centros" onclick="admAbrirCentrosModal('${p.id}')">✎</button>
-          <button class="adm-icon-btn" title="Editar produto" onclick="admAbrirEdicaoProduto('${p.id}')">🖼</button>
+          <button class="adm-icon-btn" title="Editar produto" onclick="admAbrirEdicaoProduto('${p.id}')">✎</button>
           <button class="adm-icon-btn danger" title="Excluir" onclick="admExcluirProduto('${p.id}')">🗑</button>
         </div>
       </td>
@@ -1575,7 +1574,7 @@ async function renderAdminCatalogo(){
   }).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);padding:30px;">Nenhum produto cadastrado ainda.</td></tr>`;
 
   c.innerHTML = `
-    <div class="adm-notice">Categorias e produtos criados aqui aparecem na loja para todos os visitantes assim que salvos. Clique em <strong>✎</strong> para cadastrar os preços (Centros) de um produto — sem preço, ele não aparece na vitrine.</div>
+    <div class="adm-notice">Categorias e produtos criados aqui aparecem na loja para todos os visitantes assim que salvos. Clique em <strong>✎</strong> para editar o produto e cadastrar os preços (Centros) — sem preço, ele não aparece na vitrine.</div>
 
     <h4 style="font-family:var(--font-display);font-size:18px;margin-bottom:10px;">Categorias</h4>
     <div style="background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin-bottom:14px;">${catRows}</div>
@@ -1708,8 +1707,14 @@ async function admAbrirEdicaoProduto(id){
       <input type="checkbox" id="edt-prod-ativo" ${p.ativo?'checked':''}> Produto ativo (visível na loja)
     </label>
     <button class="modal-btn primary" onclick="admSalvarEdicaoProduto('${id}')">Salvar alterações →</button>
+
+    <div style="border-top:1px dashed var(--line);margin:22px 0 16px;"></div>
+    <h4 style="font-family:var(--font-display);font-size:15.5px;color:var(--ink);margin-bottom:4px;font-weight:700;">Preços & Centros</h4>
+    <p style="font-size:12px;color:var(--ink-faint);margin-bottom:14px;">Tamanhos e preços deste produto. Salva direto no Supabase.</p>
+    <div id="centros-modal-content"></div>
   `;
   document.getElementById("modal-editar-produto").classList.add("ativo");
+  renderCentrosModalContent(id);
 }
 async function admSalvarEdicaoProduto(id){
   const nome = document.getElementById("edt-prod-nome").value.trim();
@@ -1749,11 +1754,6 @@ async function admSalvarConfiguracoes(){
   } catch(e) { feedback("Não foi possível salvar (a tabela 'configuracoes' existe? rode migration_catalogo.sql)."); }
 }
 
-function admAbrirCentrosModal(produtoId){
-  const modal = document.getElementById("modal-centros-produto");
-  renderCentrosModalContent(produtoId);
-  modal.classList.add("ativo");
-}
 function renderCentrosModalContent(produtoId){
   const p = PRODUTOS[produtoId]; if (!p) return;
   const disp = produtoDisponivel(produtoId);
@@ -1770,10 +1770,9 @@ function renderCentrosModalContent(produtoId){
         <button class="adm-btn sm" onclick="salvarCentroCompleto('${produtoId}','${centro.id}')">Salvar</button>
       </div>
     </div>`).join('');
-  document.getElementById("centros-modal-content").innerHTML = `
-    <button class="modal-fechar" onclick="fecharModal('modal-centros-produto')">×</button>
-    <h3 style="font-family:var(--font-display);font-size:20px;color:var(--ink);margin-bottom:4px;font-weight:700;">${escapeHTML(p.nome)}</h3>
-    <p style="font-size:12px;color:var(--ink-faint);margin-bottom:16px;">Preços e tamanhos (Centros) cadastrados para este produto. Tudo aqui é editável e salva direto no Supabase.</p>
+  const target = document.getElementById("centros-modal-content");
+  if (!target) return;
+  target.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;background:var(--paper-alt);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:16px;">
       <span style="font-size:13px;font-weight:600;">Produto disponível na loja</span>
       <label class="adm-switch"><input type="checkbox" id="cad-disp-${produtoId}" ${disp?'checked':''} onchange="salvarDisponibilidadeProduto('${produtoId}')"><span class="adm-switch-track"></span></label>
@@ -1997,12 +1996,9 @@ async function renderAdminRegistros(){
 <!-- BOTÃO E PAINEL DE PERSONALIZAÇÃO VISUAL -->
 <button id="btn-tema" onclick="abrirPainelTema()" title="Personalizar visual">✦</button>
 <div id="modal-editar-produto" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-editar-produto')">
-  <div class="modal-box" style="max-width:480px;" id="editar-produto-modal-content"><!-- gerado por admAbrirEdicaoProduto() --></div>
+  <div class="modal-box" style="max-width:480px;max-height:88vh;overflow-y:auto;" id="editar-produto-modal-content"><!-- gerado por admAbrirEdicaoProduto() --></div>
 </div>
 
-<div id="modal-centros-produto" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-centros-produto')">
-  <div class="modal-box" style="max-width:480px;" id="centros-modal-content"><!-- gerado por admAbrirCentrosModal() --></div>
-</div>
 
 <div id="modal-tema" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-tema')">
   <div class="modal-box" style="max-width:420px;">
