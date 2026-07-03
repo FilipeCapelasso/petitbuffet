@@ -103,7 +103,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
    HOME HERO — thesis: "monta seu cento" (comanda gigante)
    ========================================================================== */
 .home-hero{position:relative;padding:0 0 46px;max-width:1200px;overflow:visible;}
-.hero-banner{position:relative;display:flex;align-items:center;gap:clamp(16px,3vw,32px);padding:clamp(22px,3.4vw,40px) clamp(20px,3.6vw,40px);margin:28px auto 40px;max-width:880px;border-radius:var(--r-xl);overflow:hidden;
+.hero-banner{position:relative;display:flex;align-items:center;gap:clamp(16px,3vw,40px);padding:clamp(22px,3.4vw,44px) clamp(20px,3.6vw,48px);margin:28px auto 40px;max-width:1160px;border-radius:var(--r-xl);overflow:hidden;
   background:radial-gradient(120% 160% at 8% 0%, rgba(201,138,123,.16), transparent 55%), radial-gradient(120% 160% at 100% 100%, rgba(166,124,39,.14), transparent 55%), var(--pine-deep);
   box-shadow:var(--shadow-lift);}
 .hero-banner::before{content:'';position:absolute;inset:0;opacity:.5;background-image:
@@ -307,6 +307,10 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .pix-modal-icon{font-size:34px;margin-bottom:8px;}
 .pix-modal-titulo{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--ink);margin-bottom:6px;}
 .pix-modal-sub{font-size:13px;color:var(--ink-soft);line-height:1.55;max-width:300px;margin:0 auto;}
+.pix-loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:40px 0;color:var(--ink-soft);font-size:14px;font-weight:600;}
+.pix-spinner{width:20px;height:20px;border:2.5px solid var(--line-strong);border-top-color:var(--pine);border-radius:50%;animation:pixSpin .8s linear infinite;}
+@keyframes pixSpin{to{transform:rotate(360deg);}}
+.pix-aviso{background:var(--apricot-pale);color:var(--apricot-deep);font-size:12px;line-height:1.5;padding:10px 14px;border-radius:var(--r-sm);margin-bottom:14px;text-align:left;}
 
 /* ---- Meus Pedidos: perfil + cartões + stepper ---- */
 .compras-perfil{display:flex;align-items:center;gap:14px;background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 20px;margin-bottom:28px;text-align:left;}
@@ -446,7 +450,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 /* ==========================================================================
    TOAST — feedback discreto, sem popup bloqueante
    ========================================================================== */
-#toast-container{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;}
+#toast-container{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:30000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;}
 .toast{pointer-events:auto;display:flex;align-items:center;gap:9px;padding:12px 20px;border-radius:var(--r-full);background:var(--ink);color:var(--paper);font-size:13px;font-weight:600;box-shadow:var(--shadow-lift);opacity:0;transform:translateY(10px) scale(.96);transition:opacity .25s ease,transform .25s ease;max-width:86vw;text-align:center;}
 .toast.show{opacity:1;transform:translateY(0) scale(1);}
 .toast::before{content:'✓';flex-shrink:0;width:17px;height:17px;border-radius:50%;background:var(--success);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;}
@@ -503,10 +507,10 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
   <div class="modal-box">
     <button class="modal-fechar" onclick="fecharModal('modal-login')">×</button>
     <h3 style="font-family:var(--font-display);font-size:24px;color:var(--ink);margin-bottom:8px;font-weight:700;">Bem-vindo(a)</h3>
-    <p style="font-size:13px;color:var(--ink-soft);margin-bottom:22px;line-height:1.5;">Identifique-se para salvar seu histórico de compras e avaliações.</p>
-    <input type="text" id="login-nome" class="modal-input" placeholder="Seu Nome Completo">
-    <input type="tel" id="login-wpp" class="modal-input" placeholder="WhatsApp (DDD + Número)">
-    <button class="modal-btn primary" onclick="cadastrarUsuario()">Salvar Perfil</button>
+    <p style="font-size:13px;color:var(--ink-soft);margin-bottom:22px;line-height:1.5;">Só o seu primeiro nome e o WhatsApp — a conta é criada na hora, sem senha, e seu histórico de pedidos fica salvo.</p>
+    <input type="text" id="login-nome" class="modal-input" placeholder="Seu primeiro nome" autocomplete="given-name">
+    <input type="tel" id="login-wpp" class="modal-input" placeholder="WhatsApp (DDD + Número)" inputmode="numeric" autocomplete="tel">
+    <button class="modal-btn primary" onclick="cadastrarUsuario()">Entrar</button>
   </div>
 </div>
 
@@ -826,7 +830,7 @@ window.addEventListener("keydown", e => { if (e.key === "Escape") fecharImagemPr
 window.addEventListener("load", async () => {
   document.getElementById("btn-wpp").href = `https://wa.me/55${CONFIG.whatsapp}`;
   renderMenuLateral();
-  iniciarSocketSeguro(); verificarUsuarioLogado();
+  iniciarSocketSeguro(); verificarUsuarioLogado(); sincronizarClienteLogado();
   await Promise.all([carregarCatalogoSupabase(), carregarConfiguracoesLoja()]); // popula PRODUTOS/CATEGORIAS e settings reais antes de desenhar a home
   await carregarCardapioConfig();
   abrirPagina("home");
@@ -938,12 +942,38 @@ function abrirModalLogin(){
   document.getElementById("modal-login").classList.add("ativo");
 }
 function fecharModal(id){ document.getElementById(id).classList.remove("ativo"); if (id==="modal-compra-detalhe") pararAutoAtualizacaoPedido(); }
-function cadastrarUsuario(){
-  const nome = document.getElementById("login-nome").value.trim(); const telefone = onlyDigits(document.getElementById("login-wpp").value);
-  if (nome.length<3) return feedback("Informe seu nome completo.");
+function primeiroNome(txt){ return String(txt||"").trim().split(/\s+/)[0] || ""; }
+async function cadastrarUsuario(){
+  const nome = primeiroNome(document.getElementById("login-nome").value);
+  const telefone = onlyDigits(document.getElementById("login-wpp").value);
+  if (nome.length<2) return feedback("Informe seu primeiro nome.");
   if (telefone.length<10) return feedback("Informe um WhatsApp válido com DDD.");
   localStorage.setItem(STORAGE.name, nome); localStorage.setItem(STORAGE.phone, telefone);
-  fecharModal("modal-login"); verificarUsuarioLogado(); sincronizarClienteViaPlanilha();
+  await salvarClienteSupabase(nome, telefone);
+  fecharModal("modal-login"); verificarUsuarioLogado();
+  feedback(`Bem-vindo(a), ${nome}!`);
+}
+// Cadastro automático "sem senha": o telefone é a identidade do cliente.
+// Se o telefone já existe, atualiza o nome; se não, cria. É o "login" do cliente.
+async function salvarClienteSupabase(nome, telefone){
+  if (!sb) return null;
+  try {
+    const { data, error } = await sb.from("clientes")
+      .upsert({ telefone, nome, atualizado_em:new Date().toISOString() }, { onConflict:"telefone" })
+      .select().single();
+    if (error) throw error; return data;
+  } catch(e) { console.warn("Não foi possível salvar o cliente no Supabase.", e); return null; }
+}
+// Ao abrir o site, se já houver telefone salvo, revalida o nome contra o
+// Supabase (caso o cliente tenha atualizado em outro dispositivo).
+async function sincronizarClienteLogado(){
+  if (!sb) return;
+  const telefone = onlyDigits(localStorage.getItem(STORAGE.phone) || "");
+  if (telefone.length<10) return;
+  try {
+    const { data, error } = await sb.from("clientes").select("nome").eq("telefone", telefone).single();
+    if (!error && data && data.nome) { localStorage.setItem(STORAGE.name, data.nome); verificarUsuarioLogado(); }
+  } catch(e){}
 }
 
 function renderMenuLateral(){
@@ -1367,24 +1397,67 @@ async function salvarPedidoSupabase(payload, statusPagamento, statusPedido){
 }
 
 async function iniciarPixAutomatico(btn){
-  if (!mpEnabled()) { feedback("PIX automático ainda não foi configurado. Use 'Pagar com Cartão' ou fale no WhatsApp."); return; }
-  let payload; try { payload = payloadPedido("PIX Automático"); } catch(error) { feedback(error.message); return; }
-  const textoOriginal = btn.innerHTML;
+  // Valida os dados do pedido ANTES de abrir qualquer coisa.
+  let payload; try { payload = payloadPedido("PIX"); } catch(error) { feedback(error.message); return; }
+  _mpOrderPayload = payload;
+
+  // O card do PIX SEMPRE abre — mesmo que o backend automático falhe, o
+  // cliente vê o QR/chave manual. Assim o botão nunca "não faz nada".
+  fecharModal("modal-checkout");
+  renderPixLoading(payload);
+  document.getElementById("modal-pix-pagamento").classList.add("ativo");
+
+  // Registra o pedido (não bloqueia a tela do PIX se falhar).
+  salvarPedidoSupabase(payload, "pendente").catch(e=>console.warn("Não foi possível salvar o pedido antes do PIX.", e));
+  try { salvarNaAbaCompras(payload); enviarSocketPedido(payload); } catch(e){}
+
+  // Tenta o PIX automático (Mercado Pago via Edge Function). Se não estiver
+  // configurado ou falhar, cai no PIX manual (chave copia e cola + QR gerado
+  // no navegador a partir da chave).
+  if (!mpEnabled()) { await renderPixManual(payload, "O PIX automático ainda não está ativo — use a chave abaixo. Envie o comprovante pelo WhatsApp para confirmarmos."); return; }
   try {
-    btn.disabled = true; btn.innerHTML = "Gerando cobrança PIX...";
-    await salvarPedidoSupabase(payload, "pendente");
     const res = await fetch(`${MP_PIX.functionsUrl}/loop-api`, {
       method:"POST", headers:{ "Content-Type":"application/json", "apikey":SUPABASE_ANON_KEY, "Authorization":`Bearer ${SUPABASE_ANON_KEY}` },
       body: JSON.stringify({ action:"create_pix", order_id:payload.pedido, amount:payload.sinal, description:`Sinal do pedido ${payload.pedido} — Petit Buffet Premium`, payer_name:payload.nome })
     });
-    const data = await res.json(); if (!res.ok || data.error) throw new Error(data.error || "Não foi possível gerar o PIX.");
-    _mpOrderPayload = payload;
-    fecharModal("modal-checkout");
+    const data = await res.json(); if (!res.ok || data.error) throw new Error(data.error || "resposta inválida");
     await renderMpPixScreen(data, payload);
-    document.getElementById("modal-pix-pagamento").classList.add("ativo");
     startMpPolling(payload.pedido, data.token, data.expires_at);
-  } catch(error) { feedback(`Não foi possível gerar o PIX automático: ${error.message}`); }
-  finally { btn.disabled = false; btn.innerHTML = textoOriginal; }
+  } catch(error) {
+    console.warn("PIX automático falhou, usando PIX manual:", error);
+    await renderPixManual(payload, "Não foi possível gerar o PIX automático agora — use a chave abaixo e envie o comprovante pelo WhatsApp.");
+  }
+}
+function renderPixLoading(payload){
+  const area = document.getElementById("pix-auto-area"); if (!area) return;
+  area.innerHTML = `<div class="mp-pay">
+    <div class="mp-amount">Valor do sinal<strong class="mono">${fmt(payload.sinal)}</strong></div>
+    <div class="pix-loading"><span class="pix-spinner"></span> Gerando seu PIX...</div>
+  </div>`;
+  area.style.display = "block";
+}
+async function renderPixManual(payload, aviso){
+  const area = document.getElementById("pix-auto-area"); if (!area) return;
+  const chave = (PIX_KEY_MANUAL_RUNTIME || PIX_KEY_MANUAL || "").trim();
+  let qrSrc = null;
+  if (chave && window.QRCode) { try { qrSrc = await QRCode.toDataURL(chave, { width:320, margin:1, errorCorrectionLevel:"M" }); } catch(e){} }
+  const img = qrSrc ? `<img class="mp-qr" alt="QR Code PIX" src="${qrSrc}">` : `<div class="mp-qr mp-qr-empty">Copie a chave PIX abaixo</div>`;
+  const msgWpp = `Olá! Fiz o pedido *${payload.pedido}* e vou pagar o sinal de ${dinheiro(payload.sinal)} via PIX. Segue o comprovante:`;
+  area.innerHTML = `<div class="mp-pay">
+    <div class="mp-amount">Valor do sinal<strong class="mono">${fmt(payload.sinal)}</strong></div>
+    ${aviso ? `<div class="pix-aviso">${escapeHTML(aviso)}</div>` : ""}
+    ${img}
+    <div class="mp-copy-wrap"><div class="mp-copy-label">Chave PIX (telefone)</div>
+      <textarea class="mp-copy-code" id="mp-code" readonly>${escapeHTML(chave)}</textarea>
+      <button class="modal-btn pix-copy" id="mp-copy-btn" onclick="mpCopyCode()" type="button">Copiar chave PIX</button>
+    </div>
+    <a class="modal-btn success" style="text-decoration:none;display:block;text-align:center;" href="https://wa.me/55${CONFIG.whatsapp}?text=${encodeURIComponent(msgWpp)}" target="_blank" rel="noopener" onclick="finalizarPedidoManual()">Enviar comprovante no WhatsApp</a>
+  </div>`;
+  area.style.display = "block";
+}
+function finalizarPedidoManual(){
+  try { meuCarrinho = []; safeWrite(STORAGE.cart, []); atualizarContadorCarrinho(); } catch(e){}
+  setTimeout(()=>{ fecharModalPix(); abrirPagina("compras"); }, 400);
 }
 async function renderMpPixScreen(d, payload){
   const area = document.getElementById("pix-auto-area"); if (!area) return;
