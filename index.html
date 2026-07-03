@@ -496,9 +496,13 @@ const SUPABASE_URL      = "https://roifufeqyihmspedbowy.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvaWZ1ZmVxeWlobXNwZWRib3d5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwNDMzNDUsImV4cCI6MjA5ODYxOTM0NX0.tWNbd3XZ-fdIZ9xQ8hqGte5G4tpFwIMNdoUJ2XK4e2Y";
 const MP_PIX = { functionsUrl: "https://SEU-PROJETO.functions.supabase.co" };
 const PIX_KEY_MANUAL = "6892626612";
-const ADMIN_EMAIL = "admin@petitbuffet.com";
-const ADMIN_PASS  = "TROQUE-ESTA-SENHA";
-const ADMIN_ACTOR = "Petit Buffet Admin";
+/* ------------------------------------------------------------------------
+   ADMIN — login real via Supabase Auth (não é mais senha fixa no código).
+   Crie o usuário admin em Supabase → Authentication → Users, e cadastre o
+   UUID dele na tabela public.admins (veja instruções no final do SQL).
+   ------------------------------------------------------------------------ */
+let ADMIN_ACTOR = "Admin";
+let adminSession = null; // sessão Supabase Auth do admin logado (ou null)
 
 const SB_READY = !!(SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes("SEU-PROJETO") && !SUPABASE_ANON_KEY.includes("SUA-CHAVE"));
 let sb = null;
@@ -620,7 +624,22 @@ window.addEventListener("keydown", e => { if (e.key === "Escape") fecharImagemPr
 window.addEventListener("load", () => {
   document.getElementById("btn-wpp").href = `https://wa.me/55${CONFIG.whatsapp}`;
   iniciarSocketSeguro(); verificarUsuarioLogado(); carregarCardapioConfig(); abrirPagina("home");
+  restaurarSessaoAdmin();
 });
+
+/* Restaura sessão do admin (se houver) ao recarregar a página — a verdadeira
+   permissão continua sendo checada pelo servidor (RLS) a cada operação, isto
+   aqui só evita pedir login de novo desnecessariamente. */
+async function restaurarSessaoAdmin(){
+  if (!sb) return;
+  try {
+    const { data:{ session } } = await sb.auth.getSession();
+    if (!session) return;
+    const { data: souAdmin } = await sb.rpc("is_admin");
+    if (souAdmin) { adminSession = session; ADMIN_ACTOR = session.user?.email || "Admin"; }
+    else { await sb.auth.signOut(); }
+  } catch(e) { /* segue deslogado */ }
+}
 
 function safeRead(key, fallback){ try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch(_){ return fallback; } }
 function safeWrite(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
@@ -1200,16 +1219,38 @@ function enviarAvaliacaoCompra(){
    ================================================================================ */
 function openAdminLogin(){ const err=document.getElementById("adm-err"); if (err) err.style.display="none"; document.getElementById("modal-admin-login").classList.add("ativo"); }
 function closeAdminLogin(){ document.getElementById("modal-admin-login").classList.remove("ativo"); }
+
 async function doAdminLogin(){
-  const email = (document.getElementById("adm-email").value||"").trim(); const pass = (document.getElementById("adm-pass").value||"").trim(); const err = document.getElementById("adm-err");
-  if (email===ADMIN_EMAIL && pass===ADMIN_PASS) { try { sessionStorage.setItem("pb-admin-on","1"); } catch(e){} closeAdminLogin(); openAdminPanel(); logAudit("login","admin","Login no painel administrativo"); }
-  else { if (err) { err.textContent="Email ou senha incorretos."; err.style.display="block"; } }
+  const email = (document.getElementById("adm-email").value||"").trim();
+  const pass  = (document.getElementById("adm-pass").value||"").trim();
+  const err = document.getElementById("adm-err"); const btn = document.getElementById("adm-login-btn");
+  if (err) err.style.display = "none";
+  if (!sb) { if (err) { err.textContent = "Supabase não está configurado neste site."; err.style.display = "block"; } return; }
+  if (!email || !pass) { if (err) { err.textContent = "Informe email e senha."; err.style.display = "block"; } return; }
+  if (btn) { btn.disabled = true; btn.innerHTML = "Entrando..."; }
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error || !data.session) throw new Error("Email ou senha incorretos.");
+    // A senha por si só não dá acesso — precisa constar na tabela public.admins.
+    const { data: souAdmin, error: erroRpc } = await sb.rpc("is_admin");
+    if (erroRpc || !souAdmin) { await sb.auth.signOut(); throw new Error("Esta conta não tem permissão de administrador."); }
+    adminSession = data.session; ADMIN_ACTOR = data.session.user?.email || email;
+    document.getElementById("adm-pass").value = "";
+    closeAdminLogin(); openAdminPanel(); logAudit("login","admin","Login no painel administrativo");
+  } catch(e) {
+    if (err) { err.textContent = e.message || "Não foi possível entrar."; err.style.display = "block"; }
+  } finally { if (btn) { btn.disabled = false; btn.innerHTML = "Entrar no painel →"; } }
 }
-function adminLogout(){ try { sessionStorage.removeItem("pb-admin-on"); } catch(e){} document.getElementById("adm-panel").classList.remove("op"); logAudit("logout","admin","Saiu do painel administrativo"); }
-function isAdminLogado(){ try { return sessionStorage.getItem("pb-admin-on")==="1"; } catch(e){ return false; } }
+
+async function adminLogout(){
+  logAudit("logout","admin","Saiu do painel administrativo");
+  try { if (sb) await sb.auth.signOut(); } catch(e){}
+  adminSession = null; document.getElementById("adm-panel").classList.remove("op");
+}
+function isAdminLogado(){ return !!adminSession; }
 document.addEventListener("keydown", e => { if (e.ctrlKey && e.altKey && e.key.toLowerCase()==="a") openAdminLogin(); });
 
-function openAdminPanel(){ document.getElementById("adm-panel").classList.add("op"); admTab("pedidos"); }
+function openAdminPanel(){ if (!isAdminLogado()) return openAdminLogin(); document.getElementById("adm-panel").classList.add("op"); admTab("pedidos"); }
 function closeAdminPanel(){ document.getElementById("adm-panel").classList.remove("op"); }
 function admTab(tab){
   document.querySelectorAll(".adm-tab").forEach(b=>b.classList.toggle("act", b.dataset.tab===tab));
@@ -1372,7 +1413,9 @@ async function renderAdminRecuperacao(){
 
 async function salvarAvaliacaoSupabase(av){
   if (!sb) return;
-  try { await sb.from("avaliacoes").insert({ nome:av.nome, texto:av.texto, nota:av.nota, pedido:av.pedido, aprovado:true, criado_em:new Date().toISOString() }); }
+  // "aprovado" não é enviado: o banco sempre grava como pendente de moderação
+  // (o admin publica manualmente na aba Avaliações do painel).
+  try { await sb.from("avaliacoes").insert({ nome:av.nome, texto:av.texto, nota:av.nota, pedido:av.pedido }); }
   catch(e) { console.warn("Supabase: falha ao salvar avaliação.", e); }
 }
 async function renderAdminAvaliacoes(){
@@ -1423,10 +1466,10 @@ async function renderAdminRegistros(){
     <button class="modal-fechar" onclick="closeAdminLogin()">×</button>
     <h3 style="font-family:var(--font-display);font-size:21px;color:var(--ink);margin-bottom:6px;font-weight:700;">Acesso Restrito</h3>
     <p style="font-size:12.5px;color:var(--ink-faint);margin-bottom:18px;">Área exclusiva da administração da Petit Buffet Premium.</p>
-    <input type="email" id="adm-email" class="modal-input" placeholder="Email" autocomplete="off">
-    <input type="password" id="adm-pass" class="modal-input" placeholder="Senha" autocomplete="off" onkeydown="if(event.key==='Enter')doAdminLogin()">
+    <input type="email" id="adm-email" class="modal-input" placeholder="Email" autocomplete="username">
+    <input type="password" id="adm-pass" class="modal-input" placeholder="Senha" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAdminLogin()">
     <div id="adm-err" style="display:none;color:var(--danger);font-size:12px;margin:-6px 0 12px;font-weight:700;"></div>
-    <button class="modal-btn primary" onclick="doAdminLogin()">Entrar no painel →</button>
+    <button class="modal-btn primary" id="adm-login-btn" onclick="doAdminLogin()">Entrar no painel →</button>
   </div>
 </div>
 
