@@ -26,8 +26,20 @@
   --shadow-lift:0 12px 32px rgba(32,36,30,.12);
   --sab:env(safe-area-inset-bottom);
 }
+
+/* ==========================================================================
+   MODO ESCURO (DARK MODE) OVERRIDES
+   ========================================================================== */
+[data-theme="dark"] {
+  --paper:#121212; --paper-alt:#1a1a1a; --white:#242424;
+  --ink:#f5f5f5; --ink-soft:rgba(245,245,245,.7); --ink-faint:rgba(245,245,245,.4);
+  --line:#333333; --line-strong:#444444;
+  --shadow-card:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.6);
+  --shadow-lift:0 12px 32px rgba(0,0,0,.8);
+}
+
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overflow:hidden;height:100vh;height:100dvh;display:flex;user-select:none;}
+body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overflow:hidden;height:100vh;height:100dvh;display:flex;user-select:none;transition: background 0.3s, color 0.3s;}
 ::selection{background:var(--apricot);color:#fff;}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
@@ -337,6 +349,42 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .adm-centro-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);gap:10px;flex-wrap:wrap;}
 .adm-centro-row:last-child{border-bottom:none;}
 @media (max-width:720px){.adm-top{flex-direction:column;align-items:stretch;} .adm-tabs{order:3;} .adm-content{padding:16px;}}
+
+/* ==========================================================================
+   WIDGET PERSONALIZADOR VISUAL (TEMA/CORES/FONTES)
+   ========================================================================== */
+.theme-widget-btn {
+  position: fixed; bottom: 85px; right: 20px;
+  width: 45px; height: 45px; border-radius: var(--r-full);
+  background: var(--pine); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-lift); cursor: pointer; z-index: 9999;
+  border: 2px solid var(--white); font-size: 20px; transition: transform 0.2s;
+}
+.theme-widget-btn:hover { transform: scale(1.1); }
+.theme-panel {
+  position: fixed; bottom: 140px; right: 20px;
+  background: var(--white); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: 20px; width: 280px;
+  box-shadow: var(--shadow-lift); z-index: 9998;
+  display: none; flex-direction: column; gap: 15px;
+}
+.theme-panel.active { display: flex; animation: fadeUp .3s ease; }
+.theme-control { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink); font-weight: 500; }
+.theme-control input[type="color"] { border: none; width: 34px; height: 34px; cursor: pointer; background: transparent; padding: 0; border-radius: var(--r-sm); }
+.theme-select { padding: 6px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--paper-alt); color: var(--ink); font-size: 12px; outline: none; }
+.toggle-switch {
+  position: relative; width: 42px; height: 22px;
+  background: var(--line-strong); border-radius: 20px; cursor: pointer; transition: .3s;
+}
+.toggle-switch.active { background: var(--pine); }
+.toggle-switch::after {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 16px; height: 16px; background: #fff; border-radius: 50%;
+  transition: transform 0.3s;
+}
+.toggle-switch.active::after { transform: translateX(20px); }
+@media (max-width:768px) { .theme-widget-btn { bottom: calc(75px + var(--sab)); } .theme-panel { bottom: calc(130px + var(--sab)); } }
 </style>
 </head>
 <body>
@@ -351,7 +399,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
     </div>
     <div id="menu-lista">
       <div class="menu-item ativo" id="mi-home" onclick="abrirPagina('home')"><span class="icone">⌂</span> Início</div>
-      <div id="menu-categorias-produtos"><!-- gerado por renderMenuLateral() --></div>
+      <div id="menu-categorias-produtos"></div>
       <div class="menu-secao">Sua Conta</div>
       <div class="menu-item" id="mi-compras" style="display:none" onclick="abrirPagina('compras')"><span class="icone">▤</span> Minhas Compras</div>
       <button class="menu-item menu-carrinho" id="mi-carrinho" onclick="abrirPagina('carrinho')">Checkout (<span id="qtd-carrinho">0</span>)</button>
@@ -380,7 +428,44 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
   </div>
 </nav>
 
-<!-- MODAL LOGIN -->
+<button class="theme-widget-btn" onclick="toggleThemePanel()">⚙️</button>
+<div class="theme-panel" id="theme-panel">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;border-bottom:1px solid var(--line);padding-bottom:10px;">
+    <h3 style="font-family:var(--font-display);font-size:16px;color:var(--ink);">Estilo & Visual</h3>
+    <button onclick="toggleThemePanel()" style="background:none;border:none;color:var(--ink);font-size:22px;cursor:pointer;">&times;</button>
+  </div>
+  
+  <div class="theme-control">
+    <span>Modo Escuro</span>
+    <div class="toggle-switch" id="dark-mode-toggle" onclick="toggleDarkMode()"></div>
+  </div>
+
+  <div class="theme-control">
+    <span>Cor Principal</span>
+    <input type="color" id="color-brand" value="#2C4A3B" onchange="updateBrandColor(this.value)">
+  </div>
+
+  <div class="theme-control">
+    <span>Títulos</span>
+    <select class="theme-select" onchange="updateFont('display', this.value)">
+      <option value="'Fraunces', serif">Fraunces (Elegante)</option>
+      <option value="'Inter', sans-serif">Inter (Moderna)</option>
+      <option value="'IBM Plex Mono', monospace">IBM Plex (Tech)</option>
+    </select>
+  </div>
+  
+  <div class="theme-control">
+    <span>Textos</span>
+    <select class="theme-select" onchange="updateFont('body', this.value)">
+      <option value="'Inter', sans-serif">Inter (Limpa)</option>
+      <option value="'Georgia', serif">Georgia (Clássica)</option>
+      <option value="'Arial', sans-serif">Arial (Simples)</option>
+    </select>
+  </div>
+  
+  <button class="modal-btn outline" onclick="resetTheme()" style="width: 100%; margin-top: 10px;font-size:12px;">Restaurar Padrão</button>
+</div>
+
 <div id="modal-login" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-login')">
   <div class="modal-box">
     <button class="modal-fechar" onclick="fecharModal('modal-login')">×</button>
@@ -392,7 +477,6 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
   </div>
 </div>
 
-<!-- MODAL CHECKOUT -->
 <div id="modal-checkout" class="modal-overlay">
   <div class="modal-box">
     <button class="modal-fechar" onclick="fecharModal('modal-checkout')">×</button>
@@ -432,7 +516,6 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
   </div>
 </div>
 
-<!-- MODAL DETALHE COMPRA -->
 <div id="modal-compra-detalhe" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-compra-detalhe')">
   <div class="modal-box">
     <button class="modal-fechar" onclick="fecharModal('modal-compra-detalhe')">×</button>
@@ -451,7 +534,6 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
   </div>
 </div>
 
-<!-- MODAL DEPOIMENTO -->
 <div id="modal-depoimento" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-depoimento')">
   <div class="modal-box">
     <button class="modal-fechar" onclick="fecharModal('modal-depoimento')">×</button>
@@ -463,7 +545,6 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
   </div>
 </div>
 
-<!-- MODAL IMAGEM -->
 <div id="modal-imagem-produto" class="modal-overlay" onclick="if(event.target===this) fecharImagemProdutoExpandida()">
   <div class="modal-imagem-box">
     <button class="modal-fechar modal-fechar-imagem" onclick="fecharImagemProdutoExpandida()">×</button>
@@ -644,9 +725,7 @@ window.addEventListener("load", async () => {
   await carregarCardapioConfig();
   abrirPagina("home");
   await restaurarSessaoAdmin();
-  // Acesso administrativo via URL: abrindo o site com #admin (ex: seusite.com/#admin)
-  // a tela de login do admin abre sozinha. Se a sessão já estiver ativa, vai
-  // direto para o painel.
+  loadSavedTheme(); // Carrega o tema selecionado (Claro/Escuro/Fontes/Cores) do LocalStorage
   if (location.hash === "#admin") { isAdminLogado() ? openAdminPanel() : openAdminLogin(); }
 });
 
@@ -1311,16 +1390,66 @@ function enviarAvaliacaoCompra(){
 }
 
 /* ================================================================================
-   PAINEL ADMINISTRATIVO
+   PAINEL ADMINISTRATIVO E CONFIGURAÇÕES VISUAIS
    ================================================================================ */
+function toggleThemePanel() { document.getElementById('theme-panel').classList.toggle('active'); }
+function toggleDarkMode() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  document.getElementById('dark-mode-toggle').classList.toggle('active', !isDark);
+  localStorage.setItem('pb_theme', newTheme);
+}
+function hexToRgb(hex) {
+  let r = 0, g = 0, b = 0;
+  if (hex.length === 4) { r = parseInt(hex[1]+hex[1],16); g = parseInt(hex[2]+hex[2],16); b = parseInt(hex[3]+hex[3],16); }
+  else if (hex.length === 7) { r = parseInt(hex.substring(1,3),16); g = parseInt(hex.substring(3,5),16); b = parseInt(hex.substring(5,7),16); }
+  return `${r}, ${g}, ${b}`;
+}
+function updateBrandColor(color) {
+  document.documentElement.style.setProperty('--pine', color);
+  document.documentElement.style.setProperty('--pine-deep', color);
+  const rgb = hexToRgb(color);
+  document.documentElement.style.setProperty('--pine-pale', `rgba(${rgb}, .1)`);
+  document.documentElement.style.setProperty('--pine-line', `rgba(${rgb}, .2)`);
+  localStorage.setItem('pb_brand_color', color);
+}
+function updateFont(type, fontFamily) {
+  if(type === 'display') { document.documentElement.style.setProperty('--font-display', fontFamily); localStorage.setItem('pb_font_display', fontFamily); }
+  else if (type === 'body') { document.documentElement.style.setProperty('--font-body', fontFamily); localStorage.setItem('pb_font_body', fontFamily); }
+}
+function resetTheme() {
+  document.documentElement.removeAttribute('data-theme');
+  document.documentElement.style.removeProperty('--pine');
+  document.documentElement.style.removeProperty('--pine-deep');
+  document.documentElement.style.removeProperty('--pine-pale');
+  document.documentElement.style.removeProperty('--pine-line');
+  document.documentElement.style.removeProperty('--font-display');
+  document.documentElement.style.removeProperty('--font-body');
+  document.getElementById('dark-mode-toggle').classList.remove('active');
+  document.getElementById('color-brand').value = '#2C4A3B';
+  localStorage.removeItem('pb_theme');
+  localStorage.removeItem('pb_brand_color');
+  localStorage.removeItem('pb_font_display');
+  localStorage.removeItem('pb_font_body');
+}
+function loadSavedTheme() {
+  const savedTheme = localStorage.getItem('pb_theme');
+  const savedColor = localStorage.getItem('pb_brand_color');
+  const savedFontDisp = localStorage.getItem('pb_font_display');
+  const savedFontBody = localStorage.getItem('pb_font_body');
+  if(savedTheme === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('dark-mode-toggle').classList.add('active'); }
+  if(savedColor) { updateBrandColor(savedColor); document.getElementById('color-brand').value = savedColor; }
+  if(savedFontDisp) { document.documentElement.style.setProperty('--font-display', savedFontDisp); const sel = document.querySelector(`select[onchange*="'display'"]`); if(sel) sel.value = savedFontDisp; }
+  if(savedFontBody) { document.documentElement.style.setProperty('--font-body', savedFontBody); const sel = document.querySelector(`select[onchange*="'body'"]`); if(sel) sel.value = savedFontBody; }
+}
+
 function openAdminLogin(){ const err=document.getElementById("adm-err"); if (err) err.style.display="none"; document.getElementById("modal-admin-login").classList.add("ativo"); }
 function closeAdminLogin(){ document.getElementById("modal-admin-login").classList.remove("ativo"); }
 
 async function doAdminLogin(){
   const emailRaw = document.getElementById("adm-email").value||"";
   const passRaw  = document.getElementById("adm-pass").value||"";
-  // Única transformação aplicada: trim() (remove espaços nas pontas). Sem
-  // lowercase, sem qualquer outra alteração no email ou na senha.
   const email = emailRaw.trim();
   const pass  = passRaw.trim();
   const err = document.getElementById("adm-err"); const btn = document.getElementById("adm-login-btn");
@@ -1763,7 +1892,6 @@ async function renderAdminRegistros(){
 }
 </script>
 
-<!-- LOGIN DO ADMIN -->
 <div id="modal-admin-login" class="modal-overlay" onclick="if(event.target===this) closeAdminLogin()">
   <div class="modal-box">
     <button class="modal-fechar" onclick="closeAdminLogin()">×</button>
@@ -1776,7 +1904,6 @@ async function renderAdminRegistros(){
   </div>
 </div>
 
-<!-- PAINEL ADMIN -->
 <div class="adm-panel" id="adm-panel">
   <div class="adm-top">
     <div class="adm-brand">Petit Buffet <span>Admin</span></div>
