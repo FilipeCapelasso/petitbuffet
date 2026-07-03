@@ -497,6 +497,7 @@ let adminSession = null; // sessão Supabase Auth do admin logado (ou null)
 const SB_READY = !!(SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes("SEU-PROJETO") && !SUPABASE_ANON_KEY.includes("SUA-CHAVE"));
 let sb = null;
 if (SB_READY && window.supabase) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e){ console.warn("Supabase indisponível:", e); } }
+console.log("[SUPABASE] Projeto usado pelo frontend:", SUPABASE_URL, "| ref:", SUPABASE_URL.replace("https://","").split(".")[0]);
 
 const STATUS_META = {
   pendente:{label:"Aguardando pagamento",css:"st-pend"}, pago:{label:"Pago",css:"st-pago"},
@@ -1316,23 +1317,57 @@ function openAdminLogin(){ const err=document.getElementById("adm-err"); if (err
 function closeAdminLogin(){ document.getElementById("modal-admin-login").classList.remove("ativo"); }
 
 async function doAdminLogin(){
-  const email = (document.getElementById("adm-email").value||"").trim();
-  const pass  = (document.getElementById("adm-pass").value||"").trim();
+  const emailRaw = document.getElementById("adm-email").value||"";
+  const passRaw  = document.getElementById("adm-pass").value||"";
+  // Única transformação aplicada: trim() (remove espaços nas pontas). Sem
+  // lowercase, sem qualquer outra alteração no email ou na senha.
+  const email = emailRaw.trim();
+  const pass  = passRaw.trim();
   const err = document.getElementById("adm-err"); const btn = document.getElementById("adm-login-btn");
   if (err) err.style.display = "none";
-  if (!sb) { if (err) { err.textContent = "Supabase não está configurado neste site."; err.style.display = "block"; } return; }
-  if (!email || !pass) { if (err) { err.textContent = "Informe email e senha."; err.style.display = "block"; } return; }
+
+  console.group("[ADMIN LOGIN] tentativa");
+  console.log("SUPABASE_URL:", SUPABASE_URL);
+  console.log("SUPABASE_ANON_KEY (10 primeiros chars):", SUPABASE_ANON_KEY.slice(0,10) + "...");
+  console.log("SB_READY:", SB_READY, "| cliente sb criado:", !!sb);
+  console.log("EMAIL digitado (raw):", JSON.stringify(emailRaw), "→ enviado:", JSON.stringify(email));
+  console.log("SENHA digitada: length =", passRaw.length, "→ enviada: length =", pass.length, "(a senha em si nunca é logada)");
+
+  if (!sb) { console.warn("[ADMIN LOGIN] cliente Supabase não inicializado — SB_READY é false."); console.groupEnd();
+    if (err) { err.textContent = "Supabase não está configurado neste site."; err.style.display = "block"; } return; }
+  if (!email || !pass) { console.warn("[ADMIN LOGIN] email ou senha vazios após trim."); console.groupEnd();
+    if (err) { err.textContent = "Informe email e senha."; err.style.display = "block"; } return; }
+
   if (btn) { btn.disabled = true; btn.innerHTML = "Entrando..."; }
   try {
-    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-    if (error || !data.session) throw new Error("Email ou senha incorretos.");
-    // A senha por si só não dá acesso — precisa constar na tabela public.admins.
-    const { data: souAdmin, error: erroRpc } = await sb.rpc("is_admin");
-    if (erroRpc || !souAdmin) { await sb.auth.signOut(); throw new Error("Esta conta não tem permissão de administrador."); }
+    const result = await sb.auth.signInWithPassword({ email, password: pass });
+    console.log("LOGIN RESULT completo:", result);
+    console.log("→ result.data.session:", result.data?.session);
+    console.log("→ result.data.user:", result.data?.user);
+    console.log("→ result.error:", result.error);
+    if (result.data?.user) console.log("→ user.id (compare com o que está em public.admins):", result.data.user.id);
+
+    const { data, error } = result;
+    if (error || !data.session) {
+      console.error("[ADMIN LOGIN] signInWithPassword falhou. Mensagem completa do Supabase:", error?.message, "| status:", error?.status, "| name:", error?.name);
+      throw new Error(error?.message || "Email ou senha incorretos.");
+    }
+
+    const rpcResult = await sb.rpc("is_admin");
+    console.log("is_admin() RPC result:", rpcResult);
+    const { data: souAdmin, error: erroRpc } = rpcResult;
+    if (erroRpc || !souAdmin) {
+      console.error("[ADMIN LOGIN] Autenticou, mas is_admin() retornou false ou deu erro.", erroRpc);
+      await sb.auth.signOut();
+      throw new Error("Esta conta não tem permissão de administrador.");
+    }
     adminSession = data.session; ADMIN_ACTOR = data.session.user?.email || email;
     document.getElementById("adm-pass").value = "";
+    console.log("[ADMIN LOGIN] sucesso. Ator:", ADMIN_ACTOR);
+    console.groupEnd();
     closeAdminLogin(); openAdminPanel(); logAudit("login","admin","Login no painel administrativo");
   } catch(e) {
+    console.groupEnd();
     if (err) { err.textContent = e.message || "Não foi possível entrar."; err.style.display = "block"; }
   } finally { if (btn) { btn.disabled = false; btn.innerHTML = "Entrar no painel →"; } }
 }
