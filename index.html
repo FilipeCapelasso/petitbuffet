@@ -524,16 +524,16 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
     <div style="text-align:left;margin-bottom:18px;">
       <label style="font-size:10px;color:var(--ink-faint);text-transform:uppercase;font-weight:700;letter-spacing:1px;">Endereço de Entrega do Evento</label>
       <div class="checkout-address-grid">
-        <div class="checkout-field-wrap-full"><input id="checkout-rua" class="checkout-field" placeholder="Rua / Avenida"></div>
-        <div><input id="checkout-numero" class="checkout-field" placeholder="Número"></div>
-        <div><input id="checkout-bairro" class="checkout-field" placeholder="Bairro"></div>
+        <div class="checkout-field-wrap-full"><input id="checkout-rua" class="checkout-field" placeholder="Rua / Avenida" oninput="salvarRascunhoCheckout()"></div>
+        <div><input id="checkout-numero" class="checkout-field" placeholder="Número" oninput="salvarRascunhoCheckout()"></div>
+        <div><input id="checkout-bairro" class="checkout-field" placeholder="Bairro" oninput="salvarRascunhoCheckout()"></div>
       </div>
     </div>
     <div style="text-align:left;margin-bottom:18px;">
       <label id="checkout-data-label" style="font-size:10px;color:var(--ink-faint);text-transform:uppercase;font-weight:700;letter-spacing:1px;">Data do evento</label>
       <div class="checkout-address-grid">
-        <div><input id="checkout-data-evento" class="checkout-field" placeholder="DD/MM" inputmode="numeric" maxlength="5" autocomplete="off" oninput="mascararDataEvento(this)"></div>
-        <div><input id="checkout-hora-evento" class="checkout-field" placeholder="HH:MM" inputmode="numeric" maxlength="5" autocomplete="off" oninput="mascararHoraPedido(this)"></div>
+        <div><input id="checkout-data-evento" class="checkout-field" placeholder="DD/MM" inputmode="numeric" maxlength="5" autocomplete="off" oninput="mascararDataEvento(this); salvarRascunhoCheckout();"></div>
+        <div><input id="checkout-hora-evento" class="checkout-field" placeholder="HH:MM" inputmode="numeric" maxlength="5" autocomplete="off" oninput="mascararHoraPedido(this); salvarRascunhoCheckout();"></div>
       </div>
       <div id="checkout-data-hint" style="font-size:11px;color:var(--apricot-deep);margin-top:7px;line-height:1.5;"></div>
     </div>
@@ -707,7 +707,7 @@ function statusLabel(s){ s=normStatus(s); return (STATUS_META[s]||STATUS_META.pe
 function statusBadgeClass(s){ s=normStatus(s); return (STATUS_META[s]||STATUS_META.pendente).css; }
 function fmt(n){ return dinheiro(n); }
 
-const STORAGE = { cart:"pb_carrinho", orders:"pb_meus_pedidos", reviews:"pb_avaliacoes", name:"pb_nomeUsuario", phone:"pb_telefoneUsuario" };
+const STORAGE = { cart:"pb_carrinho", orders:"pb_meus_pedidos", reviews:"pb_avaliacoes", name:"pb_nomeUsuario", phone:"pb_telefoneUsuario", lastPage:"pb_ultima_pagina", checkoutDraft:"pb_checkout_rascunho" };
 
 /* ==========================================================================
    PRODUTOS — modelo de CENTOS (pacotes fechados por quantidade)
@@ -827,6 +827,58 @@ function renderCarouselAvaliacoes(){
   return `<div class="carousel-group">${a}</div><div class="carousel-group" aria-hidden="true">${b}</div>`;
 }
 
+// ============================================================================
+// PERSISTÊNCIA DE ESTADO ENTRE SESSÕES (State Persistence + Hydration)
+// ----------------------------------------------------------------------------
+// Celulares (principalmente Android/Chrome) descarregam abas em segundo plano
+// pra liberar memória — ao trocar de app, bloquear a tela ou minimizar, o
+// navegador pode encerrar a aba e recarregá-la do zero quando a pessoa volta.
+// Isso é comportamento do sistema operacional/navegador, não dá pra impedir
+// de verdade — mas dá pra fazer o site voltar EXATAMENTE de onde a pessoa
+// parou (página, carrinho, formulário de checkout em preenchimento, tema),
+// como se nada tivesse acontecido.
+//
+// Estratégia (3 partes):
+//   1) Cada mudança relevante já se salva sozinha na hora (carrinho a cada
+//      item, tema a cada troca, checkout a cada tecla digitada — ver
+//      salvarRascunhoCheckout() e os pontos que chamam safeWrite(STORAGE.*)).
+//   2) Como rede de segurança, salvarEstadoCompleto() é chamada explicitamente
+//      nos momentos em que o navegador pode congelar/matar a aba a qualquer
+//      instante: visibilitychange (tela ficou oculta) e pagehide (a página
+//      está sendo descartada/perdendo o foco de forma definitiva).
+//   3) hidratarAplicacao() roda no carregamento e reconstrói a interface a
+//      partir do que está salvo: página atual, formulário de checkout (e
+//      reabre o modal, se estava aberto) e o tema (que já é aplicado antes
+//      até do body pintar, lá em cima).
+// ============================================================================
+function salvarEstadoCompleto(){
+  try {
+    safeWrite(STORAGE.cart, meuCarrinho);                          // carrinho
+    if (paginaAtual) localStorage.setItem(STORAGE.lastPage, paginaAtual); // rota atual
+    if (document.getElementById("modal-checkout")) salvarRascunhoCheckout(); // form de checkout
+    salvarTema();                                                   // tema (no-op se não mudou)
+  } catch(e){ console.warn("Não foi possível salvar o estado antes de sair.", e); }
+}
+// dispara quando a aba fica oculta (troca de app, bloqueio de tela, minimizar)
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") salvarEstadoCompleto(); });
+// dispara quando a página está sendo descartada/navegada para longe — mais
+// confiável que "beforeunload" em navegadores mobile (Safari/Chrome)
+window.addEventListener("pagehide", salvarEstadoCompleto);
+
+function abrirPaginaInicial(){
+  let ultima = null;
+  try { ultima = localStorage.getItem(STORAGE.lastPage); } catch(e){}
+  if (!ultima || ultima==="home" || ultima==="carrinho") return abrirPagina(ultima || "home");
+  if (ultima==="compras") return abrirPagina(localStorage.getItem(STORAGE.name) ? "compras" : "home");
+  if (PRODUTOS[ultima]) return abrirPagina(ultima); // ainda é um produto válido do catálogo atual
+  return abrirPagina("home"); // página salva não existe mais (ex.: produto removido) — cai pra home
+}
+// Rotina de hidratação: reconstrói a tela inteira a partir do localStorage.
+function hidratarAplicacao(){
+  abrirPaginaInicial();
+  const rascunho = restaurarRascunhoCheckout(); // preenche os campos, se houver algo salvo
+  if (rascunho?.modalAberto && meuCarrinho.length) abrirModalCheckout(); // reabre o checkout exatamente como estava
+}
 window.addEventListener("keydown", e => { if (e.key === "Escape") fecharImagemProdutoExpandida(); });
 window.addEventListener("load", async () => {
   document.getElementById("btn-wpp").href = `https://wa.me/55${CONFIG.whatsapp}`;
@@ -834,7 +886,7 @@ window.addEventListener("load", async () => {
   iniciarSocketSeguro(); verificarUsuarioLogado(); sincronizarClienteLogado();
   await Promise.all([carregarCatalogoSupabase(), carregarConfiguracoesLoja()]); // popula PRODUTOS/CATEGORIAS e settings reais antes de desenhar a home
   await carregarCardapioConfig();
-  abrirPagina("home");
+  hidratarAplicacao();
   await restaurarSessaoAdmin();
   // Acesso administrativo via URL: abrindo o site com #admin (ex: seusite.com/#admin)
   // a tela de login do admin abre sozinha. Se a sessão já estiver ativa, vai
@@ -942,7 +994,7 @@ function abrirModalLogin(){
   }
   document.getElementById("modal-login").classList.add("ativo");
 }
-function fecharModal(id){ document.getElementById(id).classList.remove("ativo"); if (id==="modal-compra-detalhe") pararAutoAtualizacaoPedido(); }
+function fecharModal(id){ document.getElementById(id).classList.remove("ativo"); if (id==="modal-compra-detalhe") pararAutoAtualizacaoPedido(); if (id==="modal-checkout") salvarRascunhoCheckout(false); }
 function primeiroNome(txt){ return String(txt||"").trim().split(/\s+/)[0] || ""; }
 async function cadastrarUsuario(){
   const nome = primeiroNome(document.getElementById("login-nome").value);
@@ -1049,6 +1101,7 @@ function atualizarAtivosMenu(id){
 
 function abrirPagina(id){
   paginaAtual = id; atualizarAtivosMenu(id);
+  try { localStorage.setItem(STORAGE.lastPage, id); } catch(e){}
   const vitrine = document.getElementById("vitrine"); const btnVoltar = document.querySelector(".btn-voltar");
   btnVoltar.style.display = id==="home" ? "none" : "flex";
   if (id==="home") { document.getElementById("titulo-pagina").textContent="Início"; return renderHome(vitrine); }
@@ -1289,6 +1342,29 @@ function montarPedidoBase(total, sinal){
   return { numero: gerarPedidoNumero(), total, valorCobradoAgora: sinal, itensStr, centroDetalhes };
 }
 
+// ============================================================================
+// PERSISTÊNCIA DO RASCUNHO DE CHECKOUT — sobrevive a troca de app, tela
+// bloqueada ou a aba sendo descartada da memória pelo navegador.
+// ============================================================================
+function salvarRascunhoCheckout(modalAberto){
+  const campo = id => { const el = document.getElementById(id); return el ? el.value : ""; };
+  const rascunho = {
+    rua: campo("checkout-rua"), numero: campo("checkout-numero"), bairro: campo("checkout-bairro"),
+    dataEvento: campo("checkout-data-evento"), horaEvento: campo("checkout-hora-evento"),
+    modalAberto: modalAberto !== undefined ? modalAberto : document.getElementById("modal-checkout")?.classList.contains("ativo"),
+    salvoEm: new Date().toISOString()
+  };
+  safeWrite(STORAGE.checkoutDraft, rascunho);
+}
+function restaurarRascunhoCheckout(){
+  const r = safeRead(STORAGE.checkoutDraft, null); if (!r) return null;
+  const set = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
+  set("checkout-rua", r.rua); set("checkout-numero", r.numero); set("checkout-bairro", r.bairro);
+  set("checkout-data-evento", r.dataEvento); set("checkout-hora-evento", r.horaEvento);
+  return r;
+}
+function limparRascunhoCheckout(){ try { localStorage.removeItem(STORAGE.checkoutDraft); } catch(e){} }
+
 function abrirModalCheckout(){
   if (!localStorage.getItem(STORAGE.name) || !localStorage.getItem(STORAGE.phone)) { feedback("Salve seu perfil antes de finalizar o pedido."); return abrirModalLogin(); }
   if (!meuCarrinho.length) return feedback("Seu carrinho está vazio.");
@@ -1301,6 +1377,7 @@ function abrirModalCheckout(){
   const labelData = document.getElementById("checkout-data-label"); if (labelData) labelData.innerText = textoDataPedidoAtual();
   const hintData = document.getElementById("checkout-data-hint"); if (hintData) hintData.innerText = dicaDataPedido();
   document.getElementById("modal-checkout").classList.add("ativo");
+  salvarRascunhoCheckout(true);
 }
 
 function payloadPedido(formaPagamento){
@@ -1370,7 +1447,7 @@ async function pagarComCartao(btn){
     else if (USAR_PLANILHA_BACKUP) { enviarParaPlanilhaGoogle(payload).catch(e=>console.warn("Backup em planilha falhou (pedido já está salvo no Supabase).", e)); }
     enviarSocketPedido(payload); salvarNaAbaCompras(payload);
     logAudit("pedido_cartao_solicitado","pedidos",`Pedido ${payload.pedido} — pagamento via cartão solicitado no WhatsApp`);
-    meuCarrinho = []; safeWrite(STORAGE.cart, []); atualizarContadorCarrinho();
+    meuCarrinho = []; safeWrite(STORAGE.cart, []); atualizarContadorCarrinho(); limparRascunhoCheckout();
     fecharModal("modal-checkout");
     window.open(`https://wa.me/55${CONFIG.whatsapp}?text=${encodeURIComponent(mensagemWhatsAppCartao(payload))}`, "_blank");
     abrirPagina("compras");
@@ -1462,7 +1539,7 @@ async function renderPixManual(payload, aviso){
   area.style.display = "block";
 }
 function finalizarPedidoManual(){
-  try { meuCarrinho = []; safeWrite(STORAGE.cart, []); atualizarContadorCarrinho(); } catch(e){}
+  try { meuCarrinho = []; safeWrite(STORAGE.cart, []); atualizarContadorCarrinho(); limparRascunhoCheckout(); } catch(e){}
   setTimeout(()=>{ fecharModalPix(); abrirPagina("compras"); }, 400);
 }
 async function renderMpPixScreen(d, payload){
@@ -1524,7 +1601,7 @@ async function mpOnApproved(statusData){
   await salvarPedidoSupabase(payload, "pago", "confirmado");
   logAudit("pagamento_pix_aprovado", "pedidos", `Pedido ${payload.pedido} pago via PIX automático`);
   try { enviarSocketPedido(payload); salvarNaAbaCompras(payload); } catch(e){}
-  meuCarrinho = []; safeWrite(STORAGE.cart, []); atualizarContadorCarrinho();
+  meuCarrinho = []; safeWrite(STORAGE.cart, []); atualizarContadorCarrinho(); limparRascunhoCheckout();
   setTimeout(() => { fecharModalPix(); abrirPagina("compras"); feedback("Pagamento confirmado! Seu pedido já está sendo preparado."); }, 1200);
 }
 
