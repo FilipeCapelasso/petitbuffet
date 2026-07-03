@@ -6,7 +6,7 @@
 <title>Petit Buffet Premium | Centros de Pedido</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Poppins:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ==========================================================================
    DESIGN TOKENS — "COMANDA" (clean, editorial, papel + tinta verde-pinho)
@@ -26,20 +26,20 @@
   --shadow-lift:0 12px 32px rgba(32,36,30,.12);
   --sab:env(safe-area-inset-bottom);
 }
-
-/* ==========================================================================
-   MODO ESCURO (DARK MODE) OVERRIDES
-   ========================================================================== */
-[data-theme="dark"] {
-  --paper:#121212; --paper-alt:#1a1a1a; --white:#242424;
-  --ink:#f5f5f5; --ink-soft:rgba(245,245,245,.7); --ink-faint:rgba(245,245,245,.4);
-  --line:#333333; --line-strong:#444444;
-  --shadow-card:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.6);
-  --shadow-lift:0 12px 32px rgba(0,0,0,.8);
+/* -------- Modos de fundo (Admin/visitante pode trocar; salvo no navegador) -------- */
+html[data-bg="branco"]{ --paper:#FFFFFF; --paper-alt:#F4F4F2; --white:#FFFFFF; --line:#E7E7E3; --line-strong:#D6D6D0; }
+html[data-bg="preto"]{
+  --paper:#121412; --paper-alt:#1A1D19; --white:#1E211D;
+  --ink:#F2F1EA; --ink-soft:rgba(242,241,234,.68); --ink-faint:rgba(242,241,234,.40);
+  --line:rgba(255,255,255,.10); --line-strong:rgba(255,255,255,.18);
+  --shadow-card:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  --shadow-lift:0 12px 32px rgba(0,0,0,.45);
 }
-
+/* -------- Tipografia alternativa -------- */
+html[data-font="moderna"]{ --font-display:'Poppins',sans-serif; --font-body:'Manrope',sans-serif; }
+html, body, .modal-box, #sidebar, #principal, .product-card{ transition:background-color .25s ease, color .25s ease, border-color .25s ease; }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overflow:hidden;height:100vh;height:100dvh;display:flex;user-select:none;transition: background 0.3s, color 0.3s;}
+body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overflow:hidden;height:100vh;height:100dvh;display:flex;user-select:none;}
 ::selection{background:var(--apricot);color:#fff;}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
@@ -118,26 +118,29 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 /* ==========================================================================
    PRODUCT GRID — "comanda" ticket cards (signature element)
    ========================================================================== */
-.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:56px;}
+.products-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-bottom:56px;}
+@media(max-width:1300px){.products-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:900px){.products-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.products-grid{grid-template-columns:1fr;}}
 .product-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);cursor:pointer;transition:all .25s cubic-bezier(.2,.8,.2,1);position:relative;display:flex;flex-direction:column;overflow:visible;}
 .product-card:hover{border-color:var(--pine);transform:translateY(-3px);box-shadow:var(--shadow-lift);}
 .ticket-num{position:absolute;top:-9px;left:16px;background:var(--ink);color:var(--paper);font-family:var(--font-mono);font-size:10px;font-weight:600;padding:3px 9px;border-radius:var(--r-full);letter-spacing:.5px;z-index:2;}
-.product-img-wrap{position:relative;overflow:hidden;height:140px;border-radius:var(--r-md) var(--r-md) 0 0;flex-shrink:0;}
+.product-img-wrap{position:relative;overflow:hidden;height:220px;border-radius:var(--r-md) var(--r-md) 0 0;flex-shrink:0;}
 .product-img-card{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
 .product-card:hover .product-img-card{transform:scale(1.05);}
-.product-icon-wrap{height:140px;display:flex;align-items:center;justify-content:center;background:var(--paper-alt);border-radius:var(--r-md) var(--r-md) 0 0;}
-.product-icon{font-size:44px;}
-.product-body{padding:18px 20px 20px;flex:1;display:flex;flex-direction:column;}
-.product-name{font-family:var(--font-display);font-size:19px;font-weight:600;margin-bottom:6px;color:var(--ink);}
-.product-desc{font-size:12.5px;color:var(--ink-soft);line-height:1.55;flex:1;margin-bottom:14px;}
+.product-icon-wrap{height:220px;display:flex;align-items:center;justify-content:center;background:var(--paper-alt);border-radius:var(--r-md) var(--r-md) 0 0;}
+.product-icon{font-size:62px;}
+.product-body{padding:22px 24px 24px;flex:1;display:flex;flex-direction:column;}
+.product-name{font-family:var(--font-display);font-size:25px;font-weight:600;margin-bottom:8px;color:var(--ink);}
+.product-desc{font-size:13.5px;color:var(--ink-soft);line-height:1.6;flex:1;margin-bottom:16px;}
 .ticket-perf{position:relative;height:1px;border-top:1px dashed var(--line-strong);margin:0 -20px 14px;}
 .ticket-perf::before,.ticket-perf::after{content:'';position:absolute;top:-6px;width:12px;height:12px;border-radius:50%;background:var(--paper);}
 .ticket-perf::before{left:-6px;}
 .ticket-perf::after{right:-6px;}
 .product-footer{display:flex;justify-content:space-between;align-items:flex-end;}
-.product-price-label{font-size:9.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
-.product-price{font-family:var(--font-mono);font-size:17px;font-weight:600;color:var(--pine);}
-.product-arrow{width:30px;height:30px;border-radius:var(--r-full);background:var(--paper-alt);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink);font-size:14px;transition:all .2s;}
+.product-price-label{font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.product-price{font-family:var(--font-mono);font-size:22px;font-weight:600;color:var(--pine);}
+.product-arrow{width:38px;height:38px;border-radius:var(--r-full);background:var(--paper-alt);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink);font-size:16px;transition:all .2s;}
 .product-card:hover .product-arrow{background:var(--pine);color:#fff;border-color:var(--pine);}
 .product-card.esgotado{opacity:.5;filter:grayscale(.5);pointer-events:none;}
 .produto-status-badge{position:absolute;top:-9px;right:16px;z-index:2;background:var(--danger);color:#fff;padding:3px 10px;border-radius:var(--r-full);font-size:9.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;}
@@ -227,6 +230,22 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
    MODALS
    ========================================================================== */
 .modal-overlay{position:fixed;inset:0;background:rgba(20,22,18,.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;pointer-events:none;transition:opacity .25s;}
+/* -------- Botão flutuante de personalização visual + painel -------- */
+#btn-tema{position:fixed;right:24px;bottom:24px;width:52px;height:52px;border-radius:var(--r-full);background:var(--pine);color:#fff;border:none;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow-lift);z-index:400;transition:transform .2s;}
+#btn-tema:hover{transform:rotate(35deg) scale(1.06);background:var(--pine-deep);}
+.tema-secao{margin-bottom:22px;}
+.tema-secao-titulo{font-size:11px;font-weight:700;color:var(--ink-faint);letter-spacing:1.2px;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:12px;}
+.tema-opcoes{display:flex;gap:10px;flex-wrap:wrap;}
+.tema-swatch{width:44px;height:44px;border-radius:var(--r-full);border:2px solid var(--line);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;position:relative;}
+.tema-swatch:hover{transform:scale(1.08);}
+.tema-swatch.ativo{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink);}
+.tema-swatch.ativo::after{content:"✓";color:#fff;font-size:15px;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.4);}
+.tema-bg-opcao{width:66px;height:44px;border-radius:var(--r-sm);border:2px solid var(--line);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;transition:all .15s;flex-shrink:0;}
+.tema-bg-opcao.ativo{border-color:var(--pine);box-shadow:0 0 0 2px var(--pine-pale);}
+.tema-font-opcao{padding:12px 16px;border-radius:var(--r-sm);border:1.5px solid var(--line);cursor:pointer;flex:1;min-width:140px;text-align:center;transition:all .15s;}
+.tema-font-opcao.ativo{border-color:var(--pine);background:var(--pine-pale);}
+.tema-font-opcao-nome{font-size:14px;font-weight:600;color:var(--ink);}
+.tema-font-opcao-exemplo{font-size:11px;color:var(--ink-faint);margin-top:2px;}
 .modal-overlay.ativo{opacity:1;pointer-events:auto;}
 .modal-box{background:var(--white);border:1px solid var(--line);width:92%;max-width:420px;padding:34px 30px;border-radius:var(--r-xl);box-shadow:var(--shadow-lift);position:relative;text-align:center;transform:scale(.96) translateY(16px);transition:transform .3s cubic-bezier(.16,1,.3,1);}
 .modal-overlay.ativo .modal-box{transform:scale(1) translateY(0);}
@@ -349,42 +368,6 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .adm-centro-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);gap:10px;flex-wrap:wrap;}
 .adm-centro-row:last-child{border-bottom:none;}
 @media (max-width:720px){.adm-top{flex-direction:column;align-items:stretch;} .adm-tabs{order:3;} .adm-content{padding:16px;}}
-
-/* ==========================================================================
-   WIDGET PERSONALIZADOR VISUAL (TEMA/CORES/FONTES)
-   ========================================================================== */
-.theme-widget-btn {
-  position: fixed; bottom: 85px; right: 20px;
-  width: 45px; height: 45px; border-radius: var(--r-full);
-  background: var(--pine); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--shadow-lift); cursor: pointer; z-index: 9999;
-  border: 2px solid var(--white); font-size: 20px; transition: transform 0.2s;
-}
-.theme-widget-btn:hover { transform: scale(1.1); }
-.theme-panel {
-  position: fixed; bottom: 140px; right: 20px;
-  background: var(--white); border: 1px solid var(--line);
-  border-radius: var(--r-md); padding: 20px; width: 280px;
-  box-shadow: var(--shadow-lift); z-index: 9998;
-  display: none; flex-direction: column; gap: 15px;
-}
-.theme-panel.active { display: flex; animation: fadeUp .3s ease; }
-.theme-control { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink); font-weight: 500; }
-.theme-control input[type="color"] { border: none; width: 34px; height: 34px; cursor: pointer; background: transparent; padding: 0; border-radius: var(--r-sm); }
-.theme-select { padding: 6px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--paper-alt); color: var(--ink); font-size: 12px; outline: none; }
-.toggle-switch {
-  position: relative; width: 42px; height: 22px;
-  background: var(--line-strong); border-radius: 20px; cursor: pointer; transition: .3s;
-}
-.toggle-switch.active { background: var(--pine); }
-.toggle-switch::after {
-  content: ''; position: absolute; top: 3px; left: 3px;
-  width: 16px; height: 16px; background: #fff; border-radius: 50%;
-  transition: transform 0.3s;
-}
-.toggle-switch.active::after { transform: translateX(20px); }
-@media (max-width:768px) { .theme-widget-btn { bottom: calc(75px + var(--sab)); } .theme-panel { bottom: calc(130px + var(--sab)); } }
 </style>
 </head>
 <body>
@@ -399,7 +382,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
     </div>
     <div id="menu-lista">
       <div class="menu-item ativo" id="mi-home" onclick="abrirPagina('home')"><span class="icone">⌂</span> Início</div>
-      <div id="menu-categorias-produtos"></div>
+      <div id="menu-categorias-produtos"><!-- gerado por renderMenuLateral() --></div>
       <div class="menu-secao">Sua Conta</div>
       <div class="menu-item" id="mi-compras" style="display:none" onclick="abrirPagina('compras')"><span class="icone">▤</span> Minhas Compras</div>
       <button class="menu-item menu-carrinho" id="mi-carrinho" onclick="abrirPagina('carrinho')">Checkout (<span id="qtd-carrinho">0</span>)</button>
@@ -428,44 +411,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
   </div>
 </nav>
 
-<button class="theme-widget-btn" onclick="toggleThemePanel()">⚙️</button>
-<div class="theme-panel" id="theme-panel">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;border-bottom:1px solid var(--line);padding-bottom:10px;">
-    <h3 style="font-family:var(--font-display);font-size:16px;color:var(--ink);">Estilo & Visual</h3>
-    <button onclick="toggleThemePanel()" style="background:none;border:none;color:var(--ink);font-size:22px;cursor:pointer;">&times;</button>
-  </div>
-  
-  <div class="theme-control">
-    <span>Modo Escuro</span>
-    <div class="toggle-switch" id="dark-mode-toggle" onclick="toggleDarkMode()"></div>
-  </div>
-
-  <div class="theme-control">
-    <span>Cor Principal</span>
-    <input type="color" id="color-brand" value="#2C4A3B" onchange="updateBrandColor(this.value)">
-  </div>
-
-  <div class="theme-control">
-    <span>Títulos</span>
-    <select class="theme-select" onchange="updateFont('display', this.value)">
-      <option value="'Fraunces', serif">Fraunces (Elegante)</option>
-      <option value="'Inter', sans-serif">Inter (Moderna)</option>
-      <option value="'IBM Plex Mono', monospace">IBM Plex (Tech)</option>
-    </select>
-  </div>
-  
-  <div class="theme-control">
-    <span>Textos</span>
-    <select class="theme-select" onchange="updateFont('body', this.value)">
-      <option value="'Inter', sans-serif">Inter (Limpa)</option>
-      <option value="'Georgia', serif">Georgia (Clássica)</option>
-      <option value="'Arial', sans-serif">Arial (Simples)</option>
-    </select>
-  </div>
-  
-  <button class="modal-btn outline" onclick="resetTheme()" style="width: 100%; margin-top: 10px;font-size:12px;">Restaurar Padrão</button>
-</div>
-
+<!-- MODAL LOGIN -->
 <div id="modal-login" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-login')">
   <div class="modal-box">
     <button class="modal-fechar" onclick="fecharModal('modal-login')">×</button>
@@ -477,6 +423,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
   </div>
 </div>
 
+<!-- MODAL CHECKOUT -->
 <div id="modal-checkout" class="modal-overlay">
   <div class="modal-box">
     <button class="modal-fechar" onclick="fecharModal('modal-checkout')">×</button>
@@ -516,6 +463,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
   </div>
 </div>
 
+<!-- MODAL DETALHE COMPRA -->
 <div id="modal-compra-detalhe" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-compra-detalhe')">
   <div class="modal-box">
     <button class="modal-fechar" onclick="fecharModal('modal-compra-detalhe')">×</button>
@@ -534,6 +482,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
   </div>
 </div>
 
+<!-- MODAL DEPOIMENTO -->
 <div id="modal-depoimento" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-depoimento')">
   <div class="modal-box">
     <button class="modal-fechar" onclick="fecharModal('modal-depoimento')">×</button>
@@ -545,6 +494,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
   </div>
 </div>
 
+<!-- MODAL IMAGEM -->
 <div id="modal-imagem-produto" class="modal-overlay" onclick="if(event.target===this) fecharImagemProdutoExpandida()">
   <div class="modal-imagem-box">
     <button class="modal-fechar modal-fechar-imagem" onclick="fecharImagemProdutoExpandida()">×</button>
@@ -567,6 +517,48 @@ const SUPABASE_URL      = "https://ejdboszoswqvgsjsrcmf.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZGJvc3pvc3dxdmdzanNyY21mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1ODI2NzcsImV4cCI6MjA5ODE1ODY3N30.eK7FeZ9N8WabTR6UcLN9XSz6zXl4jLc_NW_FimMUX9M";
 const MP_PIX = { functionsUrl: "https://ejdboszoswqvgsjsrcmf.functions.supabase.co" };
 const PIX_KEY_MANUAL = "6892626612";
+
+/* ==========================================================================
+   PERSONALIZAÇÃO VISUAL — fundo, cor de destaque, tipografia
+   Salvo em localStorage; aplicado imediatamente (antes do resto carregar)
+   para não piscar o tema errado na abertura da página.
+   ========================================================================== */
+const TEMA_STORAGE_KEY = "petitbuffet_tema";
+const PALETAS_COR = {
+  verde:    { pine:"#2C4A3B", deep:"#1B3327", pale:"rgba(44,74,59,.08)",  line:"rgba(44,74,59,.22)"  },
+  vermelho: { pine:"#B23A2E", deep:"#8C2C22", pale:"rgba(178,58,46,.08)", line:"rgba(178,58,46,.22)" },
+  azul:     { pine:"#2C4A7A", deep:"#1E3A63", pale:"rgba(44,74,122,.08)",line:"rgba(44,74,122,.22)" },
+  roxo:     { pine:"#5B3A8A", deep:"#452C6B", pale:"rgba(91,58,138,.08)",line:"rgba(91,58,138,.22)" },
+  dourado:  { pine:"#A67C27", deep:"#8A651C", pale:"rgba(166,124,39,.10)",line:"rgba(166,124,39,.24)"},
+  preto:    { pine:"#20241E", deep:"#121412", pale:"rgba(32,36,30,.08)", line:"rgba(32,36,30,.22)"  }
+};
+function temaPadrao(){ return { bg:"padrao", cor:"verde", font:"classica" }; }
+function lerTema(){
+  try { const salvo = JSON.parse(localStorage.getItem(TEMA_STORAGE_KEY)); return salvo ? { ...temaPadrao(), ...salvo } : temaPadrao(); }
+  catch(e){ return temaPadrao(); }
+}
+function aplicarTema(t){
+  document.documentElement.setAttribute("data-bg", t.bg);
+  document.documentElement.setAttribute("data-font", t.font);
+  const p = PALETAS_COR[t.cor] || PALETAS_COR.verde;
+  const s = document.documentElement.style;
+  s.setProperty("--pine", p.pine); s.setProperty("--pine-deep", p.deep);
+  s.setProperty("--pine-pale", p.pale); s.setProperty("--pine-line", p.line);
+}
+let temaAtual = lerTema();
+aplicarTema(temaAtual); // roda já na primeira linha do script, antes do body pintar
+
+function salvarTema(){ localStorage.setItem(TEMA_STORAGE_KEY, JSON.stringify(temaAtual)); aplicarTema(temaAtual); atualizarUiPainelTema(); }
+function setTemaBg(bg){ temaAtual.bg = bg; salvarTema(); }
+function setTemaCor(cor){ temaAtual.cor = cor; salvarTema(); }
+function setTemaFont(font){ temaAtual.font = font; salvarTema(); }
+function resetarTema(){ temaAtual = temaPadrao(); salvarTema(); }
+function atualizarUiPainelTema(){
+  document.querySelectorAll("[data-bg-opt]").forEach(el=>el.classList.toggle("ativo", el.dataset.bgOpt===temaAtual.bg));
+  document.querySelectorAll("[data-cor]").forEach(el=>el.classList.toggle("ativo", el.dataset.cor===temaAtual.cor));
+  document.querySelectorAll("[data-font-opt]").forEach(el=>el.classList.toggle("ativo", el.dataset.fontOpt===temaAtual.font));
+}
+function abrirPainelTema(){ atualizarUiPainelTema(); document.getElementById("modal-tema").classList.add("ativo"); }
 /* ------------------------------------------------------------------------
    ADMIN — login real via Supabase Auth (não é mais senha fixa no código).
    Crie o usuário admin em Supabase → Authentication → Users, e cadastre o
@@ -725,7 +717,9 @@ window.addEventListener("load", async () => {
   await carregarCardapioConfig();
   abrirPagina("home");
   await restaurarSessaoAdmin();
-  loadSavedTheme(); // Carrega o tema selecionado (Claro/Escuro/Fontes/Cores) do LocalStorage
+  // Acesso administrativo via URL: abrindo o site com #admin (ex: seusite.com/#admin)
+  // a tela de login do admin abre sozinha. Se a sessão já estiver ativa, vai
+  // direto para o painel.
   if (location.hash === "#admin") { isAdminLogado() ? openAdminPanel() : openAdminLogin(); }
 });
 
@@ -1390,66 +1384,16 @@ function enviarAvaliacaoCompra(){
 }
 
 /* ================================================================================
-   PAINEL ADMINISTRATIVO E CONFIGURAÇÕES VISUAIS
+   PAINEL ADMINISTRATIVO
    ================================================================================ */
-function toggleThemePanel() { document.getElementById('theme-panel').classList.toggle('active'); }
-function toggleDarkMode() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const newTheme = isDark ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', newTheme);
-  document.getElementById('dark-mode-toggle').classList.toggle('active', !isDark);
-  localStorage.setItem('pb_theme', newTheme);
-}
-function hexToRgb(hex) {
-  let r = 0, g = 0, b = 0;
-  if (hex.length === 4) { r = parseInt(hex[1]+hex[1],16); g = parseInt(hex[2]+hex[2],16); b = parseInt(hex[3]+hex[3],16); }
-  else if (hex.length === 7) { r = parseInt(hex.substring(1,3),16); g = parseInt(hex.substring(3,5),16); b = parseInt(hex.substring(5,7),16); }
-  return `${r}, ${g}, ${b}`;
-}
-function updateBrandColor(color) {
-  document.documentElement.style.setProperty('--pine', color);
-  document.documentElement.style.setProperty('--pine-deep', color);
-  const rgb = hexToRgb(color);
-  document.documentElement.style.setProperty('--pine-pale', `rgba(${rgb}, .1)`);
-  document.documentElement.style.setProperty('--pine-line', `rgba(${rgb}, .2)`);
-  localStorage.setItem('pb_brand_color', color);
-}
-function updateFont(type, fontFamily) {
-  if(type === 'display') { document.documentElement.style.setProperty('--font-display', fontFamily); localStorage.setItem('pb_font_display', fontFamily); }
-  else if (type === 'body') { document.documentElement.style.setProperty('--font-body', fontFamily); localStorage.setItem('pb_font_body', fontFamily); }
-}
-function resetTheme() {
-  document.documentElement.removeAttribute('data-theme');
-  document.documentElement.style.removeProperty('--pine');
-  document.documentElement.style.removeProperty('--pine-deep');
-  document.documentElement.style.removeProperty('--pine-pale');
-  document.documentElement.style.removeProperty('--pine-line');
-  document.documentElement.style.removeProperty('--font-display');
-  document.documentElement.style.removeProperty('--font-body');
-  document.getElementById('dark-mode-toggle').classList.remove('active');
-  document.getElementById('color-brand').value = '#2C4A3B';
-  localStorage.removeItem('pb_theme');
-  localStorage.removeItem('pb_brand_color');
-  localStorage.removeItem('pb_font_display');
-  localStorage.removeItem('pb_font_body');
-}
-function loadSavedTheme() {
-  const savedTheme = localStorage.getItem('pb_theme');
-  const savedColor = localStorage.getItem('pb_brand_color');
-  const savedFontDisp = localStorage.getItem('pb_font_display');
-  const savedFontBody = localStorage.getItem('pb_font_body');
-  if(savedTheme === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('dark-mode-toggle').classList.add('active'); }
-  if(savedColor) { updateBrandColor(savedColor); document.getElementById('color-brand').value = savedColor; }
-  if(savedFontDisp) { document.documentElement.style.setProperty('--font-display', savedFontDisp); const sel = document.querySelector(`select[onchange*="'display'"]`); if(sel) sel.value = savedFontDisp; }
-  if(savedFontBody) { document.documentElement.style.setProperty('--font-body', savedFontBody); const sel = document.querySelector(`select[onchange*="'body'"]`); if(sel) sel.value = savedFontBody; }
-}
-
 function openAdminLogin(){ const err=document.getElementById("adm-err"); if (err) err.style.display="none"; document.getElementById("modal-admin-login").classList.add("ativo"); }
 function closeAdminLogin(){ document.getElementById("modal-admin-login").classList.remove("ativo"); }
 
 async function doAdminLogin(){
   const emailRaw = document.getElementById("adm-email").value||"";
   const passRaw  = document.getElementById("adm-pass").value||"";
+  // Única transformação aplicada: trim() (remove espaços nas pontas). Sem
+  // lowercase, sem qualquer outra alteração no email ou na senha.
   const email = emailRaw.trim();
   const pass  = passRaw.trim();
   const err = document.getElementById("adm-err"); const btn = document.getElementById("adm-login-btn");
@@ -1892,6 +1836,7 @@ async function renderAdminRegistros(){
 }
 </script>
 
+<!-- LOGIN DO ADMIN -->
 <div id="modal-admin-login" class="modal-overlay" onclick="if(event.target===this) closeAdminLogin()">
   <div class="modal-box">
     <button class="modal-fechar" onclick="closeAdminLogin()">×</button>
@@ -1904,6 +1849,7 @@ async function renderAdminRegistros(){
   </div>
 </div>
 
+<!-- PAINEL ADMIN -->
 <div class="adm-panel" id="adm-panel">
   <div class="adm-top">
     <div class="adm-brand">Petit Buffet <span>Admin</span></div>
@@ -1922,6 +1868,53 @@ async function renderAdminRegistros(){
     </div>
   </div>
   <div class="adm-content" id="adm-content"></div>
+</div>
+
+<!-- BOTÃO E PAINEL DE PERSONALIZAÇÃO VISUAL -->
+<button id="btn-tema" onclick="abrirPainelTema()" title="Personalizar visual">✦</button>
+<div id="modal-tema" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-tema')">
+  <div class="modal-box" style="max-width:420px;">
+    <button class="modal-fechar" onclick="fecharModal('modal-tema')">×</button>
+    <h3 style="font-family:var(--font-display);font-size:21px;color:var(--ink);margin-bottom:4px;font-weight:700;">Personalizar visual</h3>
+    <p style="font-size:12px;color:var(--ink-faint);margin-bottom:22px;">Suas preferências ficam salvas neste navegador.</p>
+
+    <div class="tema-secao">
+      <div class="tema-secao-titulo">Fundo</div>
+      <div class="tema-opcoes">
+        <div class="tema-bg-opcao" data-bg-opt="padrao" onclick="setTemaBg('padrao')" style="background:#FAF8F2;color:#20241E;">Padrão</div>
+        <div class="tema-bg-opcao" data-bg-opt="branco" onclick="setTemaBg('branco')" style="background:#FFFFFF;color:#20241E;">Branco</div>
+        <div class="tema-bg-opcao" data-bg-opt="preto" onclick="setTemaBg('preto')" style="background:#121412;color:#F2F1EA;">Preto</div>
+      </div>
+    </div>
+
+    <div class="tema-secao">
+      <div class="tema-secao-titulo">Cor de destaque</div>
+      <div class="tema-opcoes" id="tema-cores">
+        <div class="tema-swatch" data-cor="verde" onclick="setTemaCor('verde')" style="background:#2C4A3B;" title="Verde (padrão)"></div>
+        <div class="tema-swatch" data-cor="vermelho" onclick="setTemaCor('vermelho')" style="background:#B23A2E;" title="Vermelho"></div>
+        <div class="tema-swatch" data-cor="azul" onclick="setTemaCor('azul')" style="background:#2C4A7A;" title="Azul"></div>
+        <div class="tema-swatch" data-cor="roxo" onclick="setTemaCor('roxo')" style="background:#5B3A8A;" title="Roxo"></div>
+        <div class="tema-swatch" data-cor="dourado" onclick="setTemaCor('dourado')" style="background:#A67C27;" title="Dourado"></div>
+        <div class="tema-swatch" data-cor="preto" onclick="setTemaCor('preto')" style="background:#20241E;" title="Preto"></div>
+      </div>
+    </div>
+
+    <div class="tema-secao" style="margin-bottom:6px;">
+      <div class="tema-secao-titulo">Tipografia</div>
+      <div class="tema-opcoes" id="tema-fontes">
+        <div class="tema-font-opcao" data-font-opt="classica" onclick="setTemaFont('classica')">
+          <div class="tema-font-opcao-nome" style="font-family:'Fraunces',serif;">Clássica</div>
+          <div class="tema-font-opcao-exemplo">Fraunces + Inter</div>
+        </div>
+        <div class="tema-font-opcao" data-font-opt="moderna" onclick="setTemaFont('moderna')">
+          <div class="tema-font-opcao-nome" style="font-family:'Poppins',sans-serif;">Moderna</div>
+          <div class="tema-font-opcao-exemplo">Poppins + Manrope</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="modal-btn" style="margin-top:8px;" onclick="resetarTema()">Restaurar padrão</button>
+  </div>
 </div>
 </body>
 </html>
