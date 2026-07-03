@@ -531,7 +531,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
     <div style="text-align:left;margin-bottom:18px;">
       <label id="checkout-data-label" style="font-size:10px;color:var(--ink-faint);text-transform:uppercase;font-weight:700;letter-spacing:1px;">Data do evento</label>
       <div class="checkout-address-grid">
-        <div><input id="checkout-data-evento" class="checkout-field" placeholder="DD/MM/AAAA" inputmode="numeric" maxlength="10" autocomplete="off" oninput="mascararDataEvento(this)"></div>
+        <div><input id="checkout-data-evento" class="checkout-field" placeholder="DD/MM" inputmode="numeric" maxlength="5" autocomplete="off" oninput="mascararDataEvento(this)"></div>
         <div><input id="checkout-hora-evento" class="checkout-field" placeholder="HH:MM" inputmode="numeric" maxlength="5" autocomplete="off" oninput="mascararHoraPedido(this)"></div>
       </div>
       <div id="checkout-data-hint" style="font-size:11px;color:var(--apricot-deep);margin-top:7px;line-height:1.5;"></div>
@@ -1256,26 +1256,26 @@ function dicaDataPedido(){
   return "";
 }
 function mascararDataEvento(input){
-  const n = onlyDigits(input.value).slice(0,8);
-  let out = n;
-  if (n.length>4) out = `${n.slice(0,2)}/${n.slice(2,4)}/${n.slice(4)}`;
-  else if (n.length>2) out = `${n.slice(0,2)}/${n.slice(2)}`;
-  input.value = out;
+  const n = onlyDigits(input.value).slice(0,4);
+  input.value = n.length>2 ? `${n.slice(0,2)}/${n.slice(2)}` : n;
 }
 function mascararHoraPedido(input){ const n=onlyDigits(input.value).slice(0,4); input.value = n.length>2 ? `${n.slice(0,2)}:${n.slice(2)}` : n; }
-function dataPedidoValida(v){
-  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(v||"").trim());
-  if (!m) return false;
-  const dia=Number(m[1]), mes=Number(m[2]), ano=Number(m[3]);
-  if (dia<1||dia>31||mes<1||mes>12||ano<2000) return false;
-  const d = new Date(ano, mes-1, dia);
-  return d.getFullYear()===ano && d.getMonth()===mes-1 && d.getDate()===dia;
-}
+// O campo pede só DD/MM (sem ano) — o ano é inferido automaticamente: se a
+// data já passou este ano, assume o ano que vem (evento sempre no futuro).
+// Isso mantém as regras de 8 dias e dia da semana funcionando certinho.
 function parseDataPedido(v){
-  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(v||"").trim());
+  const m = /^(\d{2})\/(\d{2})$/.exec(String(v||"").trim());
   if (!m) return null;
-  return new Date(Number(m[3]), Number(m[2])-1, Number(m[1]), 0, 0, 0, 0);
+  const dia = Number(m[1]), mes = Number(m[2]);
+  if (mes<1||mes>12) return null;
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  let ano = hoje.getFullYear();
+  let d = new Date(ano, mes-1, dia, 0, 0, 0, 0);
+  if (d < hoje) { ano += 1; d = new Date(ano, mes-1, dia, 0, 0, 0, 0); }
+  if (d.getMonth()!==mes-1 || d.getDate()!==dia) return null; // ex.: 31/02 não existe
+  return d;
 }
+function dataPedidoValida(v){ return parseDataPedido(v) !== null; }
 function horaPedidoValida(v){ const m=/^(\d{2}):(\d{2})$/.exec(String(v||"").trim()); if(!m) return false; return Number(m[1])>=0&&Number(m[1])<=23&&Number(m[2])>=0&&Number(m[2])<=59; }
 function montarPedidoBase(total, sinal){
   const itensStr = meuCarrinho.map(i=>`${i.qtdCentros}x ${i.nome} (${dinheiro(i.subtotal)})`).join(" | ");
@@ -1308,7 +1308,7 @@ function payloadPedido(formaPagamento){
   if (nome.length<3) throw new Error("Nome inválido. Atualize seu perfil.");
   if (telefone.length<10) throw new Error("Telefone inválido. Atualize seu perfil.");
   if (!rua||!numero||!bairro) throw new Error("Preencha rua, número e bairro do evento.");
-  if (!dataPedidoValida(dataAgendada)) throw new Error(`Preencha ${labelData.toLowerCase()} no formato DD/MM/AAAA.`);
+  if (!dataPedidoValida(dataAgendada)) throw new Error(`Preencha ${labelData.toLowerCase()} no formato DD/MM.`);
   if (!horaPedidoValida(horaAgendada)) throw new Error("Preencha a hora no formato HH:MM.");
   if (!meuCarrinho.length) throw new Error("Carrinho vazio.");
   const dataObj = parseDataPedido(dataAgendada);
