@@ -351,17 +351,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
     </div>
     <div id="menu-lista">
       <div class="menu-item ativo" id="mi-home" onclick="abrirPagina('home')"><span class="icone">⌂</span> Início</div>
-      <div class="menu-secao">Centros</div>
-      <div class="menu-item" id="mi-pizza" onclick="abrirPagina('pizza')"><span class="icone">◐</span> Pizza Artesanal</div>
-      <div class="menu-item" id="mi-picole" onclick="abrirPagina('picole')"><span class="icone">◒</span> Picolé Gourmet</div>
-      <div class="menu-item" id="mi-brigadeiro" onclick="abrirPagina('brigadeiro')"><span class="icone">●</span> Brigadeiro no Tacho</div>
-      <div class="menu-item" id="mi-pipoca" onclick="abrirPagina('pipoca')"><span class="icone">◍</span> Pipoca Doce</div>
-      <div class="menu-item" id="mi-algodao" onclick="abrirPagina('algodao')"><span class="icone">◯</span> Algodão Doce</div>
-      <div class="menu-item" id="mi-cachorroquente" onclick="abrirPagina('cachorroquente')"><span class="icone">▭</span> Cachorro Quente</div>
-      <div class="menu-item" id="mi-hamburguer" onclick="abrirPagina('hamburguer')"><span class="icone">◉</span> Hambúrguer</div>
-      <div class="menu-secao">Lanches</div>
-      <div class="menu-item" id="mi-sanduiche" onclick="abrirPagina('sanduiche')"><span class="icone">▱</span> Sanduíche Natural</div>
-      <div class="menu-item" id="mi-empada" onclick="abrirPagina('empada')"><span class="icone">◔</span> Empadas</div>
+      <div id="menu-categorias-produtos"><!-- gerado por renderMenuLateral() --></div>
       <div class="menu-secao">Sua Conta</div>
       <div class="menu-item" id="mi-compras" style="display:none" onclick="abrirPagina('compras')"><span class="icone">▤</span> Minhas Compras</div>
       <button class="menu-item menu-carrinho" id="mi-carrinho" onclick="abrirPagina('carrinho')">Checkout (<span id="qtd-carrinho">0</span>)</button>
@@ -534,30 +524,54 @@ const SABORES_SANDUICHE = [
   { id:"frango", nome:"Frango", descricao:"Frango desfiado temperado com toque artesanal." }
 ];
 
-const PRODUTOS = {
-  hamburguer: { nome:"Hambúrguer", icone:"◉", imgKey:"hamburguer", desc:"Carrinho de hambúrgueres artesanais montados na hora.",
+/* HARDCODED_PRODUTOS é a rede de segurança: se o Supabase estiver fora do ar
+   ou as tabelas 'categorias'/'produtos' ainda não tiverem sido criadas
+   (rode migration_catalogo.sql), a loja continua funcionando com este
+   catálogo fixo. Assim que o Supabase responder com dados, PRODUTOS e
+   CATEGORIAS são substituídos pelo conteúdo administrável do painel. */
+const HARDCODED_PRODUTOS = {
+  hamburguer: { nome:"Hambúrguer", icone:"◉", imgKey:"hamburguer", desc:"Carrinho de hambúrgueres artesanais montados na hora.", categoriaId:"centros",
     centros:[ {id:"p",label:"Centro 100",qtd:100,preco:600}, {id:"m",label:"Centro 150",qtd:150,preco:870}, {id:"g",label:"Centro 200",qtd:200,preco:1120} ] },
-  cachorroquente: { nome:"Cachorro Quente", icone:"▭", imgKey:"cachorroquente", desc:"Cachorro quente gourmet com acompanhamentos variados.",
+  cachorroquente: { nome:"Cachorro Quente", icone:"▭", imgKey:"cachorroquente", desc:"Cachorro quente gourmet com acompanhamentos variados.", categoriaId:"centros",
     centros:[ {id:"p",label:"Centro 80",qtd:80,preco:480}, {id:"m",label:"Centro 120",qtd:120,preco:696}, {id:"g",label:"Centro 160",qtd:160,preco:896} ] },
-  pizza: { nome:"Pizza Artesanal", icone:"◐", imgKey:"pizza", desc:"Pizzas artesanais assadas na hora para encantar qualquer evento.",
+  pizza: { nome:"Pizza Artesanal", icone:"◐", imgKey:"pizza", desc:"Pizzas artesanais assadas na hora para encantar qualquer evento.", categoriaId:"centros",
     centros:[ {id:"p",label:"Centro 80",qtd:80,preco:480}, {id:"m",label:"Centro 120",qtd:120,preco:696}, {id:"g",label:"Centro 160",qtd:160,preco:896} ] },
-  picole: { nome:"Picolé Gourmet", icone:"◒", imgKey:"picole", desc:"Picolés artesanais com sabores premium e apresentação impecável.",
+  picole: { nome:"Picolé Gourmet", icone:"◒", imgKey:"picole", desc:"Picolés artesanais com sabores premium e apresentação impecável.", categoriaId:"centros",
     centros:[ {id:"p",label:"Centro 50",qtd:50,preco:250}, {id:"m",label:"Centro 100",qtd:100,preco:475}, {id:"g",label:"Centro 150",qtd:150,preco:675} ] },
-  brigadeiro: { nome:"Brigadeiro no Tacho", icone:"●", imgKey:"brigadeiro", desc:"Brigadeiro cremoso feito no tacho, servido com elegância.",
+  brigadeiro: { nome:"Brigadeiro no Tacho", icone:"●", imgKey:"brigadeiro", desc:"Brigadeiro cremoso feito no tacho, servido com elegância.", categoriaId:"centros",
     centros:[
       {id:"p",label:"Centro Pequeno",qtd:null,preco:185,descricao:"Ideal para eventos menores e comemorações intimistas."},
       {id:"m",label:"Centro Médio",qtd:null,preco:220,descricao:"Opção equilibrada, ótima presença na mesa."},
       {id:"g",label:"Centro Grande",qtd:null,preco:250,descricao:"Para eventos maiores, com mais volume e impacto visual."}
     ] },
-  pipoca: { nome:"Pipoca Doce", icone:"◍", imgKey:"pipoca", desc:"Pipoca caramelizada e temperada, irresistível para qualquer evento.",
+  pipoca: { nome:"Pipoca Doce", icone:"◍", imgKey:"pipoca", desc:"Pipoca caramelizada e temperada, irresistível para qualquer evento.", categoriaId:"centros",
     centros:[ {id:"p",label:"Centro 80",qtd:80,preco:320}, {id:"m",label:"Centro 120",qtd:120,preco:444}, {id:"g",label:"Centro 160",qtd:160,preco:544} ] },
-  algodao: { nome:"Algodão Doce", icone:"◯", imgKey:"algodao", desc:"Algodão doce colorido, macio e encantador para todas as idades.",
+  algodao: { nome:"Algodão Doce", icone:"◯", imgKey:"algodao", desc:"Algodão doce colorido, macio e encantador para todas as idades.", categoriaId:"centros",
     centros:[ {id:"p",label:"Centro 80",qtd:80,preco:320}, {id:"m",label:"Centro 120",qtd:120,preco:444}, {id:"g",label:"Centro 160",qtd:160,preco:544} ] },
-  sanduiche: { nome:"Sanduíche Natural", icone:"▱", imgKey:"sanduiche", desc:"Sanduíches naturais frescos, saudáveis e preparados com carinho.", sabores:SABORES_SANDUICHE,
+  sanduiche: { nome:"Sanduíche Natural", icone:"▱", imgKey:"sanduiche", desc:"Sanduíches naturais frescos, saudáveis e preparados com carinho.", sabores:SABORES_SANDUICHE, categoriaId:"lanches",
     centros:[ {id:"p",label:"Centro 30",qtd:30,preco:240}, {id:"m",label:"Centro 50",qtd:50,preco:380}, {id:"g",label:"Centro 80",qtd:80,preco:560} ] },
-  empada: { nome:"Empadas", icone:"◔", imgKey:"empada", desc:"Empadas artesanais crocantes com recheios sofisticados e saborosos.",
+  empada: { nome:"Empadas", icone:"◔", imgKey:"empada", desc:"Empadas artesanais crocantes com recheios sofisticados e saborosos.", categoriaId:"lanches",
     centros:[ {id:"p",label:"Centro 30",qtd:30,preco:150}, {id:"m",label:"Centro 60",qtd:60,preco:270}, {id:"g",label:"Centro 100",qtd:100,preco:420} ] }
 };
+const CATEGORIAS_FALLBACK = [ {id:"centros",nome:"Centros",ordem:1}, {id:"lanches",nome:"Lanches",ordem:2} ];
+
+let PRODUTOS = HARDCODED_PRODUTOS;      // substituído por dados reais do Supabase quando disponíveis
+let CATEGORIAS = CATEGORIAS_FALLBACK;   // idem
+let catalogoFonteSupabase = false;      // true depois que o catálogo real do Supabase carregar com sucesso
+let USAR_PLANILHA_BACKUP = false;       // controlado pela tabela 'configuracoes' (chave 'usar_planilha_backup')
+
+async function carregarConfiguracoesLoja(){
+  if (!sb) return;
+  try {
+    const { data, error } = await sb.from("configuracoes").select("*"); if (error) throw error;
+    (data||[]).forEach(row=>{
+      if (row.chave === "usar_planilha_backup") USAR_PLANILHA_BACKUP = row.valor === "true";
+      if (row.chave === "whatsapp" && row.valor) CONFIG.whatsapp = row.valor;
+      if (row.chave === "pix_key" && row.valor) PIX_KEY_MANUAL_RUNTIME = row.valor;
+    });
+  } catch(e) { /* tabela 'configuracoes' ainda não existe: usa os valores fixos do topo do arquivo */ }
+}
+let PIX_KEY_MANUAL_RUNTIME = null;
 
 let meuCarrinho = [];
 try { meuCarrinho = JSON.parse(localStorage.getItem(STORAGE.cart)) || []; } catch(_) {}
@@ -621,9 +635,13 @@ function renderCarouselAvaliacoes(){
 }
 
 window.addEventListener("keydown", e => { if (e.key === "Escape") fecharImagemProdutoExpandida(); });
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
   document.getElementById("btn-wpp").href = `https://wa.me/55${CONFIG.whatsapp}`;
-  iniciarSocketSeguro(); verificarUsuarioLogado(); carregarCardapioConfig(); abrirPagina("home");
+  renderMenuLateral();
+  iniciarSocketSeguro(); verificarUsuarioLogado();
+  await Promise.all([carregarCatalogoSupabase(), carregarConfiguracoesLoja()]); // popula PRODUTOS/CATEGORIAS e settings reais antes de desenhar a home
+  await carregarCardapioConfig();
+  abrirPagina("home");
   restaurarSessaoAdmin();
 });
 
@@ -658,8 +676,10 @@ function centroMaisBarato(produtoId){
   return centros.reduce((min,c) => { const p = precoCentro(produtoId,c.id); return p < min ? p : min; }, precoCentro(produtoId, centros[0]?.id));
 }
 function fallbackProduto(p){ return `<div class="product-icon-wrap"><div class="product-icon">${p.icone||"◈"}</div></div>`; }
+function fotoProduto(p){ return p.imagemUrl || (p.imgKey && IMGS[p.imgKey]) || null; }
 function imagemProduto(p){
-  if (p.imgKey && IMGS[p.imgKey]) return `<div class="product-img-wrap"><img src="${IMGS[p.imgKey]}" class="product-img-card" alt="${escapeHTML(p.nome)}"></div>`;
+  const src = fotoProduto(p);
+  if (src) return `<div class="product-img-wrap"><img src="${src}" class="product-img-card" alt="${escapeHTML(p.nome)}" loading="lazy"></div>`;
   return fallbackProduto(p);
 }
 function feedback(msg){ alert(msg); }
@@ -718,6 +738,70 @@ function cadastrarUsuario(){
   fecharModal("modal-login"); verificarUsuarioLogado(); sincronizarClienteViaPlanilha();
 }
 
+function renderMenuLateral(){
+  const host = document.getElementById("menu-categorias-produtos");
+  if (!host) return;
+  const cats = [...CATEGORIAS].sort((a,b)=>(a.ordem||0)-(b.ordem||0));
+  const porCategoria = {};
+  Object.entries(PRODUTOS).forEach(([id,p])=>{
+    const catId = p.categoriaId || "_sem";
+    (porCategoria[catId] = porCategoria[catId] || []).push([id,p]);
+  });
+  let html = "";
+  cats.forEach(cat=>{
+    const itens = porCategoria[cat.id] || [];
+    if (!itens.length) return;
+    html += `<div class="menu-secao">${escapeHTML(cat.nome)}</div>`;
+    itens.forEach(([id,p])=>{
+      html += `<div class="menu-item" id="mi-${id}" onclick="abrirPagina('${id}')"><span class="icone">${p.icone||"◈"}</span> ${escapeHTML(p.nome)}</div>`;
+    });
+  });
+  // produtos sem categoria (ex.: criados no admin antes de escolher uma)
+  if (porCategoria["_sem"]) {
+    html += `<div class="menu-secao">Outros</div>`;
+    porCategoria["_sem"].forEach(([id,p])=>{
+      html += `<div class="menu-item" id="mi-${id}" onclick="abrirPagina('${id}')"><span class="icone">${p.icone||"◈"}</span> ${escapeHTML(p.nome)}</div>`;
+    });
+  }
+  host.innerHTML = html;
+  atualizarAtivosMenu(paginaAtual);
+}
+
+async function carregarCatalogoSupabase(){
+  if (!sb) return;
+  try {
+    const [{ data: categoriasData, error: eCat }, { data: produtosData, error: eProd }, { data: centrosData, error: eCentro }] = await Promise.all([
+      sb.from("categorias").select("*").eq("ativo", true).order("ordem", { ascending:true }),
+      sb.from("produtos").select("*").eq("ativo", true).order("ordem", { ascending:true }),
+      sb.from("centros").select("*").eq("ativo", true)
+    ]);
+    if (eCat || eProd || eCentro) throw (eCat||eProd||eCentro);
+    if (!produtosData || !produtosData.length) return; // tabelas ainda vazias: mantém HARDCODED_PRODUTOS
+
+    const centrosPorProduto = {};
+    (centrosData||[]).forEach(c=>{
+      (centrosPorProduto[c.produto_id] = centrosPorProduto[c.produto_id] || []).push({ id:c.tier_id, label:c.label, qtd:c.quantidade, preco:Number(c.preco) });
+    });
+    Object.values(centrosPorProduto).forEach(arr=>arr.sort((a,b)=>a.preco-b.preco));
+
+    const novoProdutos = {};
+    (produtosData||[]).forEach(p=>{
+      novoProdutos[p.id] = {
+        nome: p.nome, icone: p.icone || "◈", imgKey: p.id, imagemUrl: p.imagem_url || null,
+        desc: p.descricao || "", categoriaId: p.categoria_id,
+        sabores: (HARDCODED_PRODUTOS[p.id] && HARDCODED_PRODUTOS[p.id].sabores) || undefined,
+        centros: centrosPorProduto[p.id] || (HARDCODED_PRODUTOS[p.id] && HARDCODED_PRODUTOS[p.id].centros) || []
+      };
+    });
+    const novasCategorias = (categoriasData && categoriasData.length) ? categoriasData : CATEGORIAS_FALLBACK;
+
+    PRODUTOS = novoProdutos; CATEGORIAS = novasCategorias; catalogoFonteSupabase = true;
+    renderMenuLateral();
+    if (["home","carrinho"].includes(paginaAtual)) abrirPagina(paginaAtual);
+    else if (paginaAtual !== "home" && !PRODUTOS[paginaAtual] && paginaAtual !== "compras") abrirPagina("home");
+  } catch(e) { console.warn("Supabase: catálogo indisponível, usando catálogo fixo.", e); }
+}
+
 function atualizarAtivosMenu(id){
   document.querySelectorAll(".menu-item, .nav-item").forEach(el=>el.classList.remove("ativo"));
   const md=document.getElementById("mi-"+id); if(md) md.classList.add("ativo");
@@ -735,7 +819,7 @@ function abrirPagina(id){
 }
 
 function renderHome(v){
-  const cards = Object.entries(PRODUTOS).map(([id,p],i)=>{
+  const cards = Object.entries(PRODUTOS).filter(([id,p])=>(p.centros||[]).length>0).map(([id,p],i)=>{
     const indisponivel = !produtoDisponivel(id);
     const menor = centroMaisBarato(id);
     return `<div class="product-card ${indisponivel?'esgotado':''}" onclick="${indisponivel?'':`abrirPagina('${id}')`}">
@@ -789,8 +873,9 @@ function renderProduto(v, id){
   const p = PRODUTOS[id];
   selEstado = { produtoId:id, saborId: p.sabores ? p.sabores[0].id : null, centroId:null, qtdCentros:1 };
 
-  const fotoHtml = p.imgKey && IMGS[p.imgKey]
-    ? `<div class="prod-foto-wrap" onclick="abrirImagemProdutoExpandida('${IMGS[p.imgKey]}', '${escapeHTML(p.nome).replace(/'/g,"\\'")}')"><img src="${IMGS[p.imgKey]}" class="prod-foto" alt="${escapeHTML(p.nome)}" loading="eager"></div>`
+  const fotoSrc = fotoProduto(p);
+  const fotoHtml = fotoSrc
+    ? `<div class="prod-foto-wrap" onclick="abrirImagemProdutoExpandida('${fotoSrc}', '${escapeHTML(p.nome).replace(/'/g,"\\'")}')"><img src="${fotoSrc}" class="prod-foto" alt="${escapeHTML(p.nome)}" loading="eager"></div>`
     : `<div class="prod-foto-wrap" style="justify-content:center;"><div style="font-size:72px;color:var(--pine);">${p.icone}</div></div>`;
 
   const saborHtml = p.sabores ? `
@@ -976,16 +1061,22 @@ async function finalizarPedido(formaPagamento, btn, textoOriginal){
   try {
     btn.disabled = true; btn.innerHTML = "Confirmando pedido...";
     const payload = payloadPedido(formaPagamento);
-    await enviarParaPlanilhaGoogle(payload);
+    // Supabase é a fonte da verdade. A planilha do Google, quando ativada em
+    // Admin → Catálogo → Configurações, é só um backup e nunca bloqueia o pedido.
+    const salvoNoSupabase = await salvarPedidoSupabase(payload, "pendente");
+    if (!salvoNoSupabase && !sb) {
+      await enviarParaPlanilhaGoogle(payload); // sem Supabase configurado, a planilha é o único registro possível
+    } else if (USAR_PLANILHA_BACKUP) {
+      enviarParaPlanilhaGoogle(payload).catch(e=>console.warn("Backup em planilha falhou (pedido já está salvo no Supabase).", e));
+    }
     enviarSocketPedido(payload); salvarNaAbaCompras(payload); abrirWhatsAppPagamento(payload);
-    salvarPedidoSupabase(payload, "pendente");
     meuCarrinho = []; safeWrite(STORAGE.cart, []); atualizarContadorCarrinho(); fecharModal("modal-checkout"); abrirPagina("compras");
     feedback("Pedido confirmado e salvo com sucesso.");
   } catch(error) { feedback(`Não foi possível finalizar: ${error.message}`); }
   finally { btn.disabled = false; btn.innerHTML = textoOriginal; }
 }
 function copiarChavePix(){
-  const chavePix = PIX_KEY_MANUAL;
+  const chavePix = PIX_KEY_MANUAL_RUNTIME || PIX_KEY_MANUAL;
   if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(chavePix).catch(()=>copiarChavePixFallback(chavePix)); return; }
   copiarChavePixFallback(chavePix);
 }
@@ -1254,7 +1345,7 @@ function openAdminPanel(){ if (!isAdminLogado()) return openAdminLogin(); docume
 function closeAdminPanel(){ document.getElementById("adm-panel").classList.remove("op"); }
 function admTab(tab){
   document.querySelectorAll(".adm-tab").forEach(b=>b.classList.toggle("act", b.dataset.tab===tab));
-  const map = { pedidos:renderAdminPedidos, cardapio:renderAdminCardapio, relatorios:renderAdminRelatorios, recuperacao:renderAdminRecuperacao, avaliacoes:renderAdminAvaliacoes, registros:renderAdminRegistros };
+  const map = { pedidos:renderAdminPedidos, catalogo:renderAdminCatalogo, cardapio:renderAdminCardapio, relatorios:renderAdminRelatorios, recuperacao:renderAdminRecuperacao, avaliacoes:renderAdminAvaliacoes, registros:renderAdminRegistros };
   (map[tab]||renderAdminPedidos)();
 }
 function admNaoConfigurado(msg){ return `<div class="adm-empty"><div class="adm-empty-ic">!</div>${msg}<br/><span style="font-size:11.5px;opacity:.7">Configure SUPABASE_URL e SUPABASE_ANON_KEY no topo do arquivo.</span></div>`; }
@@ -1299,6 +1390,158 @@ async function admChangeStatus(pedido, novoStatus){
   catch(e) { alert("Não foi possível alterar o status: " + e.message); }
 }
 
+/* ==========================================================================
+   ADMIN — CATÁLOGO (categorias + produtos reais no Supabase)
+   ========================================================================== */
+function catalogoNaoConfigurado(){
+  return `<div class="adm-notice">As tabelas <strong>categorias</strong> e <strong>produtos</strong> ainda não existem (ou estão vazias) no seu Supabase. Rode o arquivo <code>migration_catalogo.sql</code> no SQL Editor do projeto para ativar o catálogo administrável — até lá, a loja usa o catálogo fixo do HTML normalmente.</div>`;
+}
+async function renderAdminCatalogo(){
+  const c = document.getElementById("adm-content");
+  if (!sb) { c.innerHTML = admNaoConfigurado("O catálogo administrável aparecerá aqui assim que o Supabase estiver configurado."); return; }
+  c.innerHTML = `<div class="adm-loading">Carregando catálogo...</div>`;
+  let categorias = [], produtos = [];
+  try {
+    const [{ data: cat, error: eCat }, { data: prod, error: eProd }] = await Promise.all([
+      sb.from("categorias").select("*").order("ordem",{ascending:true}),
+      sb.from("produtos").select("*").order("ordem",{ascending:true})
+    ]);
+    if (eCat || eProd) throw (eCat||eProd);
+    categorias = cat||[]; produtos = prod||[];
+  } catch(e) { c.innerHTML = catalogoNaoConfigurado(); return; }
+
+  const catOptions = categorias.map(cat=>`<option value="${cat.id}">${escapeHTML(cat.nome)}</option>`).join('');
+  const catRows = categorias.map(cat=>`
+    <div class="adm-centro-row">
+      <div><strong>${escapeHTML(cat.nome)}</strong><div class="adm-sub">${cat.id} · ordem ${cat.ordem}${cat.ativo?'':' · oculta'}</div></div>
+      <div style="display:flex;gap:8px;">
+        <button class="adm-btn sm" onclick="admEditarCategoria('${cat.id}','${escapeHTML(cat.nome).replace(/'/g,"\\'")}',${cat.ordem||0},${!!cat.ativo})">Editar</button>
+        <button class="adm-btn sm danger" onclick="admExcluirCategoria('${cat.id}')">Excluir</button>
+      </div>
+    </div>`).join('') || `<p style="font-size:12.5px;color:var(--ink-faint);">Nenhuma categoria cadastrada ainda.</p>`;
+
+  const prodRows = produtos.map(p=>`
+    <div style="background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin-bottom:12px;display:flex;gap:14px;align-items:center;">
+      ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0;">` : `<div style="width:56px;height:56px;border-radius:10px;background:var(--paper-alt);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">${escapeHTML(p.icone||'◈')}</div>`}
+      <div style="flex:1;min-width:0;">
+        <strong style="font-family:var(--font-display);font-size:15.5px;">${escapeHTML(p.nome)}</strong>
+        <div class="adm-sub">${p.id} · ${escapeHTML((categorias.find(k=>k.id===p.categoria_id)||{}).nome || 'sem categoria')}${p.ativo?'':' · oculto'}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button class="adm-btn sm" onclick="admAbrirEdicaoProduto('${p.id}')">Editar</button>
+        <button class="adm-btn sm danger" onclick="admExcluirProduto('${p.id}')">Excluir</button>
+      </div>
+    </div>`).join('') || `<p style="font-size:12.5px;color:var(--ink-faint);">Nenhum produto cadastrado ainda.</p>`;
+
+  c.innerHTML = `
+    <div class="adm-notice">Categorias e produtos criados aqui aparecem na loja para todos os visitantes assim que salvos. Depois de criar um produto, defina ao menos um preço em <strong>Preços &amp; Estoque</strong> para ele aparecer na vitrine (sem preço, não é possível comprar).</div>
+
+    <h4 style="font-family:var(--font-display);font-size:18px;margin-bottom:10px;">Categorias</h4>
+    <div style="background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin-bottom:14px;">${catRows}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:30px;">
+      <input class="adm-input-sm" id="nova-cat-nome" placeholder="Nome da categoria" style="flex:1;min-width:160px;">
+      <input class="adm-input-sm" id="nova-cat-ordem" type="number" placeholder="Ordem" style="width:80px;" value="${categorias.length+1}">
+      <button class="adm-btn" onclick="admCriarCategoria()">+ Nova categoria</button>
+    </div>
+
+    <h4 style="font-family:var(--font-display);font-size:18px;margin-bottom:10px;">Produtos</h4>
+    ${prodRows}
+    <div style="background:var(--paper-alt);border:1px dashed var(--line-strong);border-radius:var(--r-md);padding:18px;margin-top:10px;">
+      <h5 style="font-family:var(--font-display);font-size:15px;margin-bottom:12px;">+ Novo produto</h5>
+      <div style="display:flex;flex-direction:column;gap:8px;max-width:440px;">
+        <input class="adm-input-sm" id="novo-prod-nome" placeholder="Nome do produto">
+        <select class="adm-input-sm" id="novo-prod-categoria">${catOptions}</select>
+        <textarea class="adm-input-sm" id="novo-prod-desc" placeholder="Descrição" style="resize:vertical;min-height:52px;"></textarea>
+        <input class="adm-input-sm" id="novo-prod-icone" placeholder="Ícone (ex: ◉) — usado se não houver foto" maxlength="2">
+        <input type="file" accept="image/*" id="novo-prod-foto" class="adm-input-sm">
+        <button class="adm-btn" onclick="admCriarProduto()">Salvar produto</button>
+      </div>
+    </div>
+
+    <h4 style="font-family:var(--font-display);font-size:18px;margin:30px 0 10px;">Configurações da loja</h4>
+    <div style="background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;display:flex;flex-direction:column;gap:10px;max-width:440px;">
+      <label style="display:flex;align-items:center;gap:10px;font-size:13px;">
+        <input type="checkbox" id="cfg-planilha-backup" ${USAR_PLANILHA_BACKUP?'checked':''}>
+        Manter backup automático no Google Sheets (opcional — o Supabase já é a fonte oficial dos pedidos)
+      </label>
+      <button class="adm-btn sm" style="width:fit-content;" onclick="admSalvarConfiguracoes()">Salvar configurações</button>
+    </div>
+  `;
+}
+
+async function admCriarCategoria(){
+  const nome = document.getElementById("nova-cat-nome").value.trim();
+  const ordem = Number(document.getElementById("nova-cat-ordem").value)||0;
+  if (!nome) return feedback("Informe o nome da categoria.");
+  const id = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"") || ("cat-"+Date.now());
+  try {
+    const { error } = await sb.from("categorias").insert({ id, nome, ordem, ativo:true }); if (error) throw error;
+    logAudit("categoria_criada","categorias",nome); feedback("Categoria criada."); renderAdminCatalogo();
+  } catch(e) { feedback("Não foi possível criar a categoria: " + (e.message||"")); }
+}
+function admEditarCategoria(id, nomeAtual, ordemAtual, ativaAtual){
+  const nome = prompt("Nome da categoria:", nomeAtual); if (nome===null) return;
+  const ordem = Number(prompt("Ordem (número):", ordemAtual)); const ativo = confirm("Categoria visível na loja? OK = sim, Cancelar = ocultar");
+  (async()=>{ try { const { error } = await sb.from("categorias").update({ nome, ordem: Number.isFinite(ordem)?ordem:ordemAtual, ativo }).eq("id", id); if (error) throw error;
+    logAudit("categoria_editada","categorias",nome); renderAdminCatalogo(); } catch(e){ feedback("Não foi possível salvar."); } })();
+}
+async function admExcluirCategoria(id){
+  if (!confirm("Excluir esta categoria? Produtos nela ficarão sem categoria.")) return;
+  try { const { error } = await sb.from("categorias").delete().eq("id", id); if (error) throw error;
+    logAudit("categoria_excluida","categorias",id); feedback("Categoria excluída."); renderAdminCatalogo(); } catch(e){ feedback("Não foi possível excluir."); }
+}
+
+async function admCriarProduto(){
+  const nome = document.getElementById("novo-prod-nome").value.trim();
+  const categoriaId = document.getElementById("novo-prod-categoria").value;
+  const descricao = document.getElementById("novo-prod-desc").value.trim();
+  const icone = document.getElementById("novo-prod-icone").value.trim() || "◈";
+  const arquivo = document.getElementById("novo-prod-foto").files[0];
+  if (!nome) return feedback("Informe o nome do produto.");
+  const id = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"") || ("prod-"+Date.now());
+  let imagemUrl = null;
+  try {
+    if (arquivo) imagemUrl = await admUploadImagemProduto(id, arquivo);
+    const { error } = await sb.from("produtos").insert({ id, categoria_id: categoriaId||null, nome, icone, descricao, imagem_url: imagemUrl, ativo:true });
+    if (error) throw error;
+    logAudit("produto_criado","produtos",nome);
+    feedback("Produto criado! Agora defina o preço em 'Preços & Estoque' para ele aparecer na loja.");
+    renderAdminCatalogo();
+  } catch(e) { feedback("Não foi possível criar o produto: " + (e.message||"")); }
+}
+async function admUploadImagemProduto(produtoId, arquivo){
+  const ext = (arquivo.name.split('.').pop()||'jpg').toLowerCase();
+  const path = `${produtoId}-${Date.now()}.${ext}`;
+  const { error } = await sb.storage.from("produtos").upload(path, arquivo, { upsert:true, cacheControl:"3600" });
+  if (error) throw error;
+  const { data } = sb.storage.from("produtos").getPublicUrl(path);
+  return data?.publicUrl || null;
+}
+function admAbrirEdicaoProduto(id){
+  const p = PRODUTOS[id] || {};
+  const novoNome = prompt("Nome do produto:", p.nome||id); if (novoNome===null) return;
+  const novaDesc = prompt("Descrição:", p.desc||""); if (novaDesc===null) return;
+  const ativo = confirm("Produto visível na loja? OK = sim, Cancelar = ocultar");
+  (async()=>{ try {
+    const { error } = await sb.from("produtos").update({ nome:novoNome, descricao:novaDesc, ativo, atualizado_em:new Date().toISOString() }).eq("id", id);
+    if (error) throw error; logAudit("produto_editado","produtos",novoNome); renderAdminCatalogo();
+  } catch(e){ feedback("Não foi possível salvar."); } })();
+}
+async function admExcluirProduto(id){
+  if (!confirm("Excluir este produto definitivamente? Os preços (Centros) associados também deixarão de aparecer.")) return;
+  try { const { error } = await sb.from("produtos").delete().eq("id", id); if (error) throw error;
+    logAudit("produto_excluido","produtos",id); feedback("Produto excluído."); renderAdminCatalogo(); } catch(e){ feedback("Não foi possível excluir."); }
+}
+async function admSalvarConfiguracoes(){
+  const usarPlanilha = document.getElementById("cfg-planilha-backup").checked;
+  try {
+    const { error } = await sb.from("configuracoes").upsert({ chave:"usar_planilha_backup", valor:String(usarPlanilha), atualizado_em:new Date().toISOString() }, { onConflict:"chave" });
+    if (error) throw error;
+    USAR_PLANILHA_BACKUP = usarPlanilha; logAudit("config_atualizada","configuracoes","usar_planilha_backup="+usarPlanilha);
+    feedback("Configurações salvas.");
+  } catch(e) { feedback("Não foi possível salvar (a tabela 'configuracoes' existe? rode migration_catalogo.sql)."); }
+}
+
 async function renderAdminCardapio(){
   const c = document.getElementById("adm-content");
   const rows = Object.keys(PRODUTOS).map(id => {
@@ -1317,10 +1560,31 @@ async function renderAdminCardapio(){
         <h4 style="font-family:var(--font-display);font-size:17px;color:var(--ink);">${escapeHTML(p.nome)}</h4>
         <label class="adm-switch"><input type="checkbox" id="cad-disp-${id}" ${disp?'checked':''} onchange="salvarDisponibilidadeProduto('${id}')"><span class="adm-switch-track"></span></label>
       </div>
-      ${centrosRows}
+      ${centrosRows || `<p style="font-size:12px;color:var(--ink-faint);margin:6px 0 10px;">Nenhum preço cadastrado — este produto não aparece na loja ainda.</p>`}
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:10px;border-top:1px dashed var(--line);">
+        <input class="adm-input-sm" style="width:110px;" id="novo-tier-label-${id}" placeholder="Nome (ex: Centro 100)">
+        <input class="adm-input-sm" style="width:80px;" id="novo-tier-qtd-${id}" type="number" placeholder="Qtd un.">
+        <input class="adm-input-sm" style="width:90px;" id="novo-tier-preco-${id}" type="number" step="0.01" placeholder="Preço R$">
+        <button class="adm-btn sm" onclick="admAdicionarTier('${id}')">+ Adicionar tamanho</button>
+      </div>
     </div>`;
   }).join('');
   c.innerHTML = `<div class="adm-notice">Os preços de cada Centro e a disponibilidade dos produtos ficam salvos no Supabase e sincronizam a loja para todos os visitantes. Sem o Supabase configurado, valem apenas neste navegador.</div>${rows}`;
+}
+async function admAdicionarTier(produtoId){
+  const label = document.getElementById(`novo-tier-label-${produtoId}`).value.trim();
+  const qtd = document.getElementById(`novo-tier-qtd-${produtoId}`).value;
+  const preco = Number(document.getElementById(`novo-tier-preco-${produtoId}`).value);
+  if (!label) return feedback("Informe um nome para o tamanho (ex: Centro 100).");
+  if (!Number.isFinite(preco) || preco<=0) return feedback("Informe um preço válido.");
+  if (!sb) return feedback("Configure o Supabase para cadastrar preços novos.");
+  const tierId = label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"") || ("t-"+Date.now());
+  try {
+    const { error } = await sb.from("centros").insert({ produto_id: produtoId, tier_id: tierId, label, quantidade: qtd?Number(qtd):null, preco, ativo:true });
+    if (error) throw error;
+    logAudit("centro_criado","centros",`${produtoId} — ${label}: R$ ${preco}`);
+    feedback("Tamanho adicionado."); await carregarCatalogoSupabase(); renderAdminCardapio();
+  } catch(e) { feedback("Não foi possível adicionar: " + (e.message||"")); }
 }
 async function salvarCentroPreco(produtoId, tierId){
   const preco = Number(document.getElementById(`cad-preco-${produtoId}-${tierId}`).value);
@@ -1479,7 +1743,8 @@ async function renderAdminRegistros(){
     <div class="adm-brand">Petit Buffet <span>Admin</span></div>
     <div class="adm-tabs">
       <button class="adm-tab act" data-tab="pedidos" onclick="admTab('pedidos')">Pedidos</button>
-      <button class="adm-tab" data-tab="cardapio" onclick="admTab('cardapio')">Centros &amp; Estoque</button>
+      <button class="adm-tab" data-tab="catalogo" onclick="admTab('catalogo')">Catálogo</button>
+      <button class="adm-tab" data-tab="cardapio" onclick="admTab('cardapio')">Preços &amp; Estoque</button>
       <button class="adm-tab" data-tab="relatorios" onclick="admTab('relatorios')">Relatórios</button>
       <button class="adm-tab" data-tab="recuperacao" onclick="admTab('recuperacao')">Recuperação</button>
       <button class="adm-tab" data-tab="avaliacoes" onclick="admTab('avaliacoes')">Avaliações</button>
