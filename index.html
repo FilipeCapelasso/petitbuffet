@@ -1457,7 +1457,7 @@ function openAdminPanel(){ if (!isAdminLogado()) return openAdminLogin(); docume
 function closeAdminPanel(){ document.getElementById("adm-panel").classList.remove("op"); }
 function admTab(tab){
   document.querySelectorAll(".adm-tab").forEach(b=>b.classList.toggle("act", b.dataset.tab===tab));
-  const map = { pedidos:renderAdminPedidos, catalogo:renderAdminCatalogo, cardapio:renderAdminCardapio, relatorios:renderAdminRelatorios, recuperacao:renderAdminRecuperacao, avaliacoes:renderAdminAvaliacoes, registros:renderAdminRegistros };
+  const map = { pedidos:renderAdminPedidos, catalogo:renderAdminCatalogo, relatorios:renderAdminRelatorios, recuperacao:renderAdminRecuperacao, avaliacoes:renderAdminAvaliacoes, registros:renderAdminRegistros };
   (map[tab]||renderAdminPedidos)();
 }
 function admNaoConfigurado(msg){ return `<div class="adm-empty"><div class="adm-empty-ic">!</div>${msg}<br/><span style="font-size:11.5px;opacity:.7">Configure SUPABASE_URL e SUPABASE_ANON_KEY no topo do arquivo.</span></div>`; }
@@ -1532,18 +1532,24 @@ async function renderAdminCatalogo(){
       </div>
     </div>`).join('') || `<p style="font-size:12.5px;color:var(--ink-faint);">Nenhuma categoria cadastrada ainda.</p>`;
 
-  const prodRows = produtos.map(p=>`
+  const prodRows = produtos.map(p=>{
+    const disp = produtoDisponivel(p.id); const qtdCentros = (PRODUTOS[p.id]?.centros||[]).length;
+    return `
     <div style="background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin-bottom:12px;display:flex;gap:14px;align-items:center;">
       ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0;">` : `<div style="width:56px;height:56px;border-radius:10px;background:var(--paper-alt);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">${escapeHTML(p.icone||'◈')}</div>`}
       <div style="flex:1;min-width:0;">
-        <strong style="font-family:var(--font-display);font-size:15.5px;">${escapeHTML(p.nome)}</strong>
-        <div class="adm-sub">${p.id} · ${escapeHTML((categorias.find(k=>k.id===p.categoria_id)||{}).nome || 'sem categoria')}${p.ativo?'':' · oculto'}</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:8px;height:8px;border-radius:99px;flex-shrink:0;background:${disp?'var(--success)':'var(--danger)'};" title="${disp?'Disponível':'Indisponível'}"></span>
+          <strong style="font-family:var(--font-display);font-size:15.5px;">${escapeHTML(p.nome)}</strong>
+        </div>
+        <div class="adm-sub">${p.id} · ${escapeHTML((categorias.find(k=>k.id===p.categoria_id)||{}).nome || 'sem categoria')}${p.ativo?'':' · oculto'} · ${qtdCentros} preço${qtdCentros===1?'':'s'} cadastrado${qtdCentros===1?'':'s'}</div>
       </div>
       <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button class="adm-btn sm" title="Editar preços e Centros" onclick="admAbrirCentrosModal('${p.id}')">✎ Preços</button>
         <button class="adm-btn sm" onclick="admAbrirEdicaoProduto('${p.id}')">Editar</button>
         <button class="adm-btn sm danger" onclick="admExcluirProduto('${p.id}')">Excluir</button>
       </div>
-    </div>`).join('') || `<p style="font-size:12.5px;color:var(--ink-faint);">Nenhum produto cadastrado ainda.</p>`;
+    </div>`;}).join('') || `<p style="font-size:12.5px;color:var(--ink-faint);">Nenhum produto cadastrado ainda.</p>`;
 
   c.innerHTML = `
     <div class="adm-notice">Categorias e produtos criados aqui aparecem na loja para todos os visitantes assim que salvos. Depois de criar um produto, defina ao menos um preço em <strong>Preços &amp; Estoque</strong> para ele aparecer na vitrine (sem preço, não é possível comprar).</div>
@@ -1654,34 +1660,78 @@ async function admSalvarConfiguracoes(){
   } catch(e) { feedback("Não foi possível salvar (a tabela 'configuracoes' existe? rode migration_catalogo.sql)."); }
 }
 
-async function renderAdminCardapio(){
-  const c = document.getElementById("adm-content");
-  const rows = Object.keys(PRODUTOS).map(id => {
-    const p = PRODUTOS[id]; const disp = produtoDisponivel(id);
-    const centrosRows = p.centros.map(centro => `
-      <div class="adm-centro-row">
-        <div><strong>${escapeHTML(centro.label)}</strong><div class="adm-sub">${centro.qtd ? centro.qtd+' un.' : 'pacote fechado'}</div></div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span class="mono" style="font-size:11px;color:var(--ink-faint);">R$</span>
-          <input class="adm-input-sm" type="number" step="0.01" id="cad-preco-${id}-${centro.id}" value="${precoCentro(id, centro.id)}">
-          <button class="adm-btn sm" onclick="salvarCentroPreco('${id}','${centro.id}')">Salvar</button>
-        </div>
-      </div>`).join('');
-    return `<div style="background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px;margin-bottom:14px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <h4 style="font-family:var(--font-display);font-size:17px;color:var(--ink);">${escapeHTML(p.nome)}</h4>
-        <label class="adm-switch"><input type="checkbox" id="cad-disp-${id}" ${disp?'checked':''} onchange="salvarDisponibilidadeProduto('${id}')"><span class="adm-switch-track"></span></label>
+function admAbrirCentrosModal(produtoId){
+  const modal = document.getElementById("modal-centros-produto");
+  renderCentrosModalContent(produtoId);
+  modal.classList.add("ativo");
+}
+function renderCentrosModalContent(produtoId){
+  const p = PRODUTOS[produtoId]; if (!p) return;
+  const disp = produtoDisponivel(produtoId);
+  const centrosRows = (p.centros||[]).map(centro => `
+    <div class="adm-centro-row" style="flex-direction:column;align-items:stretch;gap:8px;">
+      <div style="display:flex;gap:6px;">
+        <input class="adm-input-sm" style="flex:1;" id="edt-label-${produtoId}-${centro.id}" value="${escapeHTML(centro.label||'')}" placeholder="Nome (ex: Centro 100)">
+        <input class="adm-input-sm" style="width:80px;" type="number" id="edt-qtd-${produtoId}-${centro.id}" value="${centro.qtd??''}" placeholder="Qtd un.">
+        <span style="display:flex;align-items:center;font-size:11px;color:var(--ink-faint);">R$</span>
+        <input class="adm-input-sm" style="width:88px;" type="number" step="0.01" id="edt-preco-${produtoId}-${centro.id}" value="${precoCentro(produtoId, centro.id)}">
       </div>
+      <div style="display:flex;gap:6px;justify-content:flex-end;">
+        <button class="adm-btn sm danger" onclick="admExcluirTier('${produtoId}','${centro.id}')">Excluir</button>
+        <button class="adm-btn sm" onclick="salvarCentroCompleto('${produtoId}','${centro.id}')">Salvar</button>
+      </div>
+    </div>`).join('');
+  document.getElementById("centros-modal-content").innerHTML = `
+    <button class="modal-fechar" onclick="fecharModal('modal-centros-produto')">×</button>
+    <h3 style="font-family:var(--font-display);font-size:20px;color:var(--ink);margin-bottom:4px;font-weight:700;">${escapeHTML(p.nome)}</h3>
+    <p style="font-size:12px;color:var(--ink-faint);margin-bottom:16px;">Preços e tamanhos (Centros) cadastrados para este produto. Tudo aqui é editável e salva direto no Supabase.</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--paper-alt);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:16px;">
+      <span style="font-size:13px;font-weight:600;">Produto disponível na loja</span>
+      <label class="adm-switch"><input type="checkbox" id="cad-disp-${produtoId}" ${disp?'checked':''} onchange="salvarDisponibilidadeProduto('${produtoId}')"><span class="adm-switch-track"></span></label>
+    </div>
+    <div style="max-height:320px;overflow-y:auto;padding-right:2px;">
       ${centrosRows || `<p style="font-size:12px;color:var(--ink-faint);margin:6px 0 10px;">Nenhum preço cadastrado — este produto não aparece na loja ainda.</p>`}
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:10px;border-top:1px dashed var(--line);">
-        <input class="adm-input-sm" style="width:110px;" id="novo-tier-label-${id}" placeholder="Nome (ex: Centro 100)">
-        <input class="adm-input-sm" style="width:80px;" id="novo-tier-qtd-${id}" type="number" placeholder="Qtd un.">
-        <input class="adm-input-sm" style="width:90px;" id="novo-tier-preco-${id}" type="number" step="0.01" placeholder="Preço R$">
-        <button class="adm-btn sm" onclick="admAdicionarTier('${id}')">+ Adicionar tamanho</button>
-      </div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);">
+      <input class="adm-input-sm" style="flex:1;min-width:110px;" id="novo-tier-label-${produtoId}" placeholder="Nome (ex: Centro 100)">
+      <input class="adm-input-sm" style="width:80px;" id="novo-tier-qtd-${produtoId}" type="number" placeholder="Qtd un.">
+      <input class="adm-input-sm" style="width:90px;" id="novo-tier-preco-${produtoId}" type="number" step="0.01" placeholder="Preço R$">
+      <button class="adm-btn sm" onclick="admAdicionarTier('${produtoId}')">+ Adicionar tamanho</button>
     </div>`;
-  }).join('');
-  c.innerHTML = `<div class="adm-notice">Os preços de cada Centro e a disponibilidade dos produtos ficam salvos no Supabase e sincronizam a loja para todos os visitantes. Sem o Supabase configurado, valem apenas neste navegador.</div>${rows}`;
+}
+async function salvarCentroCompleto(produtoId, tierId){
+  const label = document.getElementById(`edt-label-${produtoId}-${tierId}`).value.trim();
+  const qtdRaw = document.getElementById(`edt-qtd-${produtoId}-${tierId}`).value;
+  const preco = Number(document.getElementById(`edt-preco-${produtoId}-${tierId}`).value);
+  if (!label) return feedback("Informe um nome para o tamanho.");
+  if (!Number.isFinite(preco) || preco<=0) return feedback("Informe um preço válido.");
+  const qtd = qtdRaw ? Number(qtdRaw) : null;
+  centroOverrides[produtoId] = centroOverrides[produtoId] || {}; centroOverrides[produtoId][tierId] = preco;
+  try { safeWrite("pb-centros-overrides", centroOverrides); } catch(e){}
+  if (sb) {
+    try {
+      const { error } = await sb.from("centros").upsert({ produto_id: produtoId, tier_id: tierId, label, quantidade: qtd, preco, ativo: true }, { onConflict:"produto_id,tier_id" });
+      if (error) throw error;
+      logAudit("centro_atualizado","centros",`${PRODUTOS[produtoId]?.nome||produtoId} — ${label}: R$ ${preco}`);
+    } catch(e) { feedback("Não foi possível salvar no Supabase: " + (e.message||"")); return; }
+  }
+  await carregarCatalogoSupabase();
+  renderCentrosModalContent(produtoId);
+  if (["home","carrinho"].includes(paginaAtual)) abrirPagina(paginaAtual);
+  if (paginaAtual===produtoId) abrirPagina(produtoId);
+  feedback("Centro atualizado.");
+}
+async function admExcluirTier(produtoId, tierId){
+  if (!confirm("Excluir este tamanho/preço?")) return;
+  if (!sb) return feedback("Configure o Supabase para excluir preços.");
+  try {
+    const { error } = await sb.from("centros").delete().eq("produto_id", produtoId).eq("tier_id", tierId);
+    if (error) throw error;
+    logAudit("centro_excluido","centros",`${produtoId} — ${tierId}`);
+    await carregarCatalogoSupabase(); renderCentrosModalContent(produtoId);
+    if (paginaAtual==="home") abrirPagina("home");
+    feedback("Tamanho excluído.");
+  } catch(e) { feedback("Não foi possível excluir: " + (e.message||"")); }
 }
 async function admAdicionarTier(produtoId){
   const label = document.getElementById(`novo-tier-label-${produtoId}`).value.trim();
@@ -1695,24 +1745,10 @@ async function admAdicionarTier(produtoId){
     const { error } = await sb.from("centros").insert({ produto_id: produtoId, tier_id: tierId, label, quantidade: qtd?Number(qtd):null, preco, ativo:true });
     if (error) throw error;
     logAudit("centro_criado","centros",`${produtoId} — ${label}: R$ ${preco}`);
-    feedback("Tamanho adicionado."); await carregarCatalogoSupabase(); renderAdminCardapio();
+    feedback("Tamanho adicionado."); await carregarCatalogoSupabase();
+    renderCentrosModalContent(produtoId);
+    if (paginaAtual==="home") abrirPagina("home");
   } catch(e) { feedback("Não foi possível adicionar: " + (e.message||"")); }
-}
-async function salvarCentroPreco(produtoId, tierId){
-  const preco = Number(document.getElementById(`cad-preco-${produtoId}-${tierId}`).value);
-  if (!Number.isFinite(preco) || preco <= 0) return feedback("Informe um preço válido.");
-  centroOverrides[produtoId] = centroOverrides[produtoId] || {}; centroOverrides[produtoId][tierId] = preco;
-  try { safeWrite("pb-centros-overrides", centroOverrides); } catch(e){}
-  if (sb) {
-    try {
-      const centro = PRODUTOS[produtoId].centros.find(c=>c.id===tierId);
-      await sb.from("centros").upsert({ produto_id: produtoId, tier_id: tierId, label: centro.label, quantidade: centro.qtd, preco, ativo: true }, { onConflict:"produto_id,tier_id" });
-      logAudit("centro_preco_atualizado","centros",`${PRODUTOS[produtoId].nome} — ${centro.label}: R$ ${preco}`);
-    } catch(e) { console.warn("Supabase: falha ao salvar preço do centro.", e); }
-  }
-  if (["home","carrinho"].includes(paginaAtual)) abrirPagina(paginaAtual);
-  if (paginaAtual===produtoId) abrirPagina(produtoId);
-  feedback("Preço do Centro atualizado.");
 }
 async function salvarDisponibilidadeProduto(produtoId){
   const disp = document.getElementById(`cad-disp-${produtoId}`).checked; estoqueProdutos[produtoId] = disp;
@@ -1856,7 +1892,6 @@ async function renderAdminRegistros(){
     <div class="adm-tabs">
       <button class="adm-tab act" data-tab="pedidos" onclick="admTab('pedidos')">Pedidos</button>
       <button class="adm-tab" data-tab="catalogo" onclick="admTab('catalogo')">Catálogo</button>
-      <button class="adm-tab" data-tab="cardapio" onclick="admTab('cardapio')">Preços &amp; Estoque</button>
       <button class="adm-tab" data-tab="relatorios" onclick="admTab('relatorios')">Relatórios</button>
       <button class="adm-tab" data-tab="recuperacao" onclick="admTab('recuperacao')">Recuperação</button>
       <button class="adm-tab" data-tab="avaliacoes" onclick="admTab('avaliacoes')">Avaliações</button>
@@ -1872,6 +1907,10 @@ async function renderAdminRegistros(){
 
 <!-- BOTÃO E PAINEL DE PERSONALIZAÇÃO VISUAL -->
 <button id="btn-tema" onclick="abrirPainelTema()" title="Personalizar visual">✦</button>
+<div id="modal-centros-produto" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-centros-produto')">
+  <div class="modal-box" style="max-width:480px;" id="centros-modal-content"><!-- gerado por admAbrirCentrosModal() --></div>
+</div>
+
 <div id="modal-tema" class="modal-overlay" onclick="if(event.target===this) fecharModal('modal-tema')">
   <div class="modal-box" style="max-width:420px;">
     <button class="modal-fechar" onclick="fecharModal('modal-tema')">×</button>
