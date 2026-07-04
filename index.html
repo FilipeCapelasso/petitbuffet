@@ -413,6 +413,8 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .adm-btn:hover{background:rgba(44,74,59,.16);}
 .adm-btn.sm{padding:6px 12px;font-size:11.5px;}
 .adm-btn.danger{background:var(--danger-pale);color:var(--danger);border-color:rgba(193,68,46,.3);}
+.adm-btn.whatsapp{background:rgba(37,211,102,.12);color:#128C4A;border-color:rgba(37,211,102,.35);}
+.adm-btn.whatsapp:hover{background:rgba(37,211,102,.22);}
 .adm-switch{position:relative;display:inline-block;width:38px;height:21px;}
 .adm-switch input{opacity:0;width:0;height:0;}
 .adm-switch-track{position:absolute;inset:0;background:var(--line-strong);border-radius:var(--r-full);cursor:pointer;transition:.2s;}
@@ -423,10 +425,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .adm-notice{background:var(--pine-pale);border:1px solid var(--pine-line);color:var(--ink-soft);padding:12px 16px;border-radius:var(--r-sm);font-size:12px;margin-bottom:18px;}
 .adm-loading,.adm-empty{text-align:center;padding:60px 20px;color:var(--ink-faint);font-size:13.5px;}
 .adm-empty-ic{font-size:30px;margin-bottom:12px;}
-.adm-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
-.adm-kpi{background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px;}
-.adm-kpi-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-faint);margin-bottom:8px;}
-.adm-kpi-val{font-family:var(--font-mono);font-size:24px;font-weight:700;color:var(--pine);}
+
 .adm-centro-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);gap:10px;flex-wrap:wrap;}
 .adm-centro-row:last-child{border-bottom:none;}
 /* -------- Tabela de produtos (estilo "Gerenciar Serviços") -------- */
@@ -1825,7 +1824,7 @@ function openAdminPanel(){ if (!isAdminLogado()) return openAdminLogin(); docume
 function closeAdminPanel(){ document.getElementById("adm-panel").classList.remove("op"); }
 function admTab(tab){
   document.querySelectorAll(".adm-tab").forEach(b=>b.classList.toggle("act", b.dataset.tab===tab));
-  const map = { pedidos:renderAdminPedidos, catalogo:renderAdminCatalogo, relatorios:renderAdminRelatorios, recuperacao:renderAdminRecuperacao, avaliacoes:renderAdminAvaliacoes, registros:renderAdminRegistros };
+  const map = { pedidos:renderAdminPedidos, catalogo:renderAdminCatalogo, recuperacao:renderAdminRecuperacao, avaliacoes:renderAdminAvaliacoes, registros:renderAdminRegistros };
   (map[tab]||renderAdminPedidos)();
 }
 function admNaoConfigurado(msg){ return `<div class="adm-empty"><div class="adm-empty-ic">!</div>${msg}<br/><span style="font-size:11.5px;opacity:.7">Configure SUPABASE_URL e SUPABASE_ANON_KEY no topo do arquivo.</span></div>`; }
@@ -1850,9 +1849,11 @@ async function renderAdminPedidos(){
   const rows = pageItems.map(p => {
     const etapaAtual = normStatusPedido(p.status_pedido);
     const proxima = proximaEtapaPedido(etapaAtual);
+    const telDigits = onlyDigits(p.telefone);
     return `<tr>
     <td><strong class="mono">${escapeHTML(p.pedido)}</strong><div class="adm-sub">${escapeHTML(p.criado_em ? new Date(p.criado_em).toLocaleString('pt-BR') : '')}</div></td>
-    <td>${escapeHTML(p.nome||'')}<div class="adm-sub">${escapeHTML(p.telefone||'')}</div></td>
+    <td>${escapeHTML(p.nome||'')}<div class="adm-sub mono" style="font-weight:700;color:var(--ink);">${escapeHTML(formatarTelefoneExibicao(p.telefone||''))}</div>
+      ${telDigits ? `<a class="adm-btn sm whatsapp" style="margin-top:5px;" target="_blank" rel="noopener" href="https://wa.me/55${telDigits}">💬 WhatsApp</a>` : ''}</td>
     <td style="max-width:220px;font-size:12px;color:var(--ink-soft)">${escapeHTML(p.itens||'')}</td>
     <td class="mono">${fmt(p.total)}<div class="adm-sub">sinal ${fmt(p.sinal)}</div></td>
     <td><span class="adm-badge ${statusBadgeClass(p.status_pagamento)}">${statusLabel(p.status_pagamento)}</span>
@@ -1868,10 +1869,22 @@ async function renderAdminPedidos(){
     <div class="adm-toolbar">
       <input class="adm-search" placeholder="Buscar por pedido, nome ou telefone..." value="${escapeHTML(_admOrdSearch)}" oninput="_admOrdSearch=this.value;_admOrdPage=1;renderAdminPedidos()">
       <div class="adm-chips">${filtroBtn('todos','Todos')}${filtroBtn('pendente','Pendentes')}${filtroBtn('pago','Pagos')}${filtroBtn('cancelado','Cancelados')}</div>
+      <button class="adm-btn sm danger" style="margin-left:auto;" onclick="limparTodosPedidos()">🗑 Limpar Todos os Pedidos</button>
     </div>
     <div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>Pedido</th><th>Cliente</th><th>Itens</th><th>Valores</th><th>Status</th><th>Alterar etapa</th></tr></thead>
     <tbody>${rows || `<tr><td colspan="6" class="adm-empty-row">Nenhum pedido encontrado.</td></tr>`}</tbody></table></div>
     <div class="adm-pagination"><button class="adm-btn sm" ${_admOrdPage<=1?'disabled':''} onclick="_admOrdPage--;renderAdminPedidos()">← Anterior</button><span>${_admOrdPage} / ${totalPages}</span><button class="adm-btn sm" ${_admOrdPage>=totalPages?'disabled':''} onclick="_admOrdPage++;renderAdminPedidos()">Próxima →</button></div>`;
+}
+async function limparTodosPedidos(){
+  if (!sb) return;
+  if (!confirm("Tem certeza que deseja apagar TODOS os pedidos? Isso não pode ser desfeito.")) return;
+  if (!confirm("Confirmando mais uma vez: todo o histórico de pedidos — pagos, em preparo, tudo — será apagado para sempre, sem possibilidade de recuperação. Deseja continuar?")) return;
+  try {
+    const { error } = await sb.from("pedidos").delete().neq("pedido", "");
+    if (error) throw error;
+    toast("Todos os pedidos foram apagados.");
+    renderAdminPedidos();
+  } catch(e) { toast("Não foi possível apagar os pedidos: " + e.message, "error"); }
 }
 function proximaEtapaPedido(atual){
   const ordemAtual = STATUS_PEDIDO_META[atual]?.ordem ?? 0;
@@ -2231,26 +2244,6 @@ async function carregarCardapioConfig(){
   } catch(e) { /* segue com cache local / padrão */ }
 }
 
-async function renderAdminRelatorios(){
-  const c = document.getElementById("adm-content");
-  if (!sb) { c.innerHTML = admNaoConfigurado("Relatórios aparecerão aqui assim que o Supabase estiver configurado."); return; }
-  c.innerHTML = `<div class="adm-loading">Calculando relatórios...</div>`;
-  try {
-    const { data, error } = await sb.from("pedidos").select("*"); if (error) throw error;
-    const pedidos = data||[]; const pagos = pedidos.filter(p=>normStatus(p.status_pagamento)==="pago");
-    const totalFaturado = pagos.reduce((s,p)=>s+Number(p.total||0),0); const totalSinais = pagos.reduce((s,p)=>s+Number(p.sinal||0),0);
-    const ticketMedio = pagos.length ? totalFaturado/pagos.length : 0;
-    const porStatus = {}; pedidos.forEach(p=>{ const s=normStatus(p.status_pagamento); porStatus[s]=(porStatus[s]||0)+1; });
-    c.innerHTML = `<div class="adm-kpis">
-      <div class="adm-kpi"><div class="adm-kpi-label">Faturamento (pago)</div><div class="adm-kpi-val">${fmt(totalFaturado)}</div></div>
-      <div class="adm-kpi"><div class="adm-kpi-label">Sinais recebidos</div><div class="adm-kpi-val">${fmt(totalSinais)}</div></div>
-      <div class="adm-kpi"><div class="adm-kpi-label">Ticket médio</div><div class="adm-kpi-val">${fmt(ticketMedio)}</div></div>
-      <div class="adm-kpi"><div class="adm-kpi-label">Total de pedidos</div><div class="adm-kpi-val">${pedidos.length}</div></div></div>
-      <div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>Status</th><th>Quantidade</th></tr></thead>
-      <tbody>${Object.keys(porStatus).map(s=>`<tr><td><span class="adm-badge ${statusBadgeClass(s)}">${statusLabel(s)}</span></td><td>${porStatus[s]}</td></tr>`).join('')}</tbody></table></div>`;
-  } catch(e) { c.innerHTML = admNaoConfigurado("Não foi possível calcular os relatórios."); }
-}
-
 function carrinhoToken(){ let t=null; try { t=localStorage.getItem("pb-cart-token"); } catch(e){} if (!t) { t="pb-"+Math.random().toString(36).slice(2,10); try{ localStorage.setItem("pb-cart-token", t);}catch(e){} } return t; }
 async function salvarCarrinhoAbandonado(){
   if (!sb || !meuCarrinho.length) return;
@@ -2263,19 +2256,33 @@ async function renderAdminRecuperacao(){
   if (!sb) { c.innerHTML = admNaoConfigurado("A recuperação de carrinhos abandonados aparecerá aqui assim que o Supabase estiver configurado."); return; }
   c.innerHTML = `<div class="adm-loading">Carregando...</div>`;
   try {
-    const cutoff = new Date(Date.now()-20*60000).toISOString();
+    // Só mostra carrinhos parados há 30 minutos ou mais, sem finalizar a compra.
+    const cutoff = new Date(Date.now()-30*60000).toISOString();
     const { data, error } = await sb.from("carrinhos_abandonados").select("*").eq("recuperado", false).lt("atualizado_em", cutoff).order("atualizado_em",{ascending:false}).limit(100);
     if (error) throw error; const carts = data||[];
     const rows = carts.map(cart => {
       let itens=[]; try { itens = JSON.parse(cart.itens||"[]"); } catch(e){}
-      const resumo = itens.map(i=>`${i.nome||i.produtoId} ×${i.qtdCentros||1}`).join(", "); const tel = onlyDigits(cart.telefone);
-      const msg = encodeURIComponent(`Olá${cart.nome?' '+cart.nome:''}! Vimos que você estava montando um pedido na Petit Buffet Premium (${resumo}). Posso te ajudar a finalizar?`);
-      return `<tr><td>${escapeHTML(cart.nome||'Visitante')}<div class="adm-sub">${escapeHTML(cart.telefone||'sem telefone')}</div></td>
-      <td style="font-size:12px;color:var(--ink-soft)">${escapeHTML(resumo)}</td><td class="mono">${fmt(cart.total)}</td>
-      <td>${tel ? `<a class="adm-btn sm" target="_blank" href="https://wa.me/55${tel}?text=${msg}">Chamar no WhatsApp</a>` : '—'}</td></tr>`;
+      const listaProdutos = itens.map(i=>`${i.nome||i.produtoId}${Number(i.qtdCentros)>1?` (×${i.qtdCentros})`:''}`);
+      const resumoHtml = listaProdutos.length
+        ? `<ul style="margin:0;padding-left:16px;">${listaProdutos.map(p=>`<li>${escapeHTML(p)}</li>`).join('')}</ul>`
+        : `<span style="color:var(--ink-faint);">Sem itens detalhados</span>`;
+      const resumoTexto = listaProdutos.join(", ") || "os itens selecionados";
+      const tel = onlyDigits(cart.telefone);
+      const minutosParado = Math.round((Date.now() - new Date(cart.atualizado_em).getTime())/60000);
+      const saudacao = cart.nome ? `Olá ${cart.nome}!` : "Olá!";
+      const msg = encodeURIComponent(`${saudacao} Notamos que você deixou ${resumoTexto} no seu carrinho. Posso te ajudar a finalizar o seu pedido?`);
+      return `<tr>
+        <td><strong>${escapeHTML(cart.nome||'Visitante')}</strong>
+          <div class="adm-sub mono" style="font-weight:700;color:var(--ink);margin-top:2px;">${tel ? escapeHTML(formatarTelefoneExibicao(cart.telefone)) : 'sem telefone'}</div>
+          <div class="adm-sub" style="margin-top:2px;">parado há ${minutosParado} min</div></td>
+        <td style="font-size:12px;color:var(--ink-soft);max-width:260px;">${resumoHtml}</td>
+        <td class="mono">${fmt(cart.total)}</td>
+        <td>${tel ? `<a class="adm-btn sm whatsapp" target="_blank" rel="noopener" href="https://wa.me/55${tel}?text=${msg}">💬 Iniciar Conversa</a>` : `<span style="color:var(--ink-faint);font-size:12px;">Sem contato</span>`}</td>
+      </tr>`;
     }).join('');
-    c.innerHTML = `<div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>Cliente</th><th>Itens</th><th>Total</th><th>Ação</th></tr></thead>
-    <tbody>${rows || `<tr><td colspan="4" class="adm-empty-row">Nenhum carrinho abandonado no momento.</td></tr>`}</tbody></table></div>`;
+    c.innerHTML = `<div class="adm-notice">Mostrando carrinhos parados há <strong>30 minutos ou mais</strong> sem finalizar a compra.</div>
+    <div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>Cliente</th><th>Produtos abandonados</th><th>Total</th><th>Ação</th></tr></thead>
+    <tbody>${rows || `<tr><td colspan="4" class="adm-empty-row">Nenhum carrinho abandonado há mais de 30 minutos no momento.</td></tr>`}</tbody></table></div>`;
   } catch(e) { c.innerHTML = admNaoConfigurado("Não foi possível carregar. Verifique a tabela 'carrinhos_abandonados'."); }
 }
 
@@ -2322,9 +2329,24 @@ async function renderAdminRegistros(){
   try {
     const { data, error } = await sb.from("registros").select("*").order("criado_em",{ascending:false}).limit(150); if (error) throw error;
     const rows = (data||[]).map(r => `<tr><td>${escapeHTML(new Date(r.criado_em).toLocaleString('pt-BR'))}</td><td>${escapeHTML(r.ator||'—')}</td><td><span class="adm-badge">${escapeHTML(r.acao)}</span></td><td style="font-size:12px;color:var(--ink-soft)">${escapeHTML(r.detalhe||'')}</td></tr>`).join('');
-    c.innerHTML = `<div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>Quando</th><th>Quem</th><th>Ação</th><th>Detalhe</th></tr></thead>
+    c.innerHTML = `
+    <div class="adm-toolbar" style="justify-content:flex-end;">
+      <button class="adm-btn sm danger" onclick="limparTodosRegistros()">🗑 Limpar Todos os Registros</button>
+    </div>
+    <div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>Quando</th><th>Quem</th><th>Ação</th><th>Detalhe</th></tr></thead>
     <tbody>${rows || `<tr><td colspan="4" class="adm-empty-row">Nenhum registro ainda.</td></tr>`}</tbody></table></div>`;
   } catch(e) { c.innerHTML = admNaoConfigurado("Não foi possível carregar. Verifique a tabela 'registros'."); }
+}
+async function limparTodosRegistros(){
+  if (!sb) return;
+  if (!confirm("Tem certeza que deseja apagar TODOS os registros? Isso não pode ser desfeito.")) return;
+  if (!confirm("Confirmando mais uma vez: todo o histórico de auditoria será apagado para sempre, sem possibilidade de recuperação. Deseja continuar?")) return;
+  try {
+    const { error } = await sb.from("registros").delete().neq("id", 0);
+    if (error) throw error;
+    toast("Todos os registros foram apagados.");
+    renderAdminRegistros();
+  } catch(e) { toast("Não foi possível apagar os registros: " + e.message, "error"); }
 }
 </script>
 
@@ -2348,7 +2370,6 @@ async function renderAdminRegistros(){
     <div class="adm-tabs">
       <button class="adm-tab act" data-tab="pedidos" onclick="admTab('pedidos')">Pedidos</button>
       <button class="adm-tab" data-tab="catalogo" onclick="admTab('catalogo')">Catálogo</button>
-      <button class="adm-tab" data-tab="relatorios" onclick="admTab('relatorios')">Relatórios</button>
       <button class="adm-tab" data-tab="recuperacao" onclick="admTab('recuperacao')">Recuperação</button>
       <button class="adm-tab" data-tab="avaliacoes" onclick="admTab('avaliacoes')">Avaliações</button>
       <button class="adm-tab" data-tab="registros" onclick="admTab('registros')">Registros</button>
