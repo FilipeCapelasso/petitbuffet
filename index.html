@@ -224,7 +224,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .sabor-chip.sel{background:var(--pine);border-color:var(--pine);color:#fff;}
 
 .centros-titulo{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--ink-faint);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
-.centros-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}
+.centros-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:6px;}
 .centro-card{background:var(--white);border:1.5px solid var(--line);border-radius:var(--r-md);padding:18px 18px 16px;cursor:pointer;transition:all .2s cubic-bezier(.2,.8,.2,1);position:relative;}
 .centro-card:hover{border-color:var(--pine);transform:translateY(-2px);box-shadow:var(--shadow-card);}
 .centro-card:active{transform:translateY(0) scale(.98);}
@@ -236,6 +236,20 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .centro-un{font-size:10.5px;color:var(--ink-faint);margin-top:2px;}
 .centro-check{position:absolute;top:14px;right:14px;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line-strong);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;}
 .centro-card.sel .centro-check{background:var(--apricot);border-color:var(--apricot);}
+
+/* -------- Compra por unidade + descontos de combo -------- */
+.modo-compra-switch{display:flex;background:var(--paper-alt);border-radius:var(--r-full);padding:4px;gap:4px;margin-bottom:22px;max-width:360px;}
+.modo-compra-btn{flex:1;text-align:center;padding:10px 14px;border-radius:var(--r-full);font-size:12.5px;font-weight:700;color:var(--ink-soft);cursor:pointer;transition:all .2s ease;border:none;background:transparent;font-family:var(--font-body);}
+.modo-compra-btn:active{transform:scale(.97);}
+.modo-compra-btn.ativo{background:var(--white);color:var(--pine);box-shadow:var(--shadow-card);}
+.combo-badge{position:absolute;top:-9px;left:14px;background:var(--apricot);color:#fff;font-size:9px;font-weight:800;letter-spacing:.3px;padding:3px 10px;border-radius:var(--r-full);text-transform:uppercase;box-shadow:0 3px 8px rgba(221,115,46,.35);white-space:nowrap;}
+.combo-badge.vantajoso{background:var(--pine);box-shadow:0 3px 8px rgba(44,74,59,.3);}
+.combo-preco-original{font-size:11.5px;color:var(--ink-faint);text-decoration:line-through;margin-right:7px;}
+.combo-economia{font-size:10.5px;color:var(--success);font-weight:700;margin-top:3px;}
+.unidade-box{background:var(--white);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;box-shadow:var(--shadow-card);max-width:420px;animation:cardEnter .35s ease both;}
+.unidade-preco-linha{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:20px;gap:12px;flex-wrap:wrap;}
+.unidade-preco-linha .unidade-nome{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--ink);}
+.unidade-preco-linha .unidade-preco-un{font-family:var(--font-mono);font-size:14.5px;color:var(--pine);font-weight:700;white-space:nowrap;}
 
 .qtd-stepper{display:flex;align-items:center;gap:14px;margin-top:22px;}
 .stepper-btn{width:38px;height:38px;border-radius:var(--r-full);border:1px solid var(--line);background:var(--white);font-size:17px;font-weight:700;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;}
@@ -256,6 +270,9 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .cart-item,.compra-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 22px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;transition:all .2s;cursor:pointer;gap:12px;flex-wrap:wrap;}
 .cart-item:hover,.compra-card:hover{border-color:var(--pine);box-shadow:var(--shadow-card);}
 .cart-info h4{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px;font-family:var(--font-display);}
+.cart-tipo-badge{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:2px 9px;border-radius:var(--r-full);margin-top:2px;}
+.cart-tipo-badge.unidade{background:var(--pine-pale);color:var(--pine-deep);}
+.cart-tipo-badge.combo{background:var(--success-pale);color:var(--success);}
 .cart-price{font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--pine);}
 .btn-remover{background:var(--danger-pale);color:var(--danger);border:none;padding:5px 12px;border-radius:var(--r-full);font-size:11px;font-weight:700;cursor:pointer;margin-top:8px;}
 .btn-remover:hover{background:rgba(193,68,46,.2);}
@@ -743,6 +760,12 @@ const SABORES_SANDUICHE = [
   { id:"atum", nome:"Atum", descricao:"Patê cremoso de atum, leve e nutritivo." },
   { id:"frango", nome:"Frango", descricao:"Frango desfiado temperado com toque artesanal." }
 ];
+const SABORES_EMPADA = [
+  { id:"frango", nome:"Frango" },
+  { id:"camarao", nome:"Camarão" },
+  { id:"palmito", nome:"Palmito" },
+  { id:"queijo", nome:"Queijo" }
+];
 
 /* HARDCODED_PRODUTOS é a rede de segurança: se o Supabase estiver fora do ar
    ou as tabelas 'categorias'/'produtos' ainda não tiverem sido criadas
@@ -769,9 +792,11 @@ const HARDCODED_PRODUTOS = {
   algodao: { nome:"Algodão Doce", icone:"◯", imgKey:"algodao", desc:"Algodão doce colorido, macio e encantador para todas as idades.", categoriaId:"centros",
     centros:[ {id:"p",label:"Pacote 80",qtd:80,preco:320}, {id:"m",label:"Pacote 120",qtd:120,preco:444}, {id:"g",label:"Pacote 160",qtd:160,preco:544} ] },
   sanduiche: { nome:"Sanduíche Natural", icone:"▱", imgKey:"sanduiche", desc:"Sanduíches naturais frescos, saudáveis e preparados com carinho.", sabores:SABORES_SANDUICHE, categoriaId:"lanches",
-    centros:[ {id:"p",label:"Pacote 30",qtd:30,preco:240}, {id:"m",label:"Pacote 50",qtd:50,preco:380}, {id:"g",label:"Pacote 80",qtd:80,preco:560} ] },
-  empada: { nome:"Empadas", icone:"◔", imgKey:"empada", desc:"Empadas artesanais crocantes com recheios sofisticados e saborosos.", categoriaId:"lanches",
-    centros:[ {id:"p",label:"Pacote 30",qtd:30,preco:150}, {id:"m",label:"Pacote 60",qtd:60,preco:270}, {id:"g",label:"Pacote 100",qtd:100,preco:420} ] }
+    tipoProduto:"hibrido", vendaUnitariaAtiva:true, precoUnitario:8.00, unidadeMinima:1, unidadeMaxima:100,
+    centros:[ {id:"p",label:"Pacote 30",qtd:30,preco:240,descontoCombo:0}, {id:"m",label:"Pacote 50",qtd:50,preco:380,descontoCombo:20}, {id:"g",label:"Pacote 80",qtd:80,preco:560,descontoCombo:80} ] },
+  empada: { nome:"Empadas", icone:"◔", imgKey:"empada", desc:"Empadas artesanais crocantes com recheios sofisticados e saborosos.", sabores:SABORES_EMPADA, categoriaId:"lanches",
+    tipoProduto:"hibrido", vendaUnitariaAtiva:true, precoUnitario:5.00, unidadeMinima:1, unidadeMaxima:100,
+    centros:[ {id:"p",label:"Pacote 30",qtd:30,preco:150,descontoCombo:0}, {id:"m",label:"Pacote 60",qtd:60,preco:270,descontoCombo:30,destaque:true}, {id:"g",label:"Pacote 100",qtd:100,preco:420,descontoCombo:80} ] }
 };
 const CATEGORIAS_FALLBACK = [ {id:"centros",nome:"Pacotes",ordem:1}, {id:"lanches",nome:"Lanches",ordem:2} ];
 
@@ -806,7 +831,7 @@ let detalhePedidoAtualId = null, detalheStatusTimer = null, detalheStatusBusy = 
 const DETALHE_STATUS_INTERVALO_MS = 1200;
 
 /* estado de seleção da tela de produto */
-let selEstado = { produtoId:null, saborId:null, centroId:null, qtdCentros:1 };
+let selEstado = { produtoId:null, saborId:null, centroId:null, qtdCentros:1, modo:"combo", qtdUnidades:1 };
 
 const AVALIACOES_PREMIUM = [
   { nome:"Fernanda Lopes", texto:"O carrinho de picolé foi o destaque da festa. Todos os convidados elogiaram muito!", stars:5, comprasNum:2 },
@@ -950,6 +975,28 @@ function precoCentro(produtoId, tierId){
 function centroMaisBarato(produtoId){
   const centros = PRODUTOS[produtoId].centros || [];
   return centros.reduce((min,c) => { const p = precoCentro(produtoId,c.id); return p < min ? p : min; }, precoCentro(produtoId, centros[0]?.id));
+}
+function precoUnitarioProduto(produtoId){
+  const p = PRODUTOS[produtoId]; return p && p.vendaUnitariaAtiva && Number(p.precoUnitario)>0 ? Number(p.precoUnitario) : null;
+}
+// Calcula a economia de um combo em relação a comprar as mesmas unidades avulsas.
+// Só faz sentido (e só retorna algo) quando o produto vende por unidade E o
+// combo tem quantidade de unidades definida — senão não há base de comparação.
+function economiaCombo(produtoId, tierId){
+  const p = PRODUTOS[produtoId]; const centro = (p.centros||[]).find(c=>c.id===tierId);
+  const precoUn = precoUnitarioProduto(produtoId);
+  if (!centro || !precoUn || !Number(centro.qtd)) return null;
+  const precoFinal = precoCentro(produtoId, tierId);
+  const valorOriginal = precoUn * Number(centro.qtd);
+  const economia = valorOriginal - precoFinal;
+  if (economia <= 0) return null;
+  return { valorOriginal, valorFinal:precoFinal, economia, percentual: Math.round((economia/valorOriginal)*100) };
+}
+// Identifica o combo com maior economia em R$ — vira o selo "Mais vantajoso".
+function tierMaisVantajoso(produtoId){
+  const p = PRODUTOS[produtoId]; let melhor = null;
+  (p.centros||[]).forEach(c=>{ const e = economiaCombo(produtoId, c.id); if (e && (!melhor || e.economia>melhor.economia)) melhor = { tierId:c.id, ...e }; });
+  return melhor;
 }
 function fallbackProduto(p){ return `<div class="product-icon-wrap"><div class="product-icon">${p.icone||"◈"}</div></div>`; }
 function fotoProduto(p){ return p.imagemUrl || (p.imgKey && IMGS[p.imgKey]) || null; }
@@ -1098,7 +1145,7 @@ async function carregarCatalogoSupabase(){
 
     const centrosPorProduto = {};
     (centrosData||[]).forEach(c=>{
-      (centrosPorProduto[c.produto_id] = centrosPorProduto[c.produto_id] || []).push({ id:c.tier_id, label:c.label, qtd:c.quantidade, preco:Number(c.preco) });
+      (centrosPorProduto[c.produto_id] = centrosPorProduto[c.produto_id] || []).push({ id:c.tier_id, label:c.label, qtd:c.quantidade, preco:Number(c.preco), descontoCombo:Number(c.desconto_combo||0), destaque:!!c.destaque });
     });
     Object.values(centrosPorProduto).forEach(arr=>arr.sort((a,b)=>a.preco-b.preco));
 
@@ -1108,7 +1155,12 @@ async function carregarCatalogoSupabase(){
         nome: p.nome, icone: p.icone || "◈", imgKey: p.id, imagemUrl: p.imagem_url || null,
         desc: p.descricao || "", categoriaId: p.categoria_id,
         sabores: (HARDCODED_PRODUTOS[p.id] && HARDCODED_PRODUTOS[p.id].sabores) || undefined,
-        centros: centrosPorProduto[p.id] || (HARDCODED_PRODUTOS[p.id] && HARDCODED_PRODUTOS[p.id].centros) || []
+        centros: centrosPorProduto[p.id] || (HARDCODED_PRODUTOS[p.id] && HARDCODED_PRODUTOS[p.id].centros) || [],
+        tipoProduto: p.tipo_produto || "combo",
+        vendaUnitariaAtiva: !!p.venda_unitaria_ativa,
+        precoUnitario: p.preco_unitario!=null ? Number(p.preco_unitario) : null,
+        unidadeMinima: p.unidade_minima!=null ? Number(p.unidade_minima) : 1,
+        unidadeMaxima: p.unidade_maxima!=null ? Number(p.unidade_maxima) : 100
       };
     });
     const novasCategorias = (categoriasData && categoriasData.length) ? categoriasData : CATEGORIAS_FALLBACK;
@@ -1203,7 +1255,8 @@ function abrirDepoimentoPorIndice(idx){
 /* ---------------- PRODUCT DETAIL: seletor de Pacote ---------------- */
 function renderProduto(v, id){
   const p = PRODUTOS[id];
-  selEstado = { produtoId:id, saborId: p.sabores ? p.sabores[0].id : null, centroId:null, qtdCentros:1 };
+  const precoUn = precoUnitarioProduto(id);
+  selEstado = { produtoId:id, saborId: p.sabores ? p.sabores[0].id : null, centroId:null, qtdCentros:1, modo:"combo", qtdUnidades: p.unidadeMinima||1 };
 
   const fotoSrc = fotoProduto(p);
   const fotoHtml = fotoSrc
@@ -1218,6 +1271,7 @@ function renderProduto(v, id){
       </div>
     </div>` : "";
 
+  const melhorTier = precoUn ? tierMaisVantajoso(id) : null;
   const centrosHtml = `
     <div>
       <div class="centros-titulo">Escolha o Pacote</div>
@@ -1226,17 +1280,48 @@ function renderProduto(v, id){
           const precoTotal = precoCentro(id,c.id);
           const temQtd = Number(c.qtd) > 0;
           const precoUnitario = temQtd ? precoTotal / Number(c.qtd) : null;
+          const economia = precoUn ? economiaCombo(id, c.id) : null;
+          const badge = c.destaque ? `<span class="combo-badge">Mais vendido</span>`
+            : (melhorTier && melhorTier.tierId===c.id) ? `<span class="combo-badge vantajoso">Mais vantajoso</span>` : '';
+          const precoHtml = economia
+            ? `<div><span class="combo-preco-original">${dinheiro(economia.valorOriginal)}</span><span class="centro-preco mono">${dinheiro(precoTotal)}</span></div><div class="combo-economia">Economize ${dinheiro(economia.economia)} (${economia.percentual}%)</div>`
+            : `<div class="centro-preco mono">${dinheiro(precoTotal)}</div>`;
           return `
           <div class="centro-card" data-centro="${c.id}" onclick="selecionarCentro('${c.id}')">
+            ${badge}
             <div class="centro-check"></div>
             <div class="centro-label">${escapeHTML(c.label)}</div>
             <div class="centro-qtd">${temQtd ? `${c.qtd} unidades <span class="centro-unitario">${dinheiro(precoUnitario)}/un</span>` : (c.descricao||'')}</div>
-            <div class="centro-preco mono">${dinheiro(precoTotal)}</div>
+            ${precoHtml}
             <div class="centro-un">preço fechado do pacote</div>
           </div>`;
         }).join("")}
       </div>
     </div>`;
+
+  const modoSwitchHtml = precoUn ? `
+    <div class="modo-compra-switch">
+      <button type="button" class="modo-compra-btn ativo" onclick="selecionarModoCompra('combo', this)">🎁 Pacotes</button>
+      <button type="button" class="modo-compra-btn" onclick="selecionarModoCompra('unidade', this)">🔢 Por Unidade</button>
+    </div>` : "";
+
+  const unidadeHtml = precoUn ? `
+    <div class="unidade-box">
+      <div class="unidade-preco-linha">
+        <span class="unidade-nome">${escapeHTML(p.nome)}</span>
+        <span class="unidade-preco-un mono">${dinheiro(precoUn)}/unidade</span>
+      </div>
+      <div class="qtd-stepper" style="margin-bottom:18px;">
+        <span class="stepper-label">Quantas unidades?</span>
+        <button class="stepper-btn" onclick="alterarQtdUnidade(-1)">−</button>
+        <span class="stepper-val" id="stepper-val-unidade">${p.unidadeMinima||1}</span>
+        <button class="stepper-btn" onclick="alterarQtdUnidade(1)">+</button>
+      </div>
+      <div class="add-cart-box">
+        <div><div class="add-cart-total-label">Subtotal</div><div class="add-cart-total mono" id="add-cart-total-unidade">${dinheiro(precoUn*(p.unidadeMinima||1))}</div></div>
+        <button class="btn-add-cart" id="btn-add-cart-unidade" onclick="confirmarAddCarrinhoUnidade()">Adicionar ao Carrinho</button>
+      </div>
+    </div>` : "";
 
   v.innerHTML = `<div class="product-detail">
     ${fotoHtml}
@@ -1245,19 +1330,60 @@ function renderProduto(v, id){
       <p class="prod-desc">${escapeHTML(p.desc)}</p>
     </div>
     ${saborHtml}
-    ${centrosHtml}
-    <div class="qtd-stepper">
-      <span class="stepper-label">Quantos Pacotes?</span>
-      <button class="stepper-btn" onclick="alterarQtdSelecao(-1)">−</button>
-      <span class="stepper-val" id="stepper-val">1</span>
-      <button class="stepper-btn" onclick="alterarQtdSelecao(1)">+</button>
+    ${modoSwitchHtml}
+    <div id="modo-combo-wrap" style="display:block;">
+      ${centrosHtml}
+      <div class="qtd-stepper">
+        <span class="stepper-label">Quantos Pacotes?</span>
+        <button class="stepper-btn" onclick="alterarQtdSelecao(-1)">−</button>
+        <span class="stepper-val" id="stepper-val">1</span>
+        <button class="stepper-btn" onclick="alterarQtdSelecao(1)">+</button>
+      </div>
+      <div class="add-cart-box">
+        <div><div class="add-cart-total-label">Total do pedido</div><div class="add-cart-total mono" id="add-cart-total">Selecione um Pacote</div></div>
+        <button class="btn-add-cart" id="btn-add-cart" disabled onclick="confirmarAddCarrinho()">Adicionar ao Carrinho</button>
+      </div>
     </div>
-    <div class="add-cart-box">
-      <div><div class="add-cart-total-label">Total do pedido</div><div class="add-cart-total mono" id="add-cart-total">Selecione um Pacote</div></div>
-      <button class="btn-add-cart" id="btn-add-cart" disabled onclick="confirmarAddCarrinho()">Adicionar ao Carrinho</button>
+    <div id="modo-unidade-wrap" style="display:none;">
+      ${unidadeHtml}
     </div>
   </div>`;
 }
+function selecionarModoCompra(modo, btn){
+  selEstado.modo = modo;
+  document.querySelectorAll(".modo-compra-btn").forEach(b=>b.classList.toggle("ativo", b===btn));
+  const comboWrap = document.getElementById("modo-combo-wrap"); const unidadeWrap = document.getElementById("modo-unidade-wrap");
+  if (comboWrap) comboWrap.style.display = modo==="combo" ? "block" : "none";
+  if (unidadeWrap) unidadeWrap.style.display = modo==="unidade" ? "block" : "none";
+}
+function alterarQtdUnidade(delta){
+  const p = PRODUTOS[selEstado.produtoId]; const min = p.unidadeMinima||1; const max = p.unidadeMaxima||100;
+  const nova = Math.min(max, Math.max(min, (selEstado.qtdUnidades||min) + delta));
+  selEstado.qtdUnidades = nova;
+  const el = document.getElementById("stepper-val-unidade"); if (el) el.innerText = nova;
+  atualizarResumoUnidade();
+}
+function atualizarResumoUnidade(){
+  const totalEl = document.getElementById("add-cart-total-unidade"); if (!totalEl) return;
+  const preco = precoUnitarioProduto(selEstado.produtoId) || 0;
+  totalEl.innerText = dinheiro(preco * (selEstado.qtdUnidades||1));
+}
+function confirmarAddCarrinhoUnidade(){
+  const { produtoId, saborId } = selEstado;
+  const p = PRODUTOS[produtoId]; if (!p) return;
+  if (!produtoDisponivel(produtoId)) return feedback("Este produto está temporariamente indisponível.");
+  const precoUn = precoUnitarioProduto(produtoId); if (!precoUn) return;
+  const qtd = selEstado.qtdUnidades || p.unidadeMinima || 1;
+  const sabor = p.sabores ? p.sabores.find(s=>s.id===saborId) : null;
+  const key = `${produtoId}-unidade${sabor?('-'+sabor.id):''}`;
+  const nome = `${p.nome}${sabor?(' ('+sabor.nome+')'):''} — Unidade avulsa`;
+  const idx = meuCarrinho.findIndex(i=>i.key===key);
+  if (idx>=0) { const nq = meuCarrinho[idx].qtdCentros + qtd; meuCarrinho[idx] = { ...meuCarrinho[idx], qtdCentros:nq, subtotal:nq*precoUn }; }
+  else meuCarrinho.push({ key, tipoCompra:"unidade", produtoId, centroId:null, centroLabel:"Unidade avulsa", centroQtdUnidades:1, descontoUnitario:0, saborId:sabor?sabor.id:null, saborNome:sabor?sabor.nome:null, nome, qtdCentros:qtd, precoUnitCentro:precoUn, subtotal:qtd*precoUn });
+  safeWrite(STORAGE.cart, meuCarrinho); atualizarContadorCarrinho();
+  const btn = document.getElementById("btn-add-cart-unidade"); btn.innerText = "✓ Adicionado ao Carrinho"; setTimeout(()=>{ if(document.getElementById("btn-add-cart-unidade")) document.getElementById("btn-add-cart-unidade").innerText="Adicionar ao Carrinho"; },1600);
+}
+
 
 function selecionarSabor(saborId){
   selEstado.saborId = saborId;
@@ -1288,11 +1414,12 @@ function confirmarAddCarrinho(){
   const p = PRODUTOS[produtoId]; const centro = p.centros.find(c=>c.id===centroId);
   const sabor = p.sabores ? p.sabores.find(s=>s.id===saborId) : null;
   const preco = precoCentro(produtoId, centroId);
+  const descontoUnitario = (economiaCombo(produtoId, centroId)||{}).economia || 0;
   const key = `${produtoId}-${centroId}${sabor?('-'+sabor.id):''}`;
   const nome = `${p.nome} — ${centro.label}${sabor?(' ('+sabor.nome+')'):''}`;
   const idx = meuCarrinho.findIndex(i=>i.key===key);
   if (idx>=0) { const nq = meuCarrinho[idx].qtdCentros + qtdCentros; meuCarrinho[idx] = { ...meuCarrinho[idx], qtdCentros:nq, subtotal:nq*preco }; }
-  else meuCarrinho.push({ key, produtoId, centroId, centroLabel:centro.label, centroQtdUnidades:centro.qtd||null, saborId:sabor?sabor.id:null, saborNome:sabor?sabor.nome:null, nome, qtdCentros, precoUnitCentro:preco, subtotal:qtdCentros*preco });
+  else meuCarrinho.push({ key, tipoCompra:"combo", produtoId, centroId, centroLabel:centro.label, centroQtdUnidades:centro.qtd||null, descontoUnitario, saborId:sabor?sabor.id:null, saborNome:sabor?sabor.nome:null, nome, qtdCentros, precoUnitCentro:preco, subtotal:qtdCentros*preco });
   safeWrite(STORAGE.cart, meuCarrinho); atualizarContadorCarrinho();
   const btn = document.getElementById("btn-add-cart"); btn.innerText = "✓ Adicionado ao Carrinho"; setTimeout(()=>{ if(document.getElementById("btn-add-cart")) document.getElementById("btn-add-cart").innerText="Adicionar ao Carrinho"; },1600);
 }
@@ -1306,8 +1433,11 @@ function renderCarrinho(v){
   let total = 0;
   const itens = meuCarrinho.map((item,i)=>{
     item.subtotal = Number(item.qtdCentros) * Number(item.precoUnitCentro); total += item.subtotal;
+    const ehUnidade = item.tipoCompra === "unidade";
+    const rotuloQtd = ehUnidade ? `${item.qtdCentros} unidade(s) × ${dinheiro(item.precoUnitCentro)}` : `${item.qtdCentros} Pacote(s) × ${dinheiro(item.precoUnitCentro)}${item.centroQtdUnidades?` · ${item.centroQtdUnidades*item.qtdCentros} unidades`:''}`;
+    const selo = ehUnidade ? `<span class="cart-tipo-badge unidade">Unidade avulsa</span>` : (item.descontoUnitario>0 ? `<span class="cart-tipo-badge combo">Combo · economia ${dinheiro(item.descontoUnitario*item.qtdCentros)}</span>` : '');
     return `<div class="cart-item">
-      <div class="cart-info"><h4>${escapeHTML(item.nome)}</h4><div style="font-size:12px;color:var(--ink-faint);margin-top:2px;">${item.qtdCentros} Pacote(s) × ${dinheiro(item.precoUnitCentro)}${item.centroQtdUnidades?` · ${item.centroQtdUnidades*item.qtdCentros} unidades`:''}</div><button class="btn-remover" onclick="removerItemCart(${i})">Remover</button></div>
+      <div class="cart-info"><h4>${escapeHTML(item.nome)}</h4>${selo}<div style="font-size:12px;color:var(--ink-faint);margin-top:2px;">${rotuloQtd}</div><button class="btn-remover" onclick="removerItemCart(${i})">Remover</button></div>
       <div style="display:flex;align-items:center;gap:10px;"><button class="btn-remover" onclick="alterarQtdCart(${i}, -1)">−</button><strong class="mono" style="min-width:22px;text-align:center;">${item.qtdCentros}</strong><button class="btn-remover" onclick="alterarQtdCart(${i}, 1)">+</button><div class="cart-price mono">${dinheiro(item.subtotal)}</div></div>
     </div>`;
   }).join("");
@@ -1325,7 +1455,9 @@ function renderCarrinho(v){
 }
 function alterarQtdCart(i, delta){
   const item = meuCarrinho[i]; if (!item) return;
-  const nova = Number(item.qtdCentros) + delta; if (nova < 1) return feedback("Quantidade mínima: 1 Pacote.");
+  const nova = Number(item.qtdCentros) + delta;
+  const rotulo = item.tipoCompra === "unidade" ? "unidade" : "Pacote";
+  if (nova < 1) return feedback(`Quantidade mínima: 1 ${rotulo}.`);
   item.qtdCentros = nova; item.subtotal = nova * item.precoUnitCentro;
   safeWrite(STORAGE.cart, meuCarrinho); atualizarContadorCarrinho(); abrirPagina("carrinho");
 }
@@ -1368,7 +1500,13 @@ function dataPedidoValida(v){ return parseDataPedido(v) !== null; }
 function horaPedidoValida(v){ const m=/^(\d{2}):(\d{2})$/.exec(String(v||"").trim()); if(!m) return false; return Number(m[1])>=0&&Number(m[1])<=23&&Number(m[2])>=0&&Number(m[2])<=59; }
 function montarPedidoBase(total, sinal){
   const itensStr = meuCarrinho.map(i=>`${i.qtdCentros}x ${i.nome} (${dinheiro(i.subtotal)})`).join(" | ");
-  const centroDetalhes = meuCarrinho.map(i=>({ produto:i.produtoId, centro:i.centroId, label:i.centroLabel, sabor:i.saborId, qtdCentros:i.qtdCentros, precoUnitCentro:i.precoUnitCentro, subtotal:i.subtotal }));
+  const centroDetalhes = meuCarrinho.map(i=>({
+    produto:i.produtoId, centro:i.centroId, label:i.centroLabel, sabor:i.saborId,
+    tipoCompra: i.tipoCompra || "combo",
+    qtdCentros:i.qtdCentros, precoUnitCentro:i.precoUnitCentro,
+    descontoAplicado: Number(i.descontoUnitario||0) * Number(i.qtdCentros||0),
+    subtotal:i.subtotal
+  }));
   return { numero: gerarPedidoNumero(), total, valorCobradoAgora: sinal, itensStr, centroDetalhes };
 }
 
@@ -2138,6 +2276,29 @@ async function admAbrirEdicaoProduto(id){
     <label style="display:flex;align-items:center;gap:9px;font-size:13px;margin-bottom:18px;">
       <input type="checkbox" id="edt-prod-ativo" ${p.ativo?'checked':''}> Produto ativo (visível na loja)
     </label>
+
+    <div style="border-top:1px dashed var(--line);margin:18px 0 16px;"></div>
+    <h4 style="font-family:var(--font-display);font-size:15.5px;color:var(--ink);margin-bottom:4px;font-weight:700;">Venda por Unidade</h4>
+    <p style="font-size:12px;color:var(--ink-faint);margin-bottom:12px;">Além dos Pacotes, permite ao cliente comprar avulso (ex.: Empadas, Sanduíches).</p>
+    <label style="display:flex;align-items:center;gap:9px;font-size:13px;margin-bottom:14px;">
+      <input type="checkbox" id="edt-prod-venda-unitaria" ${p.venda_unitaria_ativa?'checked':''} onchange="admToggleVendaUnitaria()"> Vender também por unidade avulsa
+    </label>
+    <div id="edt-venda-unitaria-campos" style="display:${p.venda_unitaria_ativa?'block':'none'};margin-bottom:16px;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:120px;">
+          <label style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:6px;">Preço unitário (R$)</label>
+          <input class="modal-input" type="number" step="0.01" min="0" id="edt-prod-preco-unitario" value="${p.preco_unitario??''}" style="margin-bottom:0;">
+        </div>
+        <div style="width:90px;">
+          <label style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:6px;">Qtd. mín.</label>
+          <input class="modal-input" type="number" min="1" id="edt-prod-unidade-min" value="${p.unidade_minima??1}" style="margin-bottom:0;">
+        </div>
+        <div style="width:90px;">
+          <label style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:6px;">Qtd. máx.</label>
+          <input class="modal-input" type="number" min="1" id="edt-prod-unidade-max" value="${p.unidade_maxima??100}" style="margin-bottom:0;">
+        </div>
+      </div>
+    </div>
     <button class="modal-btn primary" onclick="admSalvarEdicaoProduto('${id}')">Salvar alterações →</button>
 
     <div style="border-top:1px dashed var(--line);margin:22px 0 16px;"></div>
@@ -2148,6 +2309,10 @@ async function admAbrirEdicaoProduto(id){
   document.getElementById("modal-editar-produto").classList.add("ativo");
   renderCentrosModalContent(id);
 }
+function admToggleVendaUnitaria(){
+  const chk = document.getElementById("edt-prod-venda-unitaria"); const campos = document.getElementById("edt-venda-unitaria-campos");
+  if (campos) campos.style.display = chk.checked ? "block" : "none";
+}
 async function admSalvarEdicaoProduto(id){
   const nome = document.getElementById("edt-prod-nome").value.trim();
   const categoriaId = document.getElementById("edt-prod-categoria").value;
@@ -2155,11 +2320,23 @@ async function admSalvarEdicaoProduto(id){
   const descricao = document.getElementById("edt-prod-desc").value.trim();
   const ativo = document.getElementById("edt-prod-ativo").checked;
   const arquivo = document.getElementById("edt-prod-foto").files[0];
+  const vendaUnitariaAtiva = document.getElementById("edt-prod-venda-unitaria").checked;
+  const precoUnitarioRaw = document.getElementById("edt-prod-preco-unitario").value;
+  const unidadeMin = Number(document.getElementById("edt-prod-unidade-min").value) || 1;
+  const unidadeMax = Number(document.getElementById("edt-prod-unidade-max").value) || 100;
   if (!nome) return feedback("Informe o nome do produto.");
+  if (vendaUnitariaAtiva && (!precoUnitarioRaw || Number(precoUnitarioRaw)<=0)) return feedback("Informe um preço unitário válido para ativar a venda por unidade.");
+  if (vendaUnitariaAtiva && unidadeMax < unidadeMin) return feedback("A quantidade máxima não pode ser menor que a mínima.");
   try {
     let imagemUrl;
     if (arquivo) imagemUrl = await admUploadImagemProduto(id, arquivo);
-    const row = { nome, categoria_id: categoriaId||null, icone, descricao, ativo, atualizado_em: new Date().toISOString() };
+    const row = {
+      nome, categoria_id: categoriaId||null, icone, descricao, ativo, atualizado_em: new Date().toISOString(),
+      venda_unitaria_ativa: vendaUnitariaAtiva,
+      preco_unitario: vendaUnitariaAtiva ? Number(precoUnitarioRaw) : null,
+      unidade_minima: unidadeMin, unidade_maxima: unidadeMax,
+      tipo_produto: vendaUnitariaAtiva ? "hibrido" : "combo"
+    };
     if (imagemUrl) row.imagem_url = imagemUrl;
     const { error } = await sb.from("produtos").update(row).eq("id", id);
     if (error) throw error;
@@ -2189,19 +2366,34 @@ async function admSalvarConfiguracoes(){
 function renderCentrosModalContent(produtoId){
   const p = PRODUTOS[produtoId]; if (!p) return;
   const disp = produtoDisponivel(produtoId);
-  const centrosRows = (p.centros||[]).map(centro => `
+  const temVendaUnitaria = p.vendaUnitariaAtiva && Number(p.precoUnitario)>0;
+  const centrosRows = (p.centros||[]).map(centro => {
+    const economiaPreview = temVendaUnitaria ? economiaCombo(produtoId, centro.id) : null;
+    return `
     <div class="adm-centro-row" style="flex-direction:column;align-items:stretch;gap:8px;">
       <div style="display:flex;gap:6px;">
         <input class="adm-input-sm" style="flex:1;" id="edt-label-${produtoId}-${centro.id}" value="${escapeHTML(centro.label||'')}" placeholder="Nome (ex: Pacote 100)">
-        <input class="adm-input-sm" style="width:80px;" type="number" id="edt-qtd-${produtoId}-${centro.id}" value="${centro.qtd??''}" placeholder="Qtd un.">
+        <input class="adm-input-sm" style="width:80px;" type="number" id="edt-qtd-${produtoId}-${centro.id}" value="${centro.qtd??''}" placeholder="Qtd un." oninput="admAtualizarPreviewEconomia('${produtoId}','${centro.id}')">
         <span style="display:flex;align-items:center;font-size:11px;color:var(--ink-faint);">R$</span>
-        <input class="adm-input-sm" style="width:88px;" type="number" step="0.01" id="edt-preco-${produtoId}-${centro.id}" value="${precoCentro(produtoId, centro.id)}">
+        <input class="adm-input-sm" style="width:88px;" type="number" step="0.01" id="edt-preco-${produtoId}-${centro.id}" value="${precoCentro(produtoId, centro.id)}" oninput="admAtualizarPreviewEconomia('${produtoId}','${centro.id}')">
       </div>
+      ${temVendaUnitaria ? `
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span style="font-size:11px;color:var(--ink-faint);white-space:nowrap;">Desconto do combo R$</span>
+        <input class="adm-input-sm" style="width:80px;" type="number" step="0.01" min="0" id="edt-desconto-${produtoId}-${centro.id}" value="${Number(centro.descontoCombo||0)}" oninput="admAtualizarPreviewEconomia('${produtoId}','${centro.id}')">
+        <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-faint);margin-left:auto;">
+          <input type="checkbox" id="edt-destaque-${produtoId}-${centro.id}" ${centro.destaque?'checked':''}> Mais vendido
+        </label>
+      </div>
+      <div id="preview-economia-${produtoId}-${centro.id}" style="font-size:11px;font-weight:600;color:${economiaPreview?'var(--success)':'var(--ink-faint)'};">
+        ${economiaPreview ? `De: ${dinheiro(economiaPreview.valorOriginal)} · Por: ${dinheiro(economiaPreview.valorFinal)} · Economize ${dinheiro(economiaPreview.economia)} (${economiaPreview.percentual}%)` : 'Sem economia em relação à unidade avulsa.'}
+      </div>` : ''}
       <div style="display:flex;gap:6px;justify-content:flex-end;">
         <button class="adm-btn sm danger" onclick="admExcluirTier('${produtoId}','${centro.id}')">Excluir</button>
         <button class="adm-btn sm" onclick="salvarCentroCompleto('${produtoId}','${centro.id}')">Salvar</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   const target = document.getElementById("centros-modal-content");
   if (!target) return;
   target.innerHTML = `
@@ -2219,10 +2411,27 @@ function renderCentrosModalContent(produtoId){
       <button class="adm-btn sm" onclick="admAdicionarTier('${produtoId}')">+ Adicionar tamanho</button>
     </div>`;
 }
+// Preview instantâneo da economia enquanto o admin digita, sem tocar no Supabase.
+function admAtualizarPreviewEconomia(produtoId, tierId){
+  const p = PRODUTOS[produtoId]; if (!p) return;
+  const previewEl = document.getElementById(`preview-economia-${produtoId}-${tierId}`); if (!previewEl) return;
+  const precoUn = precoUnitarioProduto(produtoId);
+  const qtd = Number(document.getElementById(`edt-qtd-${produtoId}-${tierId}`)?.value);
+  const preco = Number(document.getElementById(`edt-preco-${produtoId}-${tierId}`)?.value);
+  if (!precoUn || !qtd || !Number.isFinite(preco) || preco<=0) { previewEl.textContent = 'Sem economia em relação à unidade avulsa.'; previewEl.style.color = 'var(--ink-faint)'; return; }
+  const valorOriginal = precoUn * qtd; const economia = valorOriginal - preco;
+  if (economia <= 0) { previewEl.textContent = 'Sem economia em relação à unidade avulsa.'; previewEl.style.color = 'var(--ink-faint)'; return; }
+  previewEl.style.color = 'var(--success)';
+  previewEl.textContent = `De: ${dinheiro(valorOriginal)} · Por: ${dinheiro(preco)} · Economize ${dinheiro(economia)} (${Math.round((economia/valorOriginal)*100)}%)`;
+}
 async function salvarCentroCompleto(produtoId, tierId){
   const label = document.getElementById(`edt-label-${produtoId}-${tierId}`).value.trim();
   const qtdRaw = document.getElementById(`edt-qtd-${produtoId}-${tierId}`).value;
   const preco = Number(document.getElementById(`edt-preco-${produtoId}-${tierId}`).value);
+  const descontoEl = document.getElementById(`edt-desconto-${produtoId}-${tierId}`);
+  const destaqueEl = document.getElementById(`edt-destaque-${produtoId}-${tierId}`);
+  const desconto = descontoEl ? (Number(descontoEl.value)||0) : 0;
+  const destaque = destaqueEl ? destaqueEl.checked : false;
   if (!label) return feedback("Informe um nome para o tamanho.");
   if (!Number.isFinite(preco) || preco<=0) return feedback("Informe um preço válido.");
   const qtd = qtdRaw ? Number(qtdRaw) : null;
@@ -2230,7 +2439,7 @@ async function salvarCentroCompleto(produtoId, tierId){
   try { safeWrite("pb-centros-overrides", centroOverrides); } catch(e){}
   if (sb) {
     try {
-      const { error } = await sb.from("centros").upsert({ produto_id: produtoId, tier_id: tierId, label, quantidade: qtd, preco, ativo: true }, { onConflict:"produto_id,tier_id" });
+      const { error } = await sb.from("centros").upsert({ produto_id: produtoId, tier_id: tierId, label, quantidade: qtd, preco, desconto_combo: desconto, destaque, ativo: true }, { onConflict:"produto_id,tier_id" });
       if (error) throw error;
       logAudit("pacote_atualizado","centros",`${PRODUTOS[produtoId]?.nome||produtoId} — ${label}: R$ ${preco}`);
     } catch(e) { feedback("Não foi possível salvar no Supabase: " + (e.message||"")); return; }
