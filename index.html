@@ -1135,12 +1135,13 @@ function renderMenuLateral(){
 async function carregarCatalogoSupabase(){
   if (!sb) return;
   try {
-    const [{ data: categoriasData, error: eCat }, { data: produtosData, error: eProd }, { data: centrosData, error: eCentro }] = await Promise.all([
+    const [{ data: categoriasData, error: eCat }, { data: produtosData, error: eProd }, { data: centrosData, error: eCentro }, { data: saboresData, error: eSabor }] = await Promise.all([
       sb.from("categorias").select("*").eq("ativo", true).order("ordem", { ascending:true }),
       sb.from("produtos").select("*").eq("ativo", true).order("ordem", { ascending:true }),
-      sb.from("centros").select("*").eq("ativo", true)
+      sb.from("centros").select("*").eq("ativo", true),
+      sb.from("sabores").select("*").eq("ativo", true).order("ordem", { ascending:true })
     ]);
-    if (eCat || eProd || eCentro) throw (eCat||eProd||eCentro);
+    if (eCat || eProd || eCentro || eSabor) throw (eCat||eProd||eCentro||eSabor);
     if (!produtosData || !produtosData.length) return; // tabelas ainda vazias: mantém HARDCODED_PRODUTOS
 
     const centrosPorProduto = {};
@@ -1149,12 +1150,17 @@ async function carregarCatalogoSupabase(){
     });
     Object.values(centrosPorProduto).forEach(arr=>arr.sort((a,b)=>a.preco-b.preco));
 
+    const saboresPorProduto = {};
+    (saboresData||[]).forEach(s=>{
+      (saboresPorProduto[s.produto_id] = saboresPorProduto[s.produto_id] || []).push({ id:s.sabor_id, nome:s.nome });
+    });
+
     const novoProdutos = {};
     (produtosData||[]).forEach(p=>{
       novoProdutos[p.id] = {
         nome: p.nome, icone: p.icone || "◈", imgKey: p.id, imagemUrl: p.imagem_url || null,
         desc: p.descricao || "", categoriaId: p.categoria_id,
-        sabores: (HARDCODED_PRODUTOS[p.id] && HARDCODED_PRODUTOS[p.id].sabores) || undefined,
+        sabores: saboresPorProduto[p.id] || (HARDCODED_PRODUTOS[p.id] && HARDCODED_PRODUTOS[p.id].sabores) || undefined,
         centros: centrosPorProduto[p.id] || (HARDCODED_PRODUTOS[p.id] && HARDCODED_PRODUTOS[p.id].centros) || [],
         tipoProduto: p.tipo_produto || "combo",
         vendaUnitariaAtiva: !!p.venda_unitaria_ativa,
@@ -1256,14 +1262,14 @@ function abrirDepoimentoPorIndice(idx){
 function renderProduto(v, id){
   const p = PRODUTOS[id];
   const precoUn = precoUnitarioProduto(id);
-  selEstado = { produtoId:id, saborId: p.sabores ? p.sabores[0].id : null, centroId:null, qtdCentros:1, modo:"combo", qtdUnidades: p.unidadeMinima||1 };
+  selEstado = { produtoId:id, saborId: (p.sabores && p.sabores.length) ? p.sabores[0].id : null, centroId:null, qtdCentros:1, modo:"combo", qtdUnidades: p.unidadeMinima||1 };
 
   const fotoSrc = fotoProduto(p);
   const fotoHtml = fotoSrc
     ? `<div class="prod-foto-wrap" onclick="abrirImagemProdutoExpandida('${fotoSrc}', '${escapeHTML(p.nome).replace(/'/g,"\\'")}')"><img src="${fotoSrc}" class="prod-foto" alt="${escapeHTML(p.nome)}" loading="eager"></div>`
     : `<div class="prod-foto-wrap" style="justify-content:center;"><div style="font-size:72px;color:var(--pine);">${p.icone}</div></div>`;
 
-  const saborHtml = p.sabores ? `
+  const saborHtml = (p.sabores && p.sabores.length) ? `
     <div>
       <div class="centros-titulo">Escolha o sabor</div>
       <div class="sabor-picker" id="sabor-picker">
@@ -1374,7 +1380,7 @@ function confirmarAddCarrinhoUnidade(){
   if (!produtoDisponivel(produtoId)) return feedback("Este produto está temporariamente indisponível.");
   const precoUn = precoUnitarioProduto(produtoId); if (!precoUn) return;
   const qtd = selEstado.qtdUnidades || p.unidadeMinima || 1;
-  const sabor = p.sabores ? p.sabores.find(s=>s.id===saborId) : null;
+  const sabor = (p.sabores && p.sabores.length) ? p.sabores.find(s=>s.id===saborId) : null;
   const key = `${produtoId}-unidade${sabor?('-'+sabor.id):''}`;
   const nome = `${p.nome}${sabor?(' ('+sabor.nome+')'):''} — Unidade avulsa`;
   const idx = meuCarrinho.findIndex(i=>i.key===key);
@@ -1412,7 +1418,7 @@ function confirmarAddCarrinho(){
   if (!produtoId || !centroId) return;
   if (!produtoDisponivel(produtoId)) return feedback("Este produto está temporariamente indisponível.");
   const p = PRODUTOS[produtoId]; const centro = p.centros.find(c=>c.id===centroId);
-  const sabor = p.sabores ? p.sabores.find(s=>s.id===saborId) : null;
+  const sabor = (p.sabores && p.sabores.length) ? p.sabores.find(s=>s.id===saborId) : null;
   const preco = precoCentro(produtoId, centroId);
   const descontoUnitario = (economiaCombo(produtoId, centroId)||{}).economia || 0;
   const key = `${produtoId}-${centroId}${sabor?('-'+sabor.id):''}`;
@@ -2302,11 +2308,17 @@ async function admAbrirEdicaoProduto(id){
     <button class="modal-btn primary" onclick="admSalvarEdicaoProduto('${id}')">Salvar alterações →</button>
 
     <div style="border-top:1px dashed var(--line);margin:22px 0 16px;"></div>
+    <h4 style="font-family:var(--font-display);font-size:15.5px;color:var(--ink);margin-bottom:4px;font-weight:700;">Sabores</h4>
+    <p style="font-size:12px;color:var(--ink-faint);margin-bottom:14px;">Adicione, edite ou remova os sabores deste produto (ex.: Frango, Camarão). Se a lista ficar vazia, o seletor de sabor some da página do produto.</p>
+    <div id="sabores-modal-content"></div>
+
+    <div style="border-top:1px dashed var(--line);margin:22px 0 16px;"></div>
     <h4 style="font-family:var(--font-display);font-size:15.5px;color:var(--ink);margin-bottom:4px;font-weight:700;">Preços & Pacotes</h4>
     <p style="font-size:12px;color:var(--ink-faint);margin-bottom:14px;">Tamanhos e preços deste produto. Salva direto no Supabase.</p>
     <div id="centros-modal-content"></div>
   `;
   document.getElementById("modal-editar-produto").classList.add("ativo");
+  renderSaboresModalContent(id);
   renderCentrosModalContent(id);
 }
 function admToggleVendaUnitaria(){
@@ -2477,6 +2489,69 @@ async function admAdicionarTier(produtoId){
     feedback("Tamanho adicionado."); await carregarCatalogoSupabase();
     renderCentrosModalContent(produtoId);
     if (paginaAtual==="home") abrirPagina("home");
+  } catch(e) { feedback("Não foi possível adicionar: " + (e.message||"")); }
+}
+
+/* ---------------- SABORES (admin) — mesmo padrão dos Pacotes/centros ---------------- */
+function renderSaboresModalContent(produtoId){
+  const p = PRODUTOS[produtoId]; if (!p) return;
+  const saboresRows = (p.sabores||[]).map(sabor => `
+    <div class="adm-centro-row" style="gap:6px;">
+      <input class="adm-input-sm" style="flex:1;" id="edt-sabor-nome-${produtoId}-${sabor.id}" value="${escapeHTML(sabor.nome||'')}" placeholder="Nome do sabor">
+      <button class="adm-btn sm" onclick="salvarSabor('${produtoId}','${sabor.id}')">Salvar</button>
+      <button class="adm-btn sm danger" onclick="admExcluirSabor('${produtoId}','${sabor.id}')">Excluir</button>
+    </div>`).join('');
+  const target = document.getElementById("sabores-modal-content");
+  if (!target) return;
+  target.innerHTML = `
+    <div style="max-height:220px;overflow-y:auto;padding-right:2px;">
+      ${saboresRows || `<p style="font-size:12px;color:var(--ink-faint);margin:6px 0 10px;">Nenhum sabor cadastrado — o produto não mostrará o seletor de sabor.</p>`}
+    </div>
+    <div style="display:flex;gap:6px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);">
+      <input class="adm-input-sm" style="flex:1;" id="novo-sabor-nome-${produtoId}" placeholder="Nome do novo sabor (ex: Camarão)">
+      <button class="adm-btn sm" onclick="admAdicionarSabor('${produtoId}')">+ Adicionar sabor</button>
+    </div>`;
+}
+async function salvarSabor(produtoId, saborId){
+  const nome = document.getElementById(`edt-sabor-nome-${produtoId}-${saborId}`).value.trim();
+  if (!nome) return feedback("Informe o nome do sabor.");
+  if (!sb) return feedback("Configure o Supabase para editar sabores.");
+  try {
+    const { error } = await sb.from("sabores").upsert({ produto_id: produtoId, sabor_id: saborId, nome, ativo:true }, { onConflict:"produto_id,sabor_id" });
+    if (error) throw error;
+    logAudit("sabor_atualizado","sabores",`${PRODUTOS[produtoId]?.nome||produtoId} — ${nome}`);
+    await carregarCatalogoSupabase();
+    renderSaboresModalContent(produtoId);
+    if (paginaAtual===produtoId) abrirPagina(produtoId);
+    feedback("Sabor atualizado.");
+  } catch(e) { feedback("Não foi possível salvar: " + (e.message||"")); }
+}
+async function admExcluirSabor(produtoId, saborId){
+  if (!confirm("Excluir este sabor?")) return;
+  if (!sb) return feedback("Configure o Supabase para excluir sabores.");
+  try {
+    const { error } = await sb.from("sabores").delete().eq("produto_id", produtoId).eq("sabor_id", saborId);
+    if (error) throw error;
+    logAudit("sabor_excluido","sabores",`${produtoId} — ${saborId}`);
+    await carregarCatalogoSupabase();
+    renderSaboresModalContent(produtoId);
+    if (paginaAtual===produtoId) abrirPagina(produtoId);
+    feedback("Sabor excluído.");
+  } catch(e) { feedback("Não foi possível excluir: " + (e.message||"")); }
+}
+async function admAdicionarSabor(produtoId){
+  const nome = document.getElementById(`novo-sabor-nome-${produtoId}`).value.trim();
+  if (!nome) return feedback("Informe o nome do sabor.");
+  if (!sb) return feedback("Configure o Supabase para cadastrar sabores.");
+  const saborId = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"") || ("s-"+Date.now());
+  try {
+    const proximaOrdem = (PRODUTOS[produtoId]?.sabores||[]).length + 1;
+    const { error } = await sb.from("sabores").insert({ produto_id: produtoId, sabor_id: saborId, nome, ordem: proximaOrdem, ativo:true });
+    if (error) throw error;
+    logAudit("sabor_criado","sabores",`${produtoId} — ${nome}`);
+    feedback("Sabor adicionado."); await carregarCatalogoSupabase();
+    renderSaboresModalContent(produtoId);
+    if (paginaAtual===produtoId) abrirPagina(produtoId);
   } catch(e) { feedback("Não foi possível adicionar: " + (e.message||"")); }
 }
 async function salvarDisponibilidadeProduto(produtoId){
