@@ -96,8 +96,27 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .btn-login-icon{width:38px;height:38px;border-radius:var(--r-full);background:var(--paper-alt);border:1px solid var(--line);color:var(--ink-soft);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .btn-login-icon:hover{border-color:var(--pine);color:var(--pine);}
 
-#vitrine{flex:1;overflow-y:auto;padding:0 42px 100px;animation:fadeUp .4s ease-out;scroll-behavior:smooth;}
+#vitrine{flex:1;overflow-y:auto;padding:0 42px 100px;scroll-behavior:smooth;}
+.page-transition{animation:fadeUp .4s ease-out both;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+/* Entrada em cascata dos cards conforme a página é montada */
+@keyframes cardEnter{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.product-card, .pedido-card, .centro-card{animation:cardEnter .45s cubic-bezier(.2,.8,.2,1) both;}
+.products-grid .product-card:nth-child(1),.centros-grid .centro-card:nth-child(1){animation-delay:.02s;}
+.products-grid .product-card:nth-child(2),.centros-grid .centro-card:nth-child(2){animation-delay:.06s;}
+.products-grid .product-card:nth-child(3),.centros-grid .centro-card:nth-child(3){animation-delay:.10s;}
+.products-grid .product-card:nth-child(4){animation-delay:.14s;}
+.products-grid .product-card:nth-child(5){animation-delay:.18s;}
+.products-grid .product-card:nth-child(6){animation-delay:.22s;}
+.products-grid .product-card:nth-child(n+7){animation-delay:.25s;}
+/* Linhas de tabela do admin também entram suavemente */
+.adm-table tbody tr{animation:cardEnter .35s ease-out both;}
+.adm-table tbody tr:nth-child(1){animation-delay:.01s;} .adm-table tbody tr:nth-child(2){animation-delay:.03s;}
+.adm-table tbody tr:nth-child(3){animation-delay:.05s;} .adm-table tbody tr:nth-child(4){animation-delay:.07s;}
+.adm-table tbody tr:nth-child(5){animation-delay:.09s;} .adm-table tbody tr:nth-child(n+6){animation-delay:.11s;}
+@media (prefers-reduced-motion:reduce){
+  .page-transition,.product-card,.pedido-card,.centro-card,.adm-table tbody tr{animation:none!important;}
+}
 
 /* ==========================================================================
    HOME HERO — thesis: "monta seu pacote" (comanda gigante)
@@ -122,6 +141,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .hero-tagline{display:flex;align-items:center;gap:8px;font-size:11.5px;color:rgba(251,247,238,.62);margin-bottom:4px;flex-wrap:wrap;}
 .hero-cta-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
 .hero-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 17px;border-radius:var(--r-full);font-size:12px;font-weight:700;text-decoration:none;transition:all .2s;white-space:nowrap;}
+.hero-btn:active{transform:scale(.96);}
 .hero-btn.primary{background:#E8C08A;color:var(--pine-deep);}
 .hero-btn.primary:hover{background:#F2D3A6;transform:translateY(-1px);}
 .hero-btn.ghost{background:rgba(255,255,255,.08);color:#FBF7EE;border:1px solid rgba(255,255,255,.22);}
@@ -205,8 +225,9 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 
 .centros-titulo{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--ink-faint);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
 .centros-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}
-.centro-card{background:var(--white);border:1.5px solid var(--line);border-radius:var(--r-md);padding:18px 18px 16px;cursor:pointer;transition:all .18s;position:relative;}
-.centro-card:hover{border-color:var(--pine);}
+.centro-card{background:var(--white);border:1.5px solid var(--line);border-radius:var(--r-md);padding:18px 18px 16px;cursor:pointer;transition:all .2s cubic-bezier(.2,.8,.2,1);position:relative;}
+.centro-card:hover{border-color:var(--pine);transform:translateY(-2px);box-shadow:var(--shadow-card);}
+.centro-card:active{transform:translateY(0) scale(.98);}
 .centro-card.sel{border-color:var(--apricot);background:var(--apricot-pale);}
 .centro-label{font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--ink);margin-bottom:3px;}
 .centro-qtd{font-size:11px;color:var(--ink-faint);margin-bottom:10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
@@ -279,6 +300,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .modal-input:focus{border-color:var(--pine);background:var(--white);}
 .modal-input::placeholder{color:var(--ink-faint);}
 .modal-btn{width:100%;padding:14px;background:var(--paper-alt);color:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);font-weight:700;font-size:13.5px;cursor:pointer;transition:all .2s;margin-bottom:9px;}
+.modal-btn:active{transform:scale(.985);}
 .modal-btn:hover{background:var(--line);}
 .modal-btn.primary{background:var(--pine);color:#fff;border:none;}
 .modal-btn.primary:hover{background:var(--pine-deep);}
@@ -357,15 +379,16 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
    MOBILE NAV
    ========================================================================== */
 #mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;width:100%;background:var(--white);border-top:1px solid var(--line);z-index:100;padding-bottom:var(--sab);}
-.nav-items-container{display:flex;justify-content:space-around;align-items:center;height:62px;}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--ink-faint);font-size:10px;font-weight:600;cursor:pointer;position:relative;}
-.nav-item .nav-icon{font-size:19px;opacity:.6;}
+.nav-items-container{display:flex;justify-content:space-around;align-items:center;height:64px;padding:0 4px;}
+.nav-item{flex:1;min-height:48px;min-width:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--ink-faint);font-size:10px;font-weight:600;cursor:pointer;position:relative;border-radius:var(--r-md);transition:color .2s ease, transform .15s ease;}
+.nav-item:active{transform:scale(.92);}
+.nav-item .nav-icon{font-size:19px;opacity:.6;transition:opacity .2s ease, transform .2s ease;}
 .nav-item.ativo{color:var(--pine);}
-.nav-item.ativo .nav-icon{opacity:1;}
+.nav-item.ativo .nav-icon{opacity:1;transform:translateY(-1px);}
 .badge{position:absolute;top:2px;right:22%;background:var(--danger);color:#fff;font-size:8.5px;font-weight:800;padding:2px 5px;border-radius:var(--r-full);border:2px solid #fff;}
 
 @media (max-width:768px){
-  #sidebar{display:none;} #mobile-bottom-nav{display:block;} #principal{padding-bottom:calc(62px + var(--sab));}
+  #sidebar{display:none;} #mobile-bottom-nav{display:block;} #principal{padding-bottom:calc(64px + var(--sab));}
   #btn-tema{display:none;} /* agora vive dentro do menu inferior, como "Configurações" — evita duplicar e sobrepor a barra */
   #header{padding:14px 18px;} #titulo-pagina{font-size:19px;} .btn-voltar{display:flex;width:34px;height:34px;font-size:17px;}
   #vitrine{padding:0 18px 20px;} .home-hero{padding:22px 0 34px;}
@@ -396,21 +419,25 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .adm-chips{display:flex;gap:8px;flex-wrap:wrap;}
 .adm-chip{background:var(--white);border:1px solid var(--line);color:var(--ink-soft);padding:7px 14px;border-radius:var(--r-full);font-size:12px;cursor:pointer;}
 .adm-chip.act{background:var(--pine-pale);color:var(--pine-deep);border-color:var(--pine-line);font-weight:700;}
-.adm-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-md);background:var(--white);}
+.adm-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--white);box-shadow:var(--shadow-card);margin-bottom:26px;}
 .adm-table{width:100%;border-collapse:collapse;font-size:13px;}
-.adm-table th{text-align:left;padding:12px 16px;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-faint);border-bottom:1px solid var(--line);white-space:nowrap;}
-.adm-table td{padding:12px 16px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:top;}
+.adm-table th{text-align:left;padding:14px 16px;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-faint);font-family:var(--font-mono);font-weight:700;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--paper-alt);}
+.adm-table td{padding:14px 16px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:top;transition:background-color .15s ease;}
 .adm-table tr:last-child td{border-bottom:none;}
+.adm-table tbody tr:nth-child(even) td{background:var(--paper-alt);}
+.adm-table tbody tr:hover td{background:var(--pine-pale);}
 .adm-sub{font-size:11px;color:var(--ink-faint);margin-top:2px;}
 .adm-empty-row{text-align:center;padding:30px!important;color:var(--ink-faint);}
 .adm-badge{display:inline-block;padding:4px 12px;border-radius:var(--r-full);font-size:11px;font-weight:700;background:var(--paper-alt);color:var(--ink-soft);}
 .adm-badge.st-pend{background:var(--warning-pale);color:var(--warning);}
 .adm-badge.st-pago{background:var(--success-pale);color:var(--success);}
 .adm-badge.st-canc{background:var(--danger-pale);color:var(--danger);}
-.adm-select{background:var(--white);border:1px solid var(--line);color:var(--ink);padding:6px 10px;border-radius:var(--r-sm);font-size:12px;}
+.adm-select{background:var(--white);border:1px solid var(--line);color:var(--ink);padding:6px 10px;border-radius:var(--r-sm);font-size:12px;transition:border-color .15s ease;}
+.adm-select:hover{border-color:var(--pine-line);}
 .adm-input-sm{width:100px;background:var(--white);border:1px solid var(--line);color:var(--ink);padding:7px 10px;border-radius:var(--r-sm);font-size:12.5px;font-family:var(--font-mono);}
-.adm-btn{background:var(--pine-pale);color:var(--pine-deep);border:1px solid var(--pine-line);padding:8px 16px;border-radius:var(--r-full);font-size:12px;cursor:pointer;font-weight:600;text-decoration:none;display:inline-block;}
-.adm-btn:hover{background:rgba(44,74,59,.16);}
+.adm-btn{background:var(--pine-pale);color:var(--pine-deep);border:1px solid var(--pine-line);padding:8px 16px;border-radius:var(--r-full);font-size:12px;cursor:pointer;font-weight:600;text-decoration:none;display:inline-block;transition:all .2s ease;}
+.adm-btn:hover{background:rgba(44,74,59,.16);transform:translateY(-1px);}
+.adm-btn:active{transform:translateY(0) scale(.97);}
 .adm-btn.sm{padding:6px 12px;font-size:11.5px;}
 .adm-btn.danger{background:var(--danger-pale);color:var(--danger);border-color:rgba(193,68,46,.3);}
 .adm-btn.whatsapp{background:rgba(37,211,102,.12);color:#128C4A;border-color:rgba(37,211,102,.35);}
@@ -425,6 +452,13 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .adm-notice{background:var(--pine-pale);border:1px solid var(--pine-line);color:var(--ink-soft);padding:12px 16px;border-radius:var(--r-sm);font-size:12px;margin-bottom:18px;}
 .adm-loading,.adm-empty{text-align:center;padding:60px 20px;color:var(--ink-faint);font-size:13.5px;}
 .adm-empty-ic{font-size:30px;margin-bottom:12px;}
+/* -------- Skeleton loading (substitui telas brancas/"Carregando...") -------- */
+.skel-wrap{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--white);box-shadow:var(--shadow-card);}
+.skel-row{display:flex;gap:16px;padding:16px;align-items:center;border-bottom:1px solid var(--line);}
+.skel-row:last-child{border-bottom:none;}
+.skel-bar{border-radius:6px;background:linear-gradient(90deg, var(--paper-alt) 25%, var(--line) 50%, var(--paper-alt) 75%);background-size:400% 100%;animation:skelShimmer 1.4s ease infinite;height:13px;}
+@keyframes skelShimmer{0%{background-position:100% 50%;}100%{background-position:-100% 50%;}}
+@media (prefers-reduced-motion:reduce){.skel-bar{animation:none;opacity:.6;}}
 
 .adm-centro-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);gap:10px;flex-wrap:wrap;}
 .adm-centro-row:last-child{border-bottom:none;}
@@ -433,15 +467,8 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .adm-section-title{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--ink);}
 .adm-section-title em{font-style:normal;color:var(--pine);}
 .adm-section-sub{font-size:12px;color:var(--ink-faint);margin-top:2px;}
-.adm-table-wrap{background:var(--white);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;margin-bottom:26px;}
-.adm-table{width:100%;border-collapse:collapse;}
-.adm-table thead th{text-align:left;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink-faint);font-family:var(--font-mono);padding:14px 16px;border-bottom:1px solid var(--line);background:var(--paper-alt);}
-.adm-table tbody td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:middle;}
-.adm-table tbody tr:last-child td{border-bottom:none;}
-.adm-table tbody tr:hover{background:var(--paper-alt);}
 .adm-thumb{width:52px;height:52px;object-fit:cover;border-radius:10px;display:block;}
 .adm-thumb-fallback{width:52px;height:52px;border-radius:10px;background:var(--paper-alt);display:flex;align-items:center;justify-content:center;font-size:22px;}
-.adm-badge{display:inline-block;padding:4px 11px;border-radius:var(--r-full);font-size:10.5px;font-weight:700;letter-spacing:.3px;}
 .adm-badge.on{background:var(--success-pale);color:var(--success);}
 .adm-badge.off{background:var(--danger-pale);color:var(--danger);}
 .adm-icon-btn{width:32px;height:32px;border-radius:var(--r-full);border:1px solid var(--line);background:var(--white);color:var(--ink-soft);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s;}
@@ -1103,6 +1130,9 @@ function abrirPagina(id){
   paginaAtual = id; atualizarAtivosMenu(id);
   try { localStorage.setItem(STORAGE.lastPage, id); } catch(e){}
   const vitrine = document.getElementById("vitrine"); const btnVoltar = document.querySelector(".btn-voltar");
+  // Re-dispara a transição suave de entrada a cada navegação (sem isto, a
+  // animação só tocaria uma vez, na primeira carga da página).
+  vitrine.classList.remove("page-transition"); void vitrine.offsetWidth; vitrine.classList.add("page-transition");
   btnVoltar.style.display = id==="home" ? "none" : "flex";
   if (id==="home") { document.getElementById("titulo-pagina").textContent="Início"; return renderHome(vitrine); }
   if (id==="carrinho") { document.getElementById("titulo-pagina").textContent="Checkout"; return renderCarrinho(vitrine); }
@@ -1651,7 +1681,7 @@ function formatarDataCurtaPedido(c){
   return String(c.dataHora || c.created_at || 'Recente').split(' ')[0];
 }
 function renderCompras(v){
-  v.innerHTML = `<div style="max-width:800px;margin:0 auto;"><div class="adm-loading">Carregando seus pedidos...</div></div>`;
+  v.innerHTML = `<div style="max-width:800px;margin:0 auto;">${adminSkeleton(3)}</div>`;
   carregarPedidosCliente().then(compras => renderComprasLista(v, compras));
 }
 function renderComprasLista(v, compras){
@@ -1824,16 +1854,36 @@ function openAdminPanel(){ if (!isAdminLogado()) return openAdminLogin(); docume
 function closeAdminPanel(){ document.getElementById("adm-panel").classList.remove("op"); }
 function admTab(tab){
   document.querySelectorAll(".adm-tab").forEach(b=>b.classList.toggle("act", b.dataset.tab===tab));
+  const content = document.getElementById("adm-content");
+  if (content) { content.classList.remove("page-transition"); void content.offsetWidth; content.classList.add("page-transition"); }
   const map = { pedidos:renderAdminPedidos, catalogo:renderAdminCatalogo, recuperacao:renderAdminRecuperacao, avaliacoes:renderAdminAvaliacoes, registros:renderAdminRegistros };
   (map[tab]||renderAdminPedidos)();
 }
 function admNaoConfigurado(msg){ return `<div class="adm-empty"><div class="adm-empty-ic">!</div>${msg}<br/><span style="font-size:11.5px;opacity:.7">Configure SUPABASE_URL e SUPABASE_ANON_KEY no topo do arquivo.</span></div>`; }
+// Skeleton screen elegante pra substituir a antiga tela em branco "Carregando...".
+function adminSkeleton(linhas){
+  linhas = linhas || 6;
+  const larguras = [88,70,82,64,86,72];
+  let rows = '';
+  for (let i=0;i<linhas;i++){
+    const w = larguras[i % larguras.length];
+    rows += `<div class="skel-row">
+      <div class="skel-bar" style="width:44px;height:44px;border-radius:10px;flex-shrink:0;"></div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:7px;">
+        <div class="skel-bar" style="width:${w}%;max-width:280px;"></div>
+        <div class="skel-bar" style="width:${Math.max(28,w-30)}%;max-width:150px;height:10px;"></div>
+      </div>
+      <div class="skel-bar" style="width:74px;height:24px;border-radius:999px;flex-shrink:0;"></div>
+    </div>`;
+  }
+  return `<div class="skel-wrap">${rows}</div>`;
+}
 
 let _admOrdSearch="", _admOrdFiltro="todos", _admOrdPage=1; const ADM_ORD_PAGE_SIZE=10;
 async function renderAdminPedidos(){
   const c = document.getElementById("adm-content");
   if (!sb) { c.innerHTML = admNaoConfigurado("O Supabase ainda não está configurado — os pedidos automáticos aparecerão aqui assim que estiver."); return; }
-  c.innerHTML = `<div class="adm-loading">Carregando pedidos...</div>`;
+  c.innerHTML = adminSkeleton(6);
   let pedidos = [];
   try { const { data, error } = await sb.from("pedidos").select("*").order("criado_em",{ascending:false}).limit(500); if (error) throw error; pedidos = data||[]; }
   catch(e) { c.innerHTML = admNaoConfigurado("Não foi possível carregar os pedidos. Verifique se a tabela 'pedidos' existe no Supabase."); return; }
@@ -1880,9 +1930,10 @@ async function limparTodosPedidos(){
   if (!confirm("Tem certeza que deseja apagar TODOS os pedidos? Isso não pode ser desfeito.")) return;
   if (!confirm("Confirmando mais uma vez: todo o histórico de pedidos — pagos, em preparo, tudo — será apagado para sempre, sem possibilidade de recuperação. Deseja continuar?")) return;
   try {
-    const { error } = await sb.from("pedidos").delete().neq("pedido", "");
+    const { data, error } = await sb.from("pedidos").delete().neq("pedido", "").select("pedido");
     if (error) throw error;
-    toast("Todos os pedidos foram apagados.");
+    if (!data || !data.length) { toast("Nada foi apagado — verifique se a policy 'pedidos_admin_delete' existe no Supabase (RLS).", "error"); return; }
+    toast(`${data.length} pedido(s) apagado(s).`);
     renderAdminPedidos();
   } catch(e) { toast("Não foi possível apagar os pedidos: " + e.message, "error"); }
 }
@@ -1911,7 +1962,7 @@ function catalogoNaoConfigurado(){
 async function renderAdminCatalogo(){
   const c = document.getElementById("adm-content");
   if (!sb) { c.innerHTML = admNaoConfigurado("O catálogo administrável aparecerá aqui assim que o Supabase estiver configurado."); return; }
-  c.innerHTML = `<div class="adm-loading">Carregando catálogo...</div>`;
+  c.innerHTML = adminSkeleton(5);
   let categorias = [], produtos = [];
   try {
     const [{ data: cat, error: eCat }, { data: prod, error: eProd }] = await Promise.all([
@@ -2254,7 +2305,7 @@ async function salvarCarrinhoAbandonado(){
 async function renderAdminRecuperacao(){
   const c = document.getElementById("adm-content");
   if (!sb) { c.innerHTML = admNaoConfigurado("A recuperação de carrinhos abandonados aparecerá aqui assim que o Supabase estiver configurado."); return; }
-  c.innerHTML = `<div class="adm-loading">Carregando...</div>`;
+  c.innerHTML = adminSkeleton(5);
   try {
     // Só mostra carrinhos parados há 30 minutos ou mais, sem finalizar a compra.
     const cutoff = new Date(Date.now()-30*60000).toISOString();
@@ -2296,7 +2347,7 @@ async function salvarAvaliacaoSupabase(av){
 async function renderAdminAvaliacoes(){
   const c = document.getElementById("adm-content");
   if (!sb) { c.innerHTML = admNaoConfigurado("As avaliações enviadas pelos clientes aparecerão aqui assim que o Supabase estiver configurado."); return; }
-  c.innerHTML = `<div class="adm-loading">Carregando...</div>`;
+  c.innerHTML = adminSkeleton(5);
   try {
     const { data, error } = await sb.from("avaliacoes").select("*").order("criado_em",{ascending:false}).limit(200); if (error) throw error;
     const rows = (data||[]).map(av => `<tr><td>${escapeHTML(av.nome)}</td>
@@ -2325,7 +2376,7 @@ async function logAudit(action, entity, detail){
 async function renderAdminRegistros(){
   const c = document.getElementById("adm-content");
   if (!sb) { c.innerHTML = admNaoConfigurado("O log de auditoria aparecerá aqui assim que o Supabase estiver configurado."); return; }
-  c.innerHTML = `<div class="adm-loading">Carregando...</div>`;
+  c.innerHTML = adminSkeleton(5);
   try {
     const { data, error } = await sb.from("registros").select("*").order("criado_em",{ascending:false}).limit(150); if (error) throw error;
     const rows = (data||[]).map(r => `<tr><td>${escapeHTML(new Date(r.criado_em).toLocaleString('pt-BR'))}</td><td>${escapeHTML(r.ator||'—')}</td><td><span class="adm-badge">${escapeHTML(r.acao)}</span></td><td style="font-size:12px;color:var(--ink-soft)">${escapeHTML(r.detalhe||'')}</td></tr>`).join('');
@@ -2342,9 +2393,10 @@ async function limparTodosRegistros(){
   if (!confirm("Tem certeza que deseja apagar TODOS os registros? Isso não pode ser desfeito.")) return;
   if (!confirm("Confirmando mais uma vez: todo o histórico de auditoria será apagado para sempre, sem possibilidade de recuperação. Deseja continuar?")) return;
   try {
-    const { error } = await sb.from("registros").delete().neq("id", 0);
+    const { data, error } = await sb.from("registros").delete().neq("id", 0).select("id");
     if (error) throw error;
-    toast("Todos os registros foram apagados.");
+    if (!data || !data.length) { toast("Nada foi apagado — verifique se a policy 'registros_admin_delete' existe no Supabase (RLS).", "error"); return; }
+    toast(`${data.length} registro(s) apagado(s).`);
     renderAdminRegistros();
   } catch(e) { toast("Não foi possível apagar os registros: " + e.message, "error"); }
 }
