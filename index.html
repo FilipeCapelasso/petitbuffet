@@ -974,6 +974,15 @@ function safeRead(key, fallback){ try { return JSON.parse(localStorage.getItem(k
 function safeWrite(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
 function dinheiro(v){ return `R$ ${Number(v||0).toFixed(2).replace('.', ',')}`; }
 function onlyDigits(v){ return String(v||"").replace(/\D/g,""); }
+// Corrige o problema do navegador/Google autocompletando o campo de WhatsApp
+// com "+55" na frente (ex.: "+55 68 97400-5458"). Sem isso, o número salvo
+// fica com 13 dígitos em vez de 11, e todo link de WhatsApp monta errado
+// (viraria "5555..." em vez de "5568...").
+function normalizarTelefoneBR(v){
+  let d = onlyDigits(v);
+  if (d.length > 11 && d.startsWith("55")) d = d.slice(2);
+  return d;
+}
 function escapeHTML(v){ return String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c])); }
 function produtoDisponivel(id){ return estoqueProdutos[id] !== false; }
 function precoCentro(produtoId, tierId){
@@ -1082,7 +1091,7 @@ function fecharModal(id){ document.getElementById(id).classList.remove("ativo");
 function primeiroNome(txt){ return String(txt||"").trim().split(/\s+/)[0] || ""; }
 async function cadastrarUsuario(){
   const nome = primeiroNome(document.getElementById("login-nome").value);
-  const telefone = onlyDigits(document.getElementById("login-wpp").value);
+  const telefone = normalizarTelefoneBR(document.getElementById("login-wpp").value);
   if (nome.length<2) return feedback("Informe seu primeiro nome.");
   if (telefone.length<10) return feedback("Informe um WhatsApp válido com DDD.");
   localStorage.setItem(STORAGE.name, nome); localStorage.setItem(STORAGE.phone, telefone);
@@ -1102,10 +1111,15 @@ async function salvarClienteSupabase(nome, telefone){
   } catch(e) { console.warn("Não foi possível salvar o cliente no Supabase.", e); return null; }
 }
 // Ao abrir o site, se já houver telefone salvo, revalida o nome contra o
-// Supabase (caso o cliente tenha atualizado em outro dispositivo).
+// Supabase (caso o cliente tenha atualizado em outro dispositivo). Também
+// "autocura" quem já ficou com o +55 gravado no navegador antes da correção.
 async function sincronizarClienteLogado(){
+  const telefoneCorrigido = normalizarTelefoneBR(localStorage.getItem(STORAGE.phone) || "");
+  if (telefoneCorrigido && telefoneCorrigido !== (localStorage.getItem(STORAGE.phone) || "")) {
+    localStorage.setItem(STORAGE.phone, telefoneCorrigido);
+  }
   if (!sb) return;
-  const telefone = onlyDigits(localStorage.getItem(STORAGE.phone) || "");
+  const telefone = telefoneCorrigido;
   if (telefone.length<10) return;
   try {
     const { data, error } = await sb.from("clientes").select("nome").eq("telefone", telefone).single();
@@ -1624,7 +1638,7 @@ function payloadPedido(formaPagamento){
   const dataAgendada = document.getElementById("checkout-data-evento").value.trim();
   const horaAgendada = document.getElementById("checkout-hora-evento").value.trim();
   const labelData = textoDataPedidoAtual(); const endereco = [rua,numero,bairro].filter(Boolean).join(", ");
-  const nome = localStorage.getItem(STORAGE.name) || ""; const telefone = onlyDigits(localStorage.getItem(STORAGE.phone));
+  const nome = localStorage.getItem(STORAGE.name) || ""; const telefone = normalizarTelefoneBR(localStorage.getItem(STORAGE.phone));
   if (nome.length<3) throw new Error("Nome inválido. Atualize seu perfil.");
   if (telefone.length<10) throw new Error("Telefone inválido. Atualize seu perfil.");
   if (!rua||!numero||!bairro) throw new Error("Preencha rua, número e bairro do evento.");
@@ -1848,7 +1862,7 @@ async function mpOnApproved(statusData){
 function salvarNaAbaCompras(payload){ const compras = unificarPedidos([payload], safeRead(STORAGE.orders, [])); safeWrite(STORAGE.orders, compras); }
 
 async function sincronizarClienteViaPlanilha(){
-  const telefone = onlyDigits(localStorage.getItem(STORAGE.phone)); if (!telefone) return false;
+  const telefone = normalizarTelefoneBR(localStorage.getItem(STORAGE.phone)); if (!telefone) return false;
   const btn = document.getElementById("btn-sync-compras"); if (btn) { btn.innerHTML="Sincronizando..."; btn.style.opacity=0.55; }
   try {
     const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getOrders&telefone=${encodeURIComponent(telefone)}&_=${Date.now()}`, { cache:'no-store' });
@@ -1871,7 +1885,7 @@ function unificarPedidos(novos, antigos){
 }
 
 async function carregarPedidosCliente(){
-  const telefone = onlyDigits(localStorage.getItem(STORAGE.phone) || "");
+  const telefone = normalizarTelefoneBR(localStorage.getItem(STORAGE.phone) || "");
   if (sb && telefone) {
     try {
       const { data, error } = await sb.from("pedidos").select("*").eq("telefone", telefone).order("criado_em",{ascending:false});
@@ -1883,7 +1897,12 @@ async function carregarPedidosCliente(){
   }
   return safeRead(STORAGE.orders, []).map(normalizarPedido);
 }
-function formatarTelefoneExibicao(tel){ const d = onlyDigits(tel); if (d.length<10) return tel||''; return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`; }
+function formatarTelefoneExibicao(tel){
+  const d = normalizarTelefoneBR(tel);
+  if (d.length<10) return tel||'';
+  if (d.length===11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+}
 function formatarDataCurtaPedido(c){
   c = normalizarPedido(c||{});
   const d = c.data_agendada || c.data_evento || c.data_entrega;
@@ -2109,7 +2128,7 @@ async function renderAdminPedidos(){
   const rows = pageItems.map(p => {
     const etapaAtual = normStatusPedido(p.status_pedido);
     const proxima = proximaEtapaPedido(etapaAtual);
-    const telDigits = onlyDigits(p.telefone);
+    const telDigits = normalizarTelefoneBR(p.telefone);
     return `<tr>
     <td><strong class="mono">${escapeHTML(p.pedido)}</strong><div class="adm-sub">${escapeHTML(p.criado_em ? new Date(p.criado_em).toLocaleString('pt-BR') : '')}</div></td>
     <td>${escapeHTML(p.nome||'')}<div class="adm-sub mono" style="font-weight:700;color:var(--ink);">${escapeHTML(formatarTelefoneExibicao(p.telefone||''))}</div>
@@ -2660,7 +2679,7 @@ async function carregarCardapioConfig(){
 function carrinhoToken(){ let t=null; try { t=localStorage.getItem("pb-cart-token"); } catch(e){} if (!t) { t="pb-"+Math.random().toString(36).slice(2,10); try{ localStorage.setItem("pb-cart-token", t);}catch(e){} } return t; }
 async function salvarCarrinhoAbandonado(){
   if (!sb || !meuCarrinho.length) return;
-  const nome = localStorage.getItem(STORAGE.name)||""; const telefone = localStorage.getItem(STORAGE.phone)||"";
+  const nome = localStorage.getItem(STORAGE.name)||""; const telefone = normalizarTelefoneBR(localStorage.getItem(STORAGE.phone)||"");
   try { await sb.from("carrinhos_abandonados").upsert({ token:carrinhoToken(), nome, telefone, itens:JSON.stringify(meuCarrinho), total: meuCarrinho.reduce((s,i)=>s+Number(i.subtotal||0),0), atualizado_em:new Date().toISOString(), recuperado:false }, { onConflict:"token" }); }
   catch(e) {}
 }
@@ -2680,7 +2699,7 @@ async function renderAdminRecuperacao(){
         ? `<ul style="margin:0;padding-left:16px;">${listaProdutos.map(p=>`<li>${escapeHTML(p)}</li>`).join('')}</ul>`
         : `<span style="color:var(--ink-faint);">Sem itens detalhados</span>`;
       const resumoTexto = listaProdutos.join(", ") || "os itens selecionados";
-      const tel = onlyDigits(cart.telefone);
+      const tel = normalizarTelefoneBR(cart.telefone);
       const minutosParado = Math.round((Date.now() - new Date(cart.atualizado_em).getTime())/60000);
       const saudacao = cart.nome ? `Olá ${cart.nome}!` : "Olá!";
       const msg = encodeURIComponent(`${saudacao} Notamos que você deixou ${resumoTexto} no seu carrinho. Posso te ajudar a finalizar o seu pedido?`);
