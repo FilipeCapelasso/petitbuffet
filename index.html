@@ -543,7 +543,7 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 
   <main id="principal">
     <header id="header">
-      <div class="header-left"><button class="btn-voltar" onclick="abrirPagina('home')">‹</button><h1 id="titulo-pagina">Início</h1></div>
+      <div class="header-left"><button class="btn-voltar" onclick="fecharTelaAtual()">‹</button><h1 id="titulo-pagina">Início</h1></div>
       <div class="header-actions">
         <a class="btn-login-icon" href="https://www.instagram.com/petitbuffet_ac?igsh=MTdjNmFkdHFyaWRvOA==" target="_blank" rel="noopener" title="Instagram @petitbuffet_ac" style="color:var(--pine);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="6" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.15" fill="currentColor"/></svg></a>
         <a id="btn-wpp" class="btn-wpp" href="#" target="_blank">Fale Conosco</a>
@@ -1257,7 +1257,20 @@ function atualizarAtivosMenu(id){
   const mm=document.getElementById("bn-"+id); if(mm) mm.classList.add("ativo");
 }
 
+// _pbViaPopstate: true enquanto estamos respondendo a um evento popstate (botão físico de
+// Voltar do celular/navegador) — usado pra não empilhar um novo estado de histórico de novo
+// quando é a própria navegação de volta que está chamando esta função.
+let _pbViaPopstate = false;
 function abrirPagina(id){
+  // Histórico do navegador: ao sair da Home para outra tela (produto, carrinho ou "Minhas
+  // Compras"), empilhamos um novo estado. Assim, o botão físico de "Voltar" do celular (ou o
+  // botão "Voltar" do navegador) apenas fecha essa tela e retorna pra Home, em vez de sair do
+  // site inteiramente. Não empilhamos quando: é só um refresh da própria tela atual (id igual
+  // ao que já estava aberto), o destino é a própria Home, ou esta chamada veio do popstate.
+  const navegouParaOutraTela = id !== paginaAtual;
+  if (navegouParaOutraTela && id!=="home" && !_pbViaPopstate) {
+    history.pushState({ pbPagina: id }, "", location.href);
+  }
   paginaAtual = id; atualizarAtivosMenu(id);
   try { localStorage.setItem(STORAGE.lastPage, id); } catch(e){}
   const vitrine = document.getElementById("vitrine"); const btnVoltar = document.querySelector(".btn-voltar");
@@ -1269,6 +1282,20 @@ function abrirPagina(id){
   if (id==="carrinho") { document.getElementById("titulo-pagina").textContent="Checkout"; return renderCarrinho(vitrine); }
   if (id==="compras") { document.getElementById("titulo-pagina").textContent="Minhas Compras"; return renderCompras(vitrine); }
   if (PRODUTOS[id]) { document.getElementById("titulo-pagina").textContent=PRODUTOS[id].nome; return renderProduto(vitrine, id); }
+}
+// Botão físico/nativo de "Voltar" do celular (ou o "Voltar" do navegador no computador).
+// Em vez de deixar o navegador sair do site, fechamos a tela atual e mantemos o usuário na Home.
+window.addEventListener("popstate", function(){
+  _pbViaPopstate = true;
+  abrirPagina("home");
+  _pbViaPopstate = false;
+});
+// Botão "‹" da própria interface (o "X"/voltar da tela, não o botão físico do celular).
+// Chama history.back() em vez de abrirPagina('home') direto, para consumir corretamente o
+// estado que foi empilhado ao abrir esta tela — quem efetivamente troca a tela de volta pra
+// Home é o listener de popstate acima, mantendo a pilha do histórico sempre equilibrada.
+function fecharTelaAtual(){
+  if (paginaAtual !== "home") history.back();
 }
 
 function renderHome(v){
