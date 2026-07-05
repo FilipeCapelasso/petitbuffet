@@ -486,7 +486,57 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 
 .adm-centro-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);gap:10px;flex-wrap:wrap;}
 .adm-centro-row:last-child{border-bottom:none;}
-/* -------- Indicador de auto-save (salvamento automático nos campos do admin) -------- */
+/* ---- BANNER CARRINHOS GRÁTIS ---- */
+.frete-banner{position:relative;overflow:hidden;margin:0 0 56px;border-radius:var(--r-xl);background:linear-gradient(135deg,var(--pine-deep) 0%,#2C4A3B 60%,#1a3d2c 100%);padding:36px 44px;display:flex;align-items:center;gap:32px;flex-wrap:wrap;box-shadow:0 8px 40px rgba(28,55,40,.22);}
+.frete-banner::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none;}
+.frete-banner-icone{font-size:56px;flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));animation:fbBounce 2.8s ease-in-out infinite;}
+@keyframes fbBounce{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-10px) rotate(3deg);}}
+.frete-banner-body{flex:1;min-width:220px;}
+.frete-banner-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px;}
+.frete-banner-titulo{font-family:var(--font-display);font-size:clamp(22px,3.2vw,32px);font-weight:700;color:#fff;line-height:1.15;margin-bottom:10px;}
+.frete-banner-titulo em{color:#b8e4a0;font-style:normal;}
+.frete-banner-desc{font-size:14.5px;color:rgba(255,255,255,.75);line-height:1.65;max-width:560px;}
+.frete-banner-desc strong{color:#fff;}
+.frete-banner-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+.frete-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:var(--r-full);padding:7px 14px;font-size:12px;font-weight:700;color:#fff;backdrop-filter:blur(4px);animation:fbFadeIn .6s ease both;}
+.frete-tag:nth-child(2){animation-delay:.1s;}.frete-tag:nth-child(3){animation-delay:.2s;}
+@keyframes fbFadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.frete-tag-dot{width:7px;height:7px;border-radius:50%;background:#b8e4a0;flex-shrink:0;animation:fbPulse 1.8s ease-in-out infinite;}
+@keyframes fbPulse{0%,100%{opacity:.4;transform:scale(.85);}50%{opacity:1;transform:scale(1.15);}}
+.frete-banner-badge{background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.22);border-radius:var(--r-lg);padding:18px 24px;text-align:center;flex-shrink:0;backdrop-filter:blur(6px);animation:fbGlow 3s ease-in-out infinite;}
+@keyframes fbGlow{0%,100%{box-shadow:0 0 0 0 rgba(184,228,160,0);}50%{box-shadow:0 0 24px 4px rgba(184,228,160,.18);}}
+.frete-badge-valor{font-family:var(--font-display);font-size:36px;font-weight:700;color:#b8e4a0;line-height:1;}
+.frete-badge-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:4px;}
+@media(max-width:640px){.frete-banner{padding:24px 20px;gap:20px;}.frete-banner-badge{width:100%;}.frete-banner-icone{font-size:40px;}}
+/* ---- SEÇÃO NOSSA HISTÓRIA ---- */
+.historia-section{margin-top:64px;padding-top:56px;border-top:1px solid var(--line);}
+.historia-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--pine);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.historia-eyebrow::after{content:'';flex:1;height:1px;background:var(--pine-line);}
+.historia-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:8px;}
+@media(max-width:760px){.historia-grid{grid-template-columns:1fr;gap:28px;}}
+.historia-titulo{font-family:var(--font-display);font-size:clamp(26px,3.8vw,42px);font-weight:600;color:var(--ink);line-height:1.18;margin-bottom:22px;}
+.historia-titulo em{color:var(--pine);font-style:italic;}
+.historia-p{font-size:15px;color:var(--ink-soft);line-height:1.78;margin-bottom:16px;}
+.historia-p strong{color:var(--ink);font-weight:700;}
+.historia-p:last-child{margin-bottom:0;}
+.historia-aside{display:flex;flex-direction:column;gap:18px;}
+.historia-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;position:relative;overflow:hidden;transition:transform .22s ease,box-shadow .22s ease;opacity:0;transform:translateY(24px);}
+.historia-card.visivel{opacity:1;transform:translateY(0);transition:opacity .5s ease,transform .5s ease,box-shadow .22s ease;}
+.historia-card:nth-child(2){transition-delay:.12s;}.historia-card:nth-child(3){transition-delay:.22s;}.historia-card:nth-child(4){transition-delay:.32s;}
+.historia-card:hover{transform:translateY(-4px);box-shadow:0 10px 36px rgba(44,74,59,.1);}
+.historia-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--pine);border-radius:0 2px 2px 0;}
+.historia-card-icon{font-size:26px;margin-bottom:8px;}
+.historia-card-num{font-family:var(--font-mono);font-size:28px;font-weight:700;color:var(--pine);line-height:1;}
+.historia-card-label{font-size:11.5px;color:var(--ink-faint);margin-top:3px;font-weight:600;letter-spacing:.3px;}
+.historia-card-detalhe{font-size:12.5px;color:var(--ink-soft);margin-top:6px;line-height:1.5;}
+.historia-local{display:flex;align-items:flex-start;gap:12px;background:var(--pine-pale);border:1px solid var(--pine-line);border-radius:var(--r-md);padding:16px 18px;margin-top:6px;}
+.historia-local-pin{font-size:22px;flex-shrink:0;margin-top:1px;}
+.historia-local-texto{font-size:13.5px;color:var(--pine-deep);line-height:1.6;font-weight:500;}
+.historia-local-texto strong{color:var(--pine-deep);font-weight:800;display:block;font-size:14.5px;margin-bottom:2px;}
+.historia-encerramento{text-align:center;margin-top:48px;padding:36px 32px;background:linear-gradient(135deg,var(--pine-pale) 0%,rgba(44,74,59,.04) 100%);border-radius:var(--r-xl);border:1px solid var(--pine-line);}
+.historia-enc-emoji{font-size:38px;margin-bottom:12px;animation:fbBounce 3s ease-in-out infinite;}
+.historia-enc-titulo{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--pine-deep);margin-bottom:10px;}
+.historia-enc-texto{font-size:14.5px;color:var(--ink-soft);line-height:1.7;max-width:540px;margin:0 auto;}
 .adm-autosave-tag{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;letter-spacing:.2px;color:var(--ink-faint);opacity:0;transform:translateY(2px);transition:opacity .2s ease, transform .2s ease;white-space:nowrap;pointer-events:none;}
 .adm-autosave-tag.mostrar{opacity:1;transform:translateY(0);}
 .adm-autosave-tag.saved{color:var(--success);}
@@ -1360,11 +1410,97 @@ function renderHome(v){
   </div>
   <div class="section-header"><h2 class="section-title">Nossos Pacotes</h2><span class="section-note">preço fechado por pacote</span><div class="section-line"></div></div>
   <div class="products-grid">${cards}</div>
+
+  <!-- ═══════════════════ BANNER CARRINHOS GRÁTIS ═══════════════════ -->
+  <div class="frete-banner">
+    <div class="frete-banner-icone">🛒</div>
+    <div class="frete-banner-body">
+      <div class="frete-banner-eyebrow">✦ Incluso em todos os pacotes de evento</div>
+      <h2 class="frete-banner-titulo">Carrinhos decorativos,<br><em>aluguel e frete: grátis.</em></h2>
+      <p class="frete-banner-desc">
+        Quando você escolhe um dos nossos Pacotes de evento, os <strong>carrinhos temáticos</strong> vão até você sem nenhum custo adicional — montados, decorados e prontos para encantar seus convidados. <strong>Sem taxa de aluguel, sem taxa de frete, sem surpresas.</strong> Tudo incluído no preço fechado do pacote.
+      </p>
+      <div class="frete-banner-tags">
+        <span class="frete-tag"><span class="frete-tag-dot"></span>Carrinho decorativo incluso</span>
+        <span class="frete-tag"><span class="frete-tag-dot"></span>Frete grátis</span>
+        <span class="frete-tag"><span class="frete-tag-dot"></span>Sem taxa de aluguel</span>
+      </div>
+    </div>
+    <div class="frete-banner-badge">
+      <div class="frete-badge-valor">R$ 0</div>
+      <div class="frete-badge-label">Frete & aluguel</div>
+    </div>
+  </div>
+  <!-- ════════════════════════════════════════════════════════════════ -->
+
   <div class="avaliacoes-section">
     <h2 class="avaliacoes-titulo">O que nossos clientes dizem</h2>
     <p class="avaliacoes-sub">Experiências reais de quem já viveu a diferença Petit Buffet</p>
     <div class="carousel-wrapper"><div class="carousel-track">${reviews}</div></div>
-  </div>`;
+  </div>
+
+  <!-- ═══════════════════ NOSSA HISTÓRIA ═══════════════════ -->
+  <div class="historia-section">
+    <div class="historia-eyebrow">Nossa história</div>
+    <div class="historia-grid">
+      <div class="historia-texto">
+        <h2 class="historia-titulo">De Guajará-Mirim para<br>Rio Branco — com <em>amor e sabor.</em></h2>
+        <p class="historia-p">
+          Há <strong>4 anos</strong>, nasceu a Petit Buffet em Guajará-Mirim, Rondônia — uma pequena cidade onde aprendemos que comida boa e cuidado de verdade fazem qualquer evento se tornar inesquecível. Com o coração cheio de sonhos e as malas cheias de receitas, cruzamos o estado e chegamos a <strong>Rio Branco, Acre</strong>, prontos para uma vida nova.
+        </p>
+        <p class="historia-p">
+          Somos novos aqui, mas chegamos com uma missão muito clara: <strong>fazer parte dos momentos mais especiais da sua vida.</strong> Seja um aniversário intimista, uma confraternização de empresa, uma formatura ou qualquer celebração que mereça ser vivida com intensidade — estaremos lá, do início ao fim, levando decoração, sabor e aquele calor de quem trata cada evento como se fosse o seu próprio.
+        </p>
+        <p class="historia-p">
+          Não precisa nos procurar — <strong>nós vamos até você</strong>, com empolgação, pontualidade e tudo pronto para servir: os carrinhos decorativos, os lanches frescos feitos na hora e aquela energia contagiante que só quem ama o que faz consegue levar.
+        </p>
+        <div class="historia-local">
+          <div class="historia-local-pin">📍</div>
+          <div class="historia-local-texto">
+            <strong>Belo Jardim 1, Rio Branco – AC</strong>
+            Entrada do bairro, Rua Princesinha — mas lembre-se: <strong>atendemos em toda Rio Branco.</strong> Você nos diz o local, nós chegamos com tudo.
+          </div>
+        </div>
+      </div>
+      <div class="historia-aside" id="historia-cards">
+        <div class="historia-card">
+          <div class="historia-card-icon">🎉</div>
+          <div class="historia-card-num">200–240</div>
+          <div class="historia-card-label">Eventos realizados</div>
+          <div class="historia-card-detalhe">Cada um deles um capítulo novo, emocionante e cheio de gratidão.</div>
+        </div>
+        <div class="historia-card">
+          <div class="historia-card-icon">📅</div>
+          <div class="historia-card-num">4 anos</div>
+          <div class="historia-card-label">De experiência</div>
+          <div class="historia-card-detalhe">Uma trajetória construída com dedicação, receita a receita, sorriso a sorriso.</div>
+        </div>
+        <div class="historia-card">
+          <div class="historia-card-icon">🚀</div>
+          <div class="historia-card-num">RO → AC</div>
+          <div class="historia-card-label">De Guajará-Mirim para Rio Branco</div>
+          <div class="historia-card-detalhe">Uma nova cidade, uma nova chance — e toda a nossa energia para agradá-la.</div>
+        </div>
+        <div class="historia-card">
+          <div class="historia-card-icon">🎂</div>
+          <div class="historia-card-num">100%</div>
+          <div class="historia-card-label">Presença no evento</div>
+          <div class="historia-card-detalhe">Aniversários, festas corporativas, comemorações — estamos em todos.</div>
+        </div>
+      </div>
+    </div>
+    <div class="historia-encerramento">
+      <div class="historia-enc-emoji">💚</div>
+      <div class="historia-enc-titulo">Obrigado por nos receber, Rio Branco.</div>
+      <p class="historia-enc-texto">
+        Chegamos para ficar e para fazer parte da sua história. Cada pedido que recebemos é uma oportunidade nova de provar que valeu a pena trocar de cidade — e de levar alegria, sabor e momentos incríveis para as famílias e empresas desta cidade que já estamos aprendendo a amar.
+      </p>
+    </div>
+  </div>
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  `;
+  // Ativa a animação de entrada dos cards após o DOM ser pintado
+  requestAnimationFrame(()=> requestAnimationFrame(iniciarObserverHistoria));
 }
 
 function abrirDepoimentoPorIndice(idx){
@@ -1375,6 +1511,16 @@ function abrirDepoimentoPorIndice(idx){
   document.getElementById("dep-stars").innerText = "★".repeat(av.stars||5);
   document.getElementById("dep-texto").innerText = `"${av.texto}"`;
   document.getElementById("modal-depoimento").classList.add("ativo");
+}
+// Anima os cards da seção "Nossa História" ao entrarem na viewport.
+function iniciarObserverHistoria(){
+  const cards = document.querySelectorAll(".historia-card");
+  if (!cards.length) return;
+  if (!("IntersectionObserver" in window)) { cards.forEach(c=>c.classList.add("visivel")); return; }
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if (e.isIntersecting) { e.target.classList.add("visivel"); obs.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  cards.forEach(c=>obs.observe(c));
 }
 
 /* ---------------- PRODUCT DETAIL: seletor de Pacote ---------------- */
