@@ -1746,6 +1746,43 @@ function payloadPedido(formaPagamento){
   };
 }
 
+// ---------------------------------------------------------------------------
+// CONFLITO DE AGENDAMENTO — carrinhos de EVENTO
+// Verifica no Supabase se algum dos produtos do carrinho já está reservado
+// para a data solicitada (ou qualquer data posterior ainda não ocorrida).
+// Retorna null se não há conflito, ou uma string com a mensagem de erro.
+// A regra NÃO se aplica a lanches (categoria_compra = 'lanche').
+// ---------------------------------------------------------------------------
+async function verificarConflitosAgendamento(dataAgendadaBR){
+  // Só verifica se o Supabase está disponível e o carrinho é de evento
+  if (!sb) return null;
+  if (carrinhoCategoriaCompra() !== "evento") return null;
+
+  // Coleta os produto_ids do carrinho (sem duplicatas)
+  const produtoIds = [...new Set(meuCarrinho.map(i => i.produtoId).filter(Boolean))];
+  if (!produtoIds.length) return null;
+
+  // Converte DD/MM → YYYY-MM-DD para o Supabase (usa o mesmo algoritmo de parseDataPedido)
+  const dataObj = parseDataPedido(dataAgendadaBR);
+  if (!dataObj) return null;
+  const dataIso = dataObj.toISOString().slice(0, 10); // "YYYY-MM-DD"
+
+  try {
+    const { data, error } = await sb.rpc("verificar_conflitos_agendamento", {
+      p_produto_ids: produtoIds,
+      p_data_evento: dataIso
+    });
+    if (error) { console.warn("Conflito de agendamento: erro na consulta.", error); return null; }
+    if (!data || !data.length) return null;
+
+    // Monta a mensagem amigável: agrupa por data (pode haver conflito com datas diferentes)
+    // Pega a data mais próxima (já ordenada pelo banco)
+    const dataBloqueio = data[0].data_evento_br;
+    const nomes = data.map(r => r.nome_produto).join(", ");
+    return `Me desculpa, os carrinhos ${nomes} já estão agendados para um evento até o dia ${dataBloqueio}. Por favor, escolha outra data.`;
+  } catch(e) { console.warn("Conflito de agendamento: exceção.", e); return null; }
+}
+
 async function enviarParaPlanilhaGoogle(payload){
   const response = await fetch(GOOGLE_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload) });
   const text = await response.text(); let data;
@@ -1767,6 +1804,9 @@ function mensagemWhatsAppCartao(payload){
 }
 async function pagarComCartao(btn){
   let payload; try { payload = payloadPedido("Cartão"); } catch(error) { feedback(error.message); return; }
+  // Verifica conflito de agendamento (somente para produtos de evento)
+  const conflito = await verificarConflitosAgendamento(payload.data_agendada);
+  if (conflito) { feedback(conflito, "error"); return; }
   const textoOriginal = btn.innerHTML;
   try {
     btn.disabled = true; btn.innerHTML = "Enviando...";
@@ -1811,6 +1851,9 @@ async function salvarPedidoSupabase(payload, statusPagamento, statusPedido){
 async function iniciarPixAutomatico(btn){
   // Valida os dados do pedido ANTES de abrir qualquer coisa.
   let payload; try { payload = payloadPedido("PIX"); } catch(error) { feedback(error.message); return; }
+  // Verifica conflito de agendamento (somente para produtos de evento)
+  const conflito = await verificarConflitosAgendamento(payload.data_agendada);
+  if (conflito) { feedback(conflito, "error"); return; }
   _mpOrderPayload = payload;
 
   // O card do PIX SEMPRE abre — mesmo que o backend automático falhe, o
