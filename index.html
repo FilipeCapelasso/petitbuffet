@@ -1007,6 +1007,22 @@ function centroMaisBarato(produtoId){
 function precoUnitarioProduto(produtoId){
   const p = PRODUTOS[produtoId]; return p && p.vendaUnitariaAtiva && Number(p.precoUnitario)>0 ? Number(p.precoUnitario) : null;
 }
+// Melhor preço por unidade para exibir no card da home.
+// Prioridade: (1) preco_unitario cadastrado → mais direto e exato;
+//             (2) menor preço÷quantidade entre os pacotes com quantidade definida;
+//             (3) null → produto sem quantidade por unidade (ex: brigadeiro em tacho).
+function melhorPrecoUnitario(produtoId){
+  const p = PRODUTOS[produtoId]; if (!p) return null;
+  if (p.vendaUnitariaAtiva && Number(p.precoUnitario) > 0) return Number(p.precoUnitario);
+  const centros = p.centros || [];
+  let melhor = null;
+  for (const c of centros) {
+    if (!c.qtd || Number(c.qtd) <= 0) continue;
+    const porUn = precoCentro(produtoId, c.id) / Number(c.qtd);
+    if (melhor === null || porUn < melhor) melhor = porUn;
+  }
+  return melhor;
+}
 // Calcula a economia de um combo em relação a comprar as mesmas unidades avulsas.
 // Só faz sentido (e só retorna algo) quando o produto vende por unidade E o
 // combo tem quantidade de unidades definida — senão não há base de comparação.
@@ -1301,7 +1317,10 @@ function fecharTelaAtual(){
 function renderHome(v){
   const cards = Object.entries(PRODUTOS).filter(([id,p])=>(p.centros||[]).length>0).map(([id,p],i)=>{
     const indisponivel = !produtoDisponivel(id);
-    const menor = centroMaisBarato(id);
+    const porUn = melhorPrecoUnitario(id);
+    const precoHTML = porUn !== null
+      ? `<div><div class="product-price-label">por unidade</div><div class="product-price">${dinheiro(porUn)}</div></div>`
+      : `<div><div class="product-price-label">a partir de</div><div class="product-price">${dinheiro(centroMaisBarato(id))}</div></div>`;
     return `<div class="product-card ${indisponivel?'esgotado':''}" onclick="${indisponivel?'':`abrirPagina('${id}')`}">
       <span class="ticket-num">Nº ${String(i+1).padStart(2,'0')}</span>
       ${indisponivel?'<span class="produto-status-badge">Indisponível</span>':''}
@@ -1311,7 +1330,7 @@ function renderHome(v){
         <p class="product-desc">${escapeHTML(p.desc)}</p>
         <div class="ticket-perf"></div>
         <div class="product-footer">
-          <div><div class="product-price-label">A partir de</div><div class="product-price">${dinheiro(menor)}</div></div>
+          ${precoHTML}
           <div class="product-arrow">→</div>
         </div>
       </div>
