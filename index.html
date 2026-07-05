@@ -1844,7 +1844,11 @@ async function salvarPedidoSupabase(payload, statusPagamento, statusPedido){
       criado_em: payload.timestamp || new Date().toISOString()
     };
     const { data, error } = await sb.from("pedidos").upsert(row, { onConflict:"pedido" }).select().single();
-    if (error) throw error; return data;
+    if (error) throw error;
+    // Processa a fila do Telegram em background após cada INSERT bem-sucedido.
+    // Fire-and-forget: não bloqueia o fluxo do pedido caso o RPC demore.
+    sb.rpc("processar_telegram_pendente").then(()=>{}).catch(e=>console.warn("Telegram fila:", e));
+    return data;
   } catch(e) { console.warn("Supabase: não foi possível salvar o pedido.", e); return null; }
 }
 
@@ -2197,7 +2201,14 @@ async function adminLogout(){
 function isAdminLogado(){ return !!adminSession; }
 document.addEventListener("keydown", e => { if (e.ctrlKey && e.altKey && e.key.toLowerCase()==="a") openAdminLogin(); });
 
-function openAdminPanel(){ if (!isAdminLogado()) return openAdminLogin(); document.getElementById("adm-panel").classList.add("op"); admTab("pedidos"); }
+function openAdminPanel(){
+  if (!isAdminLogado()) return openAdminLogin();
+  document.getElementById("adm-panel").classList.add("op");
+  admTab("pedidos");
+  // Processa silenciosamente qualquer mensagem pendente na fila do Telegram
+  // que possa ter ficado presa (ex: cliente fechou a aba antes do RPC concluir).
+  if (sb) sb.rpc("processar_telegram_pendente").then(()=>{}).catch(()=>{});
+}
 function closeAdminPanel(){ document.getElementById("adm-panel").classList.remove("op"); }
 function admTab(tab){
   document.querySelectorAll(".adm-tab").forEach(b=>b.classList.toggle("act", b.dataset.tab===tab));
