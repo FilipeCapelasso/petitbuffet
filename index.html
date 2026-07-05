@@ -122,12 +122,14 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
    HOME HERO — thesis: "monta seu pacote" (comanda gigante)
    ========================================================================== */
 .home-hero{position:relative;padding:0 0 46px;max-width:1200px;overflow:visible;}
-.hero-banner{position:relative;display:flex;align-items:center;gap:clamp(16px,3vw,40px);padding:clamp(22px,3.4vw,44px) clamp(20px,3.6vw,48px);margin:28px auto 40px;max-width:1160px;border-radius:var(--r-xl);overflow:hidden;
+/* ── linha com os dois banners lado a lado ── */
+.hero-row{display:flex;gap:18px;margin:28px auto 40px;max-width:1160px;align-items:stretch;}
+.hero-banner{position:relative;display:flex;align-items:center;gap:clamp(14px,2.4vw,32px);padding:clamp(20px,3vw,40px) clamp(18px,3.2vw,42px);flex:6;min-width:0;border-radius:var(--r-xl);overflow:hidden;
   background:radial-gradient(120% 160% at 8% 0%, rgba(201,138,123,.16), transparent 55%), radial-gradient(120% 160% at 100% 100%, rgba(166,124,39,.14), transparent 55%), var(--pine-deep);
   box-shadow:var(--shadow-lift);}
 .hero-banner::before{content:'';position:absolute;inset:0;opacity:.5;background-image:
   repeating-linear-gradient(115deg, rgba(255,255,255,.035) 0 2px, transparent 2px 42px);pointer-events:none;}
-.hero-brandmark-wrap{position:relative;flex-shrink:0;width:clamp(92px,11.5vw,138px);height:clamp(92px,11.5vw,138px);border-radius:50%;display:flex;align-items:center;justify-content:center;
+.hero-brandmark-wrap{position:relative;flex-shrink:0;width:clamp(80px,9vw,118px);height:clamp(80px,9vw,118px);border-radius:50%;display:flex;align-items:center;justify-content:center;
   background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.16), rgba(255,255,255,.02) 65%);
   box-shadow:0 0 0 1px rgba(255,255,255,.14), 0 18px 46px rgba(0,0,0,.35);}
 .hero-brandmark-ring{position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(230,190,140,.35);}
@@ -135,9 +137,9 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .hero-copy{position:relative;flex:1;min-width:0;max-width:100%;}
 .hero-eyebrow{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:10.5px;font-weight:600;color:#E8C08A;letter-spacing:1.8px;text-transform:uppercase;margin-bottom:12px;}
 .hero-eyebrow::before{content:'';width:7px;height:7px;border-radius:2px;background:var(--apricot);flex-shrink:0;}
-.home-titulo{font-family:var(--font-display);font-size:clamp(22px,3.2vw,38px);font-weight:600;line-height:1.14;color:#FBF7EE;letter-spacing:-.3px;margin-bottom:12px;overflow-wrap:break-word;word-break:break-word;hyphens:auto;}
+.home-titulo{font-family:var(--font-display);font-size:clamp(20px,2.6vw,34px);font-weight:600;line-height:1.14;color:#FBF7EE;letter-spacing:-.3px;margin-bottom:12px;overflow-wrap:break-word;word-break:break-word;hyphens:auto;}
 .home-titulo em{font-style:italic;font-weight:500;color:#E8C08A;}
-.home-sub{font-size:clamp(12.5px,1.3vw,14px);color:rgba(251,247,238,.78);line-height:1.6;max-width:480px;font-weight:400;margin-bottom:16px;overflow-wrap:break-word;}
+.home-sub{font-size:clamp(12px,1.1vw,13.5px);color:rgba(251,247,238,.78);line-height:1.6;max-width:420px;font-weight:400;margin-bottom:16px;overflow-wrap:break-word;}
 .hero-tagline{display:flex;align-items:center;gap:8px;font-size:11.5px;color:rgba(251,247,238,.62);margin-bottom:4px;flex-wrap:wrap;}
 .hero-cta-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
 .hero-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 17px;border-radius:var(--r-full);font-size:12px;font-weight:700;text-decoration:none;transition:all .2s;white-space:nowrap;}
@@ -146,7 +148,28 @@ body{font-family:var(--font-body);background:var(--paper);color:var(--ink);overf
 .hero-btn.primary:hover{background:#F2D3A6;transform:translateY(-1px);}
 .hero-btn.ghost{background:rgba(255,255,255,.08);color:#FBF7EE;border:1px solid rgba(255,255,255,.22);}
 .hero-btn.ghost:hover{background:rgba(255,255,255,.16);}
-@media(max-width:860px){.hero-banner{flex-direction:column;text-align:center;gap:16px;max-width:520px;}.hero-copy{min-width:0;width:100%;}.home-sub{max-width:100%;}.hero-cta-row{justify-content:center;}.hero-tagline{justify-content:center;}}
+/* versão compacta do frete-banner ao lado do hero */
+.frete-banner{position:relative;overflow:hidden;border-radius:var(--r-xl);background:linear-gradient(155deg,var(--pine-deep) 0%,#2C4A3B 60%,#1a3d2c 100%);padding:28px 26px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 8px 40px rgba(28,55,40,.22);}
+.frete-banner::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none;}
+/* no hero-row o frete-banner ocupa flex:4 */
+.hero-row .frete-banner{flex:4;min-width:0;margin:0;}
+.frete-banner-icone{font-size:38px;flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));animation:fbBounce 2.8s ease-in-out infinite;margin-bottom:14px;}
+@keyframes fbBounce{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-9px) rotate(3deg);}}
+.frete-banner-eyebrow{font-size:9.5px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px;}
+.frete-banner-titulo{font-family:var(--font-display);font-size:clamp(17px,2vw,24px);font-weight:700;color:#fff;line-height:1.18;margin-bottom:10px;}
+.frete-banner-titulo em{color:#b8e4a0;font-style:normal;}
+.frete-banner-desc{font-size:12.5px;color:rgba(255,255,255,.7);line-height:1.6;}
+.frete-banner-desc strong{color:#fff;}
+.frete-banner-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.frete-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:var(--r-full);padding:5px 11px;font-size:11px;font-weight:700;color:#fff;animation:fbFadeIn .6s ease both;}
+.frete-tag:nth-child(2){animation-delay:.1s;}.frete-tag:nth-child(3){animation-delay:.2s;}
+@keyframes fbFadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.frete-tag-dot{width:6px;height:6px;border-radius:50%;background:#b8e4a0;flex-shrink:0;animation:fbPulse 1.8s ease-in-out infinite;}
+@keyframes fbPulse{0%,100%{opacity:.4;transform:scale(.85);}50%{opacity:1;transform:scale(1.15);}}
+.frete-banner-badge{display:none;} /* badge separado ocultado na versão ao lado */
+/* responsivo: empilha verticalmente em telas pequenas */
+@media(max-width:900px){.hero-row{flex-direction:column;}.hero-row .frete-banner{flex:none;}.hero-banner{flex:none;}}
+@media(max-width:640px){.frete-banner{padding:22px 18px;}.frete-banner-icone{font-size:30px;}}
 .hero-stats{display:flex;gap:0;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;width:fit-content;max-width:100%;background:var(--white);}
 .hero-stat{padding:16px 26px;border-right:1px solid var(--line);}
 .hero-stat:last-child{border-right:none;}
@@ -1389,16 +1412,31 @@ function renderHome(v){
   const reviews = renderCarouselAvaliacoes();
   v.innerHTML = `
   <div class="home-hero">
-    <div class="hero-banner">
-      <div class="hero-brandmark-wrap"><div class="hero-brandmark-ring"></div><img src="${LOGO_URL}" alt="Petit Buffet" class="hero-brandmark"></div>
-      <div class="hero-copy">
-        <div class="hero-eyebrow">✦ Buffet Artesanal Premium</div>
-        <h1 class="home-titulo">Transformando seu <em>evento</em> em um momento inesquecível</h1>
-        <p class="home-sub">Charme, sabor e sofisticação para sua festa. Escolha um Pacote — o combo fechado de cada produto — e receba tudo pronto para servir, sem surpresas no valor final.</p>
-        <div class="hero-tagline">📍 Atendimento em Rio Branco – AC</div>
-        <div class="hero-cta-row">
-          <a class="hero-btn primary" href="${CONFIG.instagram}" target="_blank" rel="noopener">${svgInstagram()} @petitbuffet_ac</a>
-          <a class="hero-btn ghost" href="https://wa.me/55${CONFIG.whatsapp}" target="_blank" rel="noopener">Fale no WhatsApp</a>
+    <div class="hero-row">
+      <div class="hero-banner">
+        <div class="hero-brandmark-wrap"><div class="hero-brandmark-ring"></div><img src="${LOGO_URL}" alt="Petit Buffet" class="hero-brandmark"></div>
+        <div class="hero-copy">
+          <div class="hero-eyebrow">✦ Buffet Artesanal Premium</div>
+          <h1 class="home-titulo">Transformando seu <em>evento</em> em um momento inesquecível</h1>
+          <p class="home-sub">Charme, sabor e sofisticação para sua festa. Escolha um Pacote — o combo fechado de cada produto — e receba tudo pronto para servir, sem surpresas no valor final.</p>
+          <div class="hero-tagline">📍 Atendimento em Rio Branco – AC</div>
+          <div class="hero-cta-row">
+            <a class="hero-btn primary" href="${CONFIG.instagram}" target="_blank" rel="noopener">${svgInstagram()} @petitbuffet_ac</a>
+            <a class="hero-btn ghost" href="https://wa.me/55${CONFIG.whatsapp}" target="_blank" rel="noopener">Fale no WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <div class="frete-banner">
+        <div>
+          <div class="frete-banner-icone">🛒</div>
+          <div class="frete-banner-eyebrow">✦ Incluso em todos os pacotes</div>
+          <h2 class="frete-banner-titulo">Carrinhos,<br>aluguel e frete:<br><em>totalmente grátis.</em></h2>
+          <p class="frete-banner-desc">Seu evento recebe os <strong>carrinhos decorativos</strong> montados e prontos — <strong>sem custo de aluguel, sem frete.</strong> Tudo incluso no pacote.</p>
+        </div>
+        <div class="frete-banner-tags">
+          <span class="frete-tag"><span class="frete-tag-dot"></span>Carrinho incluso</span>
+          <span class="frete-tag"><span class="frete-tag-dot"></span>Frete grátis</span>
+          <span class="frete-tag"><span class="frete-tag-dot"></span>Sem aluguel</span>
         </div>
       </div>
     </div>
@@ -1410,28 +1448,6 @@ function renderHome(v){
   </div>
   <div class="section-header"><h2 class="section-title">Nossos Pacotes</h2><span class="section-note">preço fechado por pacote</span><div class="section-line"></div></div>
   <div class="products-grid">${cards}</div>
-
-  <!-- ═══════════════════ BANNER CARRINHOS GRÁTIS ═══════════════════ -->
-  <div class="frete-banner">
-    <div class="frete-banner-icone">🛒</div>
-    <div class="frete-banner-body">
-      <div class="frete-banner-eyebrow">✦ Incluso em todos os pacotes de evento</div>
-      <h2 class="frete-banner-titulo">Carrinhos decorativos,<br><em>aluguel e frete: grátis.</em></h2>
-      <p class="frete-banner-desc">
-        Quando você escolhe um dos nossos Pacotes de evento, os <strong>carrinhos temáticos</strong> vão até você sem nenhum custo adicional — montados, decorados e prontos para encantar seus convidados. <strong>Sem taxa de aluguel, sem taxa de frete, sem surpresas.</strong> Tudo incluído no preço fechado do pacote.
-      </p>
-      <div class="frete-banner-tags">
-        <span class="frete-tag"><span class="frete-tag-dot"></span>Carrinho decorativo incluso</span>
-        <span class="frete-tag"><span class="frete-tag-dot"></span>Frete grátis</span>
-        <span class="frete-tag"><span class="frete-tag-dot"></span>Sem taxa de aluguel</span>
-      </div>
-    </div>
-    <div class="frete-banner-badge">
-      <div class="frete-badge-valor">R$ 0</div>
-      <div class="frete-badge-label">Frete & aluguel</div>
-    </div>
-  </div>
-  <!-- ════════════════════════════════════════════════════════════════ -->
 
   <div class="avaliacoes-section">
     <h2 class="avaliacoes-titulo">O que nossos clientes dizem</h2>
