@@ -2494,7 +2494,8 @@ async function admAbrirEdicaoProduto(id){
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <div style="flex:1;min-width:120px;">
           <label style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:6px;">Preço unitário (R$)</label>
-          <input class="modal-input" type="number" step="0.01" min="0" id="edt-prod-preco-unitario" value="${p.preco_unitario??''}" style="margin-bottom:0;" oninput="agendarAutoSaveProduto('${id}')" onblur="autoSaveProdutoAoSair('${id}')">
+          <input class="modal-input" type="number" step="0.01" min="0" id="edt-prod-preco-unitario" value="${p.preco_unitario??''}" style="margin-bottom:0;" oninput="agendarAutoSaveProduto('${id}'); sincronizarCampoPorUnidade('${id}')" onblur="autoSaveProdutoAoSair('${id}')">
+          <p style="font-size:10.5px;color:var(--ink-faint);margin:5px 0 0;">Alterar este valor recalcula todos os pacotes com quantidade definida.</p>
         </div>
         <div style="width:90px;">
           <label style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:6px;">Qtd. mín.</label>
@@ -2636,9 +2637,21 @@ function renderCentrosModalContent(produtoId){
   const target = document.getElementById("centros-modal-content");
   if (!target) return;
   target.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--paper-alt);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--paper-alt);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:12px;">
       <span style="font-size:13px;font-weight:600;">Produto disponível na loja</span>
       <label class="adm-switch"><input type="checkbox" id="cad-disp-${produtoId}" ${disp?'checked':''} onchange="salvarDisponibilidadeProduto('${produtoId}')"><span class="adm-switch-track"></span></label>
+    </div>
+    <div style="background:#fffbea;border:1px solid #e8d97a;border-radius:var(--r-sm);padding:11px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span style="font-size:12px;font-weight:700;color:#7a6200;white-space:nowrap;">⚡ Calcular por unidade:</span>
+      <span style="display:flex;align-items:center;gap:5px;">
+        <span style="font-size:12px;color:#7a6200;">R$</span>
+        <input class="adm-input-sm" type="number" step="0.01" min="0" style="width:88px;background:#fff;border-color:#d4b800;"
+          id="calc-preco-un-${produtoId}"
+          placeholder="0,00"
+          value="${p.precoUnitario > 0 ? p.precoUnitario : ''}"
+          oninput="recalcularPrecosCentros('${produtoId}')">
+      </span>
+      <span style="font-size:11px;color:#9a7c00;flex:1;min-width:160px;">por unidade × quantidade = preço do pacote. Altera e salva todos os pacotes automaticamente.</span>
     </div>
     <div style="max-height:320px;overflow-y:auto;padding-right:2px;">
       ${centrosRows || `<p style="font-size:12px;color:var(--ink-faint);margin:6px 0 10px;">Nenhum preço cadastrado — este produto não aparece na loja ainda.</p>`}
@@ -2662,6 +2675,40 @@ function admAtualizarPreviewEconomia(produtoId, tierId){
   if (economia <= 0) { previewEl.textContent = 'Sem economia em relação à unidade avulsa.'; previewEl.style.color = 'var(--ink-faint)'; return; }
   previewEl.style.color = 'var(--success)';
   previewEl.textContent = `De: ${dinheiro(valorOriginal)} · Por: ${dinheiro(preco)} · Economize ${dinheiro(economia)} (${Math.round((economia/valorOriginal)*100)}%)`;
+}
+// ---------------------------------------------------------------------------
+// CÁLCULO AUTOMÁTICO DE PACOTES POR UNIDADE
+// Quando o admin digita no campo ⚡ "Calcular por unidade" (sempre visível na
+// seção de Pacotes) ou no campo "Preço unitário" (seção Venda por Unidade),
+// o sistema recalcula e salva o preço de TODOS os pacotes com quantidade:
+//   novo_preço = preço_un × quantidade
+// O save usa o mesmo debounce de 0,9 s dos outros campos — sem cliques extras.
+// ---------------------------------------------------------------------------
+function recalcularPrecosCentros(produtoId){
+  const input = document.getElementById(`calc-preco-un-${produtoId}`);
+  const novoPrecoUn = parseFloat(input?.value);
+  if (!novoPrecoUn || novoPrecoUn <= 0) return;
+  const p = PRODUTOS[produtoId]; if (!p || !(p.centros||[]).length) return;
+  for (const c of p.centros) {
+    const qtdInput   = document.getElementById(`edt-qtd-${produtoId}-${c.id}`);
+    const precoInput = document.getElementById(`edt-preco-${produtoId}-${c.id}`);
+    if (!qtdInput || !precoInput) continue;
+    const qtd = parseFloat(qtdInput.value);
+    if (!qtd || qtd <= 0) continue;
+    const novoPreco = +(novoPrecoUn * qtd).toFixed(2);
+    if (parseFloat(precoInput.value) === novoPreco) continue;
+    precoInput.value = novoPreco;
+    admAtualizarPreviewEconomia(produtoId, c.id);
+    agendarAutoSaveCentro(produtoId, c.id);
+  }
+}
+// Sincroniza o campo "Preço unitário" (seção Venda por Unidade) com o campo ⚡
+// da seção de Pacotes e dispara o recálculo quando o admin altera aquele campo.
+function sincronizarCampoPorUnidade(produtoId){
+  const origem  = document.getElementById('edt-prod-preco-unitario');
+  const espelho = document.getElementById(`calc-preco-un-${produtoId}`);
+  if (origem && espelho) espelho.value = origem.value;
+  recalcularPrecosCentros(produtoId);
 }
 // opts.silencioso=true → chamado pelo auto-save enquanto o admin digita: grava no Supabase e mostra
 // um indicador discreto na própria linha, sem re-renderizar a lista (o que tiraria o foco do campo)
