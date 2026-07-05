@@ -853,4 +853,4 @@ create trigger trg_pedidos_notificar_telegram
 --     Table Editor → pedidos → Insert row → Save. Chega em segundos.
 --   ✓ A Edge Function "notify-telegram-order" (se ainda existir) não é mais
 --     usada — pode ignorá-la ou apagá-la, sem efeito no funcionamento.
--- ============================================================================Olá Filipe! Vi seu pedido #PB-20260704-X510 aqui na Petit Buffet.
+-- ============================================================================Olá 🥰 Recebemos o seu pedido e estamos super animados para preparar tudo para você! Muito obrigado pela confiança na Petit Buffet.
