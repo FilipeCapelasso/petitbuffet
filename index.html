@@ -782,10 +782,9 @@ html{scroll-behavior:smooth;}
   </div>
 </div>
 
-<script src="/socket.io/socket.io.js" onerror="console.warn('Socket.io não encontrado, rodando em modo API/Supabase direto.')"></script>
+<script src="/socket.io/socket.io.js" async onerror="console.warn('Socket.io não encontrado, rodando em modo API/Supabase direto.')"></script>
 <script src="imagens-base64.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" async></script>
 
 <script>
 'use strict';
@@ -853,7 +852,18 @@ let adminSession = null; // sessão Supabase Auth do admin logado (ou null)
 
 const SB_READY = !!(SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes("SEU-PROJETO") && !SUPABASE_ANON_KEY.includes("SUA-CHAVE"));
 let sb = null;
-if (SB_READY && window.supabase) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e){ console.warn("Supabase indisponível:", e); } }
+function carregarSupabaseLib(){
+  return new Promise(resolve=>{
+    if (!SB_READY) return resolve();
+    const iniciar = ()=>{ try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e){ console.warn("Supabase indisponível:", e); } resolve(); };
+    if (window.supabase) return iniciar();
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+    s.onload = iniciar; s.onerror = ()=>{ console.warn("Supabase: biblioteca não carregou, usando catálogo fixo."); resolve(); };
+    document.head.appendChild(s);
+    setTimeout(resolve, 8000);
+  });
+}
 console.log("[SUPABASE] Projeto usado pelo frontend:", SUPABASE_URL, "| ref:", SUPABASE_URL.replace("https://","").split(".")[0]);
 
 const STATUS_META = {
@@ -1065,19 +1075,26 @@ function hidratarAplicacao(){
   if (rascunho?.modalAberto && meuCarrinho.length) abrirModalCheckout(); // reabre o checkout exatamente como estava
 }
 window.addEventListener("keydown", e => { if (e.key === "Escape") fecharImagemProdutoExpandida(); });
-window.addEventListener("load", async () => {
-  document.getElementById("btn-wpp").href = `https://wa.me/55${CONFIG.whatsapp}`;
-  renderMenuLateral();
-  iniciarSocketSeguro(); verificarUsuarioLogado(); sincronizarClienteLogado();
-  await Promise.all([carregarCatalogoSupabase(), carregarConfiguracoesLoja()]); // popula PRODUTOS/CATEGORIAS e settings reais antes de desenhar a home
+let _ultimaPaginaInicial = null;
+async function iniciarBackend(){
+  await carregarSupabaseLib();
+  iniciarSocketSeguro(); sincronizarClienteLogado();
+  await Promise.all([carregarCatalogoSupabase(), carregarConfiguracoesLoja()]);
+  // se a página salva só existe no catálogo real do Supabase, abre ela agora
+  if (paginaAtual==="home" && _ultimaPaginaInicial && _ultimaPaginaInicial!=="home" && PRODUTOS[_ultimaPaginaInicial]) abrirPagina(_ultimaPaginaInicial);
   await carregarCardapioConfig();
-  hidratarAplicacao();
   await restaurarSessaoAdmin();
-  // Acesso administrativo via URL: abrindo o site com #admin (ex: seusite.com/#admin)
-  // a tela de login do admin abre sozinha. Se a sessão já estiver ativa, vai
-  // direto para o painel.
   if (location.hash === "#admin") { isAdminLogado() ? openAdminPanel() : openAdminLogin(); }
-});
+}
+function bootSite(){
+  document.getElementById("btn-wpp").href = `https://wa.me/55${CONFIG.whatsapp}`;
+  try { _ultimaPaginaInicial = localStorage.getItem(STORAGE.lastPage); } catch(e){}
+  renderMenuLateral();
+  verificarUsuarioLogado();
+  hidratarAplicacao();      // desenha a home na hora, com o catálogo fixo
+  iniciarBackend();         // busca os dados reais sem travar a tela
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bootSite); else bootSite();
 
 /* Restaura sessão do admin (se houver) ao recarregar a página — a verdadeira
    permissão continua sendo checada pelo servidor (RLS) a cada operação, isto
